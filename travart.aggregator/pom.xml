@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>at.jku.cps</groupId>
+  <groupId>at.jku.cps.travart</groupId>
   <artifactId>travart.aggregator</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>TraVarT</name>
@@ -9,4 +9,13 @@
   	<name>LIT Cyber-Physical Systems Lab</name>
   	<url>https://www.jku.at/lit-cyber-physical-systems-lab/</url>
   </organization>
+  <packaging>pom</packaging>
+  <modules>
+  	<module>travart.core</module>
+  	<module>travart.gui</module>
+  	
+  	<module>travart.ovm</module>
+  	<module>travart.ppr-dsl</module>
+  	<module>travart.dopler-decision</module>
+  </modules>
 </project>
