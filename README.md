@@ -1,6 +1,6 @@
-# TraVarT - Transforming Variability Artifacts
+# TraVarT
 
-Transforming Variability Artifacts (TraVarT) is a tool meant to enable users to transfer commonly used variability models into one another. This should help users to gain understanding between the limitations of each modeling approach, experiment with new approaches, or maybe change existing models into a more desirable format. The tool currently features support for FeatureIDE feature models (which are currently used as a pivot model), OVM models and DOPLER decision models. The software features conversion from each of those models into one another, including a full roundtrip which should maintain all possible configurations.
+Transforming Variability Artifacts (TraVart) is a tool meant to enable users to transfer commonly used variability models into one another. This should help users to gain understanding between the limitations of each modeling approach, experiment with new approaches, or maybe change existing models into a more desirable format. The tool currently features support for FeatureIDE feature models (which are currently used as a pivot model), OVM models and DOPLER decision models. The software features conversion from each of those models into one another, including a full roundtrip which should maintain all possible configurations.
 
 ## Transformation Algorithms
 The main transformations performed by the transformation algorithms of TraVarT are outlined [here](https://github.com/SECPS/TraVarT/wiki/Algorithms).
@@ -19,22 +19,35 @@ mvn install:install-file -Dfile="splc/lib/de.ovgu.featureide.lib.fm-v3.7.0.jar" 
 ``
 
 ``
+mvn install:install-file -Dfile="splc/lib/de.ovgu.featureide.lib.fm-3.6.2.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.6.2" -Dpackaging="jar"
+``
+
+``
 mvn install:install-file -Dfile="splc/lib/uvl-parser-0.1.0-SNAPSHOT-standalone.jar" -DgroupId="de.neominik" -DartifactId="uvl" -Dversion="0.1.0-SNAPSHOT" -Dpackaging="jar"
 ``
 
 ``
-mvn install:install-file -Dfile="splc/lib/ppr-dsl-20210301.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.dsl" -Dversion="0.0.1" -Dpackaging="jar"
+mvn install:install-file -Dfile="splc/lib/ppr-dsl-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.dsl" -Dversion="0.0.2" -Dpackaging="jar"
 ``
 
 ``
-mvn install:install-file -Dfile="splc/lib/ppr-model-20210301.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.model" -Dversion="0.0.1" -Dpackaging="jar"
+mvn install:install-file -Dfile="splc/lib/ppr-model-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.model" -Dversion="0.0.2" -Dpackaging="jar"
 ``
 
-After that you should be able to build TraVarT by simply running: 
+After that you should be able to build TraVarT in 2 different versions: 
+
+For the version that supports ATL you have to run:
 
 ``
-mvn clean package
+mvn clean package -P atl
 ``
+
+For the version that supports UVL you have to run:
+``
+mvn clean package -P uvl
+``
+
+If the installation process fails due to failing tests, and you don't care, add the `-DskipTests` flag.
 
 Mind though, that since we have not implemented a GUI yet, you will not receive a simple runnable from the build, but you will only find the binary as JAR files in the corresponding target folders of each project. Once we implement a GUI we are also planning to provide TraVarT as an executable.
 
