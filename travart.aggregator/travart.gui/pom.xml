@@ -8,4 +8,13 @@
   <artifactId>travart.gui</artifactId>
   <name>TraVarT - GUI</name>
   <description>TraVarT - Transforming Variability Artifacts - GUI</description>
+  <reporting>
+		<plugins>
+			<plugin>
+			  <groupId>com.github.spotbugs</groupId>
+			  <artifactId>spotbugs-maven-plugin</artifactId>
+			  <version>4.2.0</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

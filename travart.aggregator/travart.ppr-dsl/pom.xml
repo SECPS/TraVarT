@@ -8,4 +8,31 @@
   <artifactId>travart.ppr-dsl</artifactId>
   <name>TraVarT - PPR - dsl</name>
   <description>TraVarT - Transforming Variability Artifacts - PPR - dsl</description>
+  <dependencies>
+		<dependency>
+			<groupId>at.sqi.ppr</groupId>
+			<artifactId>ppr.model</artifactId>
+			<version>0.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>at.sqi.ppr</groupId>
+			<artifactId>ppr.dsl</artifactId>
+			<version>0.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.external</groupId>
+			<artifactId>org-apache-commons-io</artifactId>
+			<version>RELEASE113</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<reporting>
+		<plugins>
+			<plugin>
+			  <groupId>com.github.spotbugs</groupId>
+			  <artifactId>spotbugs-maven-plugin</artifactId>
+			  <version>4.2.0</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
