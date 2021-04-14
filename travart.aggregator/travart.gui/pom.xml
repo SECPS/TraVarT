@@ -8,6 +8,13 @@
   <artifactId>travart.gui</artifactId>
   <name>TraVarT - GUI</name>
   <description>TraVarT - Transforming Variability Artifacts - GUI</description>
+  <dependencies>
+		<dependency>
+  			<groupId>org.openjfx</groupId>
+  			<artifactId>javafx-fxml</artifactId>
+  			<version>16-ea+1</version>
+	</dependency>
+	</dependencies>
   <reporting>
 		<plugins>
 			<plugin>

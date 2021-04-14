@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+	<properties>
+		<graphics key="showhiddenfeatures" value="true"/>
+		<graphics key="legendautolayout" value="true"/>
+		<graphics key="showshortnames" value="false"/>
+		<graphics key="layout" value="horizontal"/>
+		<graphics key="showcollapsedconstraints" value="true"/>
+		<graphics key="legendhidden" value="false"/>
+		<graphics key="layoutalgorithm" value="1"/>
+	</properties>
+	<struct>
+		<and mandatory="true" name="WikiMatrix">
+			<alt name="LicenseCostFee">
+				<graphics key="collapsed" value="false"/>
+				<feature name="DifferentLicenses"/>
+				<feature name="US"/>
+				<feature name="Community"/>
+			</alt>
+			<alt name="Storage">
+				<graphics key="collapsed" value="false"/>
+				<feature name="Files"/>
+				<feature name="Database"/>
+				<feature name="FileRCS"/>
+			</alt>
+			<feature mandatory="true" name="RSS"/>
+			<alt mandatory="true" name="License">
+				<graphics key="collapsed" value="false"/>
+				<feature name="Commercial"/>
+				<feature name="NoLimit"/>
+				<feature name="GPL"/>
+				<feature name="GPL2"/>
+			</alt>
+			<feature name="Unicode"/>
+			<alt name="Language">
+				<graphics key="collapsed" value="false"/>
+				<feature name="Java"/>
+				<feature name="Python"/>
+				<feature name="PHP"/>
+				<feature name="Perl"/>
+			</alt>
+		</and>
+	</struct>
+	<constraints>
+		<rule>
+			<disj>
+				<var>LicenseCostFee</var>
+				<var>Storage</var>
+			</disj>
+		</rule>
+		<rule>
+			<conj>
+				<imp>
+					<var>Storage</var>
+					<var>Unicode</var>
+				</imp>
+				<imp>
+					<var>Unicode</var>
+					<var>Storage</var>
+				</imp>
+			</conj>
+		</rule>
+		<rule>
+			<conj>
+				<imp>
+					<var>Community</var>
+					<var>FileRCS</var>
+				</imp>
+				<imp>
+					<var>FileRCS</var>
+					<var>Community</var>
+				</imp>
+			</conj>
+		</rule>
+		<rule>
+			<conj>
+				<imp>
+					<var>Commercial</var>
+					<var>US</var>
+				</imp>
+				<imp>
+					<var>US</var>
+					<var>Commercial</var>
+				</imp>
+			</conj>
+		</rule>
+		<rule>
+			<conj>
+				<imp>
+					<var>FileRCS</var>
+					<var>Perl</var>
+				</imp>
+				<imp>
+					<var>Perl</var>
+					<var>FileRCS</var>
+				</imp>
+			</conj>
+		</rule>
+		<rule>
+			<conj>
+				<imp>
+					<var>Unicode</var>
+					<var>Language</var>
+				</imp>
+				<imp>
+					<var>Language</var>
+					<var>Unicode</var>
+				</imp>
+			</conj>
+		</rule>
+		<rule>
+			<conj>
+				<imp>
+					<var>US</var>
+					<var>Java</var>
+				</imp>
+				<imp>
+					<var>Java</var>
+					<var>US</var>
+				</imp>
+			</conj>
+		</rule>
+		<rule>
+			<imp>
+				<var>GPL2</var>
+				<var>PHP</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>GPL</var>
+				<var>Storage</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>DifferentLicenses</var>
+				<not>
+					<var>GPL</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Database</var>
+				<not>
+					<var>Python</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>NoLimit</var>
+				<not>
+					<var>DifferentLicenses</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Unicode</var>
+				<not>
+					<var>NoLimit</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>LicenseCostFee</var>
+				<not>
+					<var>Files</var>
+				</not>
+			</imp>
+		</rule>
+	</constraints>
+</featureModel>
