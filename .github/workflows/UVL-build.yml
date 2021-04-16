@@ -34,8 +34,8 @@ jobs:
         mvn install:install-file -Dfile="travart/lib/ppr-dsl-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.dsl" -Dversion="0.0.2" -Dpackaging="jar"
     - name: Build with Maven
       run: |
-        mvn install -P uvl
-        mvn package -P uvl -fae --file pom.xml
+        mvn install -P uvl -fn -DtestFailureIgnore=true
+        mvn package -P uvl -fae --file pom.xml -fn -DtestFailureIgnore=true
         cat target/site/jacoco-aggregate/index.html
     - name: Publish Test Report
       if: ${{ always() }}
