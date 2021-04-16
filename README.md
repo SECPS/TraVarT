@@ -11,7 +11,7 @@ Find [here](https://github.com/SECPS/TraVarT/tree/develop/splc/at.jku.cps.vmt.ev
 # Using TraVarT
 As we are still in development, there is currently no GUI available. We plan to include a GUI in the future to enable users to easily transform their models.
 
-# Developing TraVarT ![Maven build](https://github.com/SECPS/TraVarT/workflows/Maven%20build/badge.svg)
+# Developing TraVarT [![UVL build](https://github.com/SECPS/TraVarT/actions/workflows/UVL-build.yml/badge.svg)](https://github.com/SECPS/TraVarT/actions/workflows/UVL-build.yml)
 TraVarT is built with Maven. If you don't have any experience with Maven, you can fork the project and use the GitHub Action that is set up for the project to build TraVart. If you want to build TraVarT locally, you should know, that we depend on a featureIDE library which is not available through the standard repositories. Therefore before you run the build for the first time, you need to install that dependency in your local maven repository. You can do that by either running the setup.sh for Linux systems or setup.bat for Windows. Alternatively head to the root folder of the project in a shell and run: 
 
 ``
