@@ -3,7 +3,7 @@
   <parent>
     <groupId>at.jku.cps.travart</groupId>
     <artifactId>travart.aggregator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
   <artifactId>travart.dopler-decision</artifactId>
   <name>TraVarT - DOPLER - decision</name>
@@ -12,7 +12,7 @@
 	<dependency>
 		<groupId>at.jku.cps.travart</groupId>
 			<artifactId>travart.core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.parent.version}</version>
 	</dependency>
   </dependencies>
   <reporting>

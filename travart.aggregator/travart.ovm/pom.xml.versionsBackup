@@ -3,18 +3,18 @@
   <parent>
     <groupId>at.jku.cps.travart</groupId>
     <artifactId>travart.aggregator</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>travart.gui</artifactId>
-  <name>TraVarT - GUI</name>
-  <description>TraVarT - Transforming Variability Artifacts - GUI</description>
+  <artifactId>travart.ovm</artifactId>
+  <name>TraVarT - OVM</name>
+  <description>TraVarT - Transforming Variability Artifacts - OVM</description>
   <dependencies>
-		<dependency>
-  			<groupId>org.openjfx</groupId>
-  			<artifactId>javafx-fxml</artifactId>
-  			<version>16-ea+1</version>
+	<dependency>
+		<groupId>at.jku.cps.travart</groupId>
+			<artifactId>travart.core</artifactId>
+			<version>${project.parent.version}</version>
 	</dependency>
-	</dependencies>
+  </dependencies>
   <reporting>
 		<plugins>
 			<plugin>
