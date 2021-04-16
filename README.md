@@ -47,6 +47,8 @@ For the version that supports UVL you have to run:
 mvn clean package -P uvl
 ``
 
+If you don't specify which version you want to build, maven will default to the UVL version.
+
 If the installation process fails due to failing tests, and you don't care, add the `-DskipTests` flag.
 
 Mind though, that since we have not implemented a GUI yet, you will not receive a simple runnable from the build, but you will only find the binary as JAR files in the corresponding target folders of each project. Once we implement a GUI we are also planning to provide TraVarT as an executable.
