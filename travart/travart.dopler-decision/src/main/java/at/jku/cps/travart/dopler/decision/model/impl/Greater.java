@@ -20,7 +20,7 @@ public class Greater extends ABinaryCondition {
 		} else if (getLeft() instanceof ARangeValue && getRight() instanceof GetValueFunction) {
 			ARangeValue value = (ARangeValue) getLeft();
 			GetValueFunction function = (GetValueFunction) getRight();
-			return function.execute().greaterThan(value);
+			return value.greaterThan(function.execute());
 		} else if (getLeft() instanceof GetValueFunction && getRight() instanceof GetValueFunction) {
 			GetValueFunction leftFunction = (GetValueFunction) getLeft();
 			GetValueFunction rightFunction = (GetValueFunction) getRight();

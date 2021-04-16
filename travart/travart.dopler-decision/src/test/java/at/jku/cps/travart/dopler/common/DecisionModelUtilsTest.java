@@ -341,9 +341,10 @@ public class DecisionModelUtilsTest {
 		sd.add(sd1);
 		dm.addAll(sd);
 		Set<IDecision> cd = DecisionModelUtils.getSelectableDecisions(dm);
-		assertTrue(cd.size() == 2 && cd.contains(nd1) && cd.contains(ed1));
+		assertTrue(cd.size() == 3 && cd.contains(bd1) && cd.contains(nd1) && cd.contains(ed1));
 	}
 
+	
 	@Test
 	public void testGetSelectableDecisionsAsNames() {
 		Set<IDecision<?>> sd = new LinkedHashSet<>();
@@ -362,7 +363,7 @@ public class DecisionModelUtilsTest {
 		sd.add(sd1);
 		dm.addAll(sd);
 		Set<String> cd = DecisionModelUtils.getSelectableDecisionsAsNames(dm);
-		assertTrue(cd.size() == 2 && cd.contains(nd1.getName()) && cd.contains(ed1.getName()));
+		assertTrue(cd.size() == 3 && cd.contains(bd1.getName()) && cd.contains(nd1.getName()) && cd.contains(ed1.getName()));
 	}
 
 	@Test

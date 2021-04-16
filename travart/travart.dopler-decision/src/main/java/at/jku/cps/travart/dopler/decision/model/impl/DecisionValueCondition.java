@@ -1,5 +1,7 @@
 package at.jku.cps.travart.dopler.decision.model.impl;
 
+import java.util.Objects;
+
 import at.jku.cps.travart.dopler.decision.model.ARangeValue;
 import at.jku.cps.travart.dopler.decision.model.ICondition;
 import at.jku.cps.travart.dopler.decision.model.IDecision;
@@ -11,8 +13,8 @@ public class DecisionValueCondition implements ICondition {
 	private final ARangeValue value;
 
 	public DecisionValueCondition(final IDecision decision, final ARangeValue value) {
-		this.decision = decision;
-		this.value = value;
+		this.decision = Objects.requireNonNull(decision);
+		this.value = Objects.requireNonNull(value);
 	}
 
 	public IDecision getDecision() {

@@ -21,6 +21,7 @@ import at.jku.cps.travart.dopler.decision.model.IAction;
 import at.jku.cps.travart.dopler.decision.model.ICondition;
 import at.jku.cps.travart.dopler.decision.model.IDecision;
 import at.jku.cps.travart.dopler.decision.model.IEnumerationDecision;
+import at.jku.cps.travart.dopler.decision.model.IRangeValue;
 import at.jku.cps.travart.dopler.decision.model.IValue;
 import at.jku.cps.travart.dopler.decision.model.impl.And;
 import at.jku.cps.travart.dopler.decision.model.impl.BooleanDecision;
@@ -149,6 +150,11 @@ public final class DecisionModelUtils {
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
+	/**
+	 * 
+	 * @param dm
+	 * @return returns a list of visible decisions as names
+	 */
 	public static Set<String> getSelectableDecisionsAsNames(final IDecisionModel dm) {
 		return getSelectableDecisions(dm).stream().map(IDecision::getId)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
@@ -192,7 +198,7 @@ public final class DecisionModelUtils {
 	}
 
 	public static boolean isComplexVisibilityCondition(final ICondition visibility) {
-		return !isDecision(visibility) && visibility != ICondition.TRUE && visibility != ICondition.FALSE;
+		return !isDecision(visibility) && !(visibility instanceof IRangeValue) && visibility != ICondition.TRUE && visibility != ICondition.FALSE;
 	}
 
 	public static boolean isDecision(final ICondition decision) {

@@ -12,12 +12,12 @@ public final class StringValue extends ARangeValue<String> {
 
 	@Override
 	public boolean lessThan(final ARangeValue<String> other) {
-		return getValue().compareTo(other.getValue()) < 1;
+		return getValue().compareTo(other.getValue()) < 0;
 	}
 
 	@Override
 	public boolean greaterThan(final ARangeValue<String> other) {
-		return getValue().compareTo(other.getValue()) > 1;
+		return getValue().compareTo(other.getValue()) > 0;
 	}
 
 	@Override
