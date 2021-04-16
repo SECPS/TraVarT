@@ -35,7 +35,7 @@ jobs:
     - name: Build with Maven
       run: |
         mvn install -P uvl -fn -DtestFailureIgnore=true
-        mvn package -P uvl -fae --file pom.xml -fn -DtestFailureIgnore=true
+        mvn package -P uvl -fn -DtestFailureIgnore=true
         cat target/site/jacoco-aggregate/index.html
     - name: Publish Test Report
       if: ${{ always() }}
