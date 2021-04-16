@@ -15,23 +15,23 @@ As we are still in development, there is currently no GUI available. We plan to 
 TraVarT is built with Maven. If you don't have any experience with Maven, you can fork the project and use the GitHub Action that is set up for the project to build TraVart. If you want to build TraVarT locally, you should know, that we depend on a featureIDE library which is not available through the standard repositories. Therefore before you run the build for the first time, you need to install that dependency in your local maven repository. You can do that by either running the setup.sh for Linux systems or setup.bat for Windows. Alternatively head to the root folder of the project in a shell and run: 
 
 ``
-mvn install:install-file -Dfile="splc/lib/de.ovgu.featureide.lib.fm-v3.7.0.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.7.0" -Dpackaging="jar"
+mvn install:install-file -Dfile="travart.aggregator/lib/de.ovgu.featureide.lib.fm-v3.7.0.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.7.0" -Dpackaging="jar"
 ``
 
 ``
-mvn install:install-file -Dfile="splc/lib/de.ovgu.featureide.lib.fm-3.6.2.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.6.2" -Dpackaging="jar"
+mvn install:install-file -Dfile="travart.aggregator/lib/de.ovgu.featureide.lib.fm-3.6.2.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.6.2" -Dpackaging="jar"
 ``
 
 ``
-mvn install:install-file -Dfile="splc/lib/uvl-parser-0.1.0-SNAPSHOT-standalone.jar" -DgroupId="de.neominik" -DartifactId="uvl" -Dversion="0.1.0-SNAPSHOT" -Dpackaging="jar"
+mvn install:install-file -Dfile="travart.aggregator/lib/uvl-parser-0.1.0-SNAPSHOT-standalone.jar" -DgroupId="de.neominik" -DartifactId="uvl" -Dversion="0.1.0-SNAPSHOT" -Dpackaging="jar"
 ``
 
 ``
-mvn install:install-file -Dfile="splc/lib/ppr-dsl-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.dsl" -Dversion="0.0.2" -Dpackaging="jar"
+mvn install:install-file -Dfile="travart.aggregator/lib/ppr-dsl-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.dsl" -Dversion="0.0.2" -Dpackaging="jar"
 ``
 
 ``
-mvn install:install-file -Dfile="splc/lib/ppr-model-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.model" -Dversion="0.0.2" -Dpackaging="jar"
+mvn install:install-file -Dfile="travart.aggregator/lib/ppr-model-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.model" -Dversion="0.0.2" -Dpackaging="jar"
 ``
 
 After that you should be able to build TraVarT in 2 different versions: 
