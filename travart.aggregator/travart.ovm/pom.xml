@@ -8,6 +8,13 @@
   <artifactId>travart.ovm</artifactId>
   <name>TraVarT - OVM</name>
   <description>TraVarT - Transforming Variability Artifacts - OVM</description>
+  <dependencies>
+	<dependency>
+		<groupId>at.jku.cps.travart</groupId>
+			<artifactId>travart.core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+  </dependencies>
   <reporting>
 		<plugins>
 			<plugin>

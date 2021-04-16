@@ -10,6 +10,11 @@
   <description>TraVarT - Transforming Variability Artifacts - PPR - dsl</description>
   <dependencies>
 		<dependency>
+			<groupId>at.jku.cps.travart</groupId>
+			<artifactId>travart.core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>at.sqi.ppr</groupId>
 			<artifactId>ppr.model</artifactId>
 			<version>0.0.2</version>
