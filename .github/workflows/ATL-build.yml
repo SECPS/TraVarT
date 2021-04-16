@@ -37,6 +37,9 @@ jobs:
         mvn install -P atl
         mvn package -P atl -fae --file pom.xml
         cat target/site/jacoco-aggregate/index.html
+    - name: Publish Test Report
+        if: ${{ always() }}
+        uses: scacap/action-surefire-report@v1
     - name: Run Spotbugs
       run: |
         cd travart
@@ -51,15 +54,14 @@ jobs:
         mkdir artifacts/site/core
         mkdir artifacts/site/dopler
         mkdir artifacts/site/evaluation
-        mkdir artifacts/site/gabel-csv
+        mkdir artifacts/site/ppr-dsl
         mkdir artifacts/site/gui
         mkdir artifacts/site/ovm
         cp travart/**/target/surefire-reports/ artifacts/surefire -R
         cp target/site/jacoco-aggregate/ artifacts/jacoco -R
         cp travart/*.core/target/site/ artifacts/site/core -R
-        cp travart/*.dopler/target/site/ artifacts/site/dopler -R
-        cp travart/*.evaluation/target/site/ artifacts/site/evaluation -R
-        cp travart/*.gabel-csv/target/site/ artifacts/site/gabel-csv -R
+        cp travart/*.dopler-decision/target/site/ artifacts/site/dopler -R
+        cp travart/*.ppr-dsl/target/site/ artifacts/site/gabel-csv -R
         cp travart/*.gui/target/site/ artifacts/site/gui -R
         cp travart/*.ovm/target/site/ artifacts/site/ovm -R
         cp travart/**/target/*.jar artifacts/jars -R
