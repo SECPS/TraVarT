@@ -2,12 +2,19 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>at.jku.cps.travart</groupId>
-    <artifactId>travart.aggregator</artifactId>
+    <artifactId>travart</artifactId>
     <version>0.0.1</version>
   </parent>
-  <artifactId>travart.core</artifactId>
-  <name>TraVarT - Core</name>
-  <description>TraVarT - Transforming Variability Artifacts - Core</description>
+  <artifactId>travart.dopler-decision</artifactId>
+  <name>TraVarT - DOPLER - decision</name>
+  <description>TraVarT - Transforming Variability Artifacts - DOPLER - decision</description>
+  <dependencies>
+	<dependency>
+		<groupId>at.jku.cps.travart</groupId>
+			<artifactId>travart.core</artifactId>
+			<version>${project.parent.version}</version>
+	</dependency>
+  </dependencies>
   <reporting>
 		<plugins>
 			<plugin>
