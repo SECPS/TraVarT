@@ -38,8 +38,8 @@ jobs:
         mvn package -P atl -fae --file pom.xml
         cat target/site/jacoco-aggregate/index.html
     - name: Publish Test Report
-        if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1
+      if: ${{ always() }}
+      uses: scacap/action-surefire-report@v1
     - name: Run Spotbugs
       run: |
         cd travart
