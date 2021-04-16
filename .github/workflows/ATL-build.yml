@@ -1,0 +1,69 @@
+
+name: ATL build
+
+on:
+  push:
+    branches: [ develop,master ]
+  pull_request:
+    branches: [ develop,master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+    - name: Caching dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Install local dependencies
+      run: |
+        mvn install:install-file -Dfile="travart/lib/de.ovgu.featureide.lib.fm-v3.7.0.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.7.0" -Dpackaging="jar"
+        mvn install:install-file -Dfile="travart/lib/de.ovgu.featureide.lib.fm-3.6.2.jar" -DgroupId="de.ovgu.featureide" -DartifactId="lib.fm" -Dversion="3.6.2" -Dpackaging="jar"
+        mvn install:install-file -Dfile="travart/lib/uvl-parser-0.1.0-SNAPSHOT-standalone.jar" -DgroupId="de.neominik" -DartifactId="uvl" -Dversion="0.1.0-SNAPSHOT" -Dpackaging="jar"
+        mvn install:install-file -Dfile="travart/lib/ppr-model-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.model" -Dversion="0.0.2" -Dpackaging="jar"
+        mvn install:install-file -Dfile="travart/lib/ppr-dsl-20210319.jar" -DgroupId="at.sqi.ppr" -DartifactId="ppr.dsl" -Dversion="0.0.2" -Dpackaging="jar"
+    - name: Build with Maven
+      run: |
+        mvn install -P atl
+        mvn package -P atl -fae --file pom.xml
+        cat target/site/jacoco-aggregate/index.html
+    - name: Run Spotbugs
+      run: |
+        cd travart
+        mvn site
+    - name: Assemble artifacts
+      run: |
+        mkdir artifacts
+        mkdir artifacts/jacoco
+        mkdir artifacts/surefire
+        mkdir artifacts/jars
+        mkdir artifacts/site
+        mkdir artifacts/site/core
+        mkdir artifacts/site/dopler
+        mkdir artifacts/site/evaluation
+        mkdir artifacts/site/gabel-csv
+        mkdir artifacts/site/gui
+        mkdir artifacts/site/ovm
+        cp travart/**/target/surefire-reports/ artifacts/surefire -R
+        cp target/site/jacoco-aggregate/ artifacts/jacoco -R
+        cp travart/*.core/target/site/ artifacts/site/core -R
+        cp travart/*.dopler/target/site/ artifacts/site/dopler -R
+        cp travart/*.evaluation/target/site/ artifacts/site/evaluation -R
+        cp travart/*.gabel-csv/target/site/ artifacts/site/gabel-csv -R
+        cp travart/*.gui/target/site/ artifacts/site/gui -R
+        cp travart/*.ovm/target/site/ artifacts/site/ovm -R
+        cp travart/**/target/*.jar artifacts/jars -R
+    - uses: actions/upload-artifact@v1
+      with:
+         name: Jars and test reports
+         path: artifacts
