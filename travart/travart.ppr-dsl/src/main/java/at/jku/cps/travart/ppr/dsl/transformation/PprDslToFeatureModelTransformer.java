@@ -87,6 +87,18 @@ public class PprDslToFeatureModelTransformer implements IModelTransformer<Assemb
 				Product parentProduct = product.getImplementedProducts().get(0);
 				IFeature parentFeature = fm.getFeature(parentProduct.getId());
 				FeatureUtils.addChild(parentFeature, feature);
+			} else {
+				// no tree can be derived, but constraints for each of the implemented products
+				// (Product requires implemented products)
+				for (Product implemented : product.getImplementedProducts()) {
+					IFeature impFeature = fm.getFeature(implemented.getId());
+					assert impFeature != null;
+					if (!TraVarTUtils.isParentFeatureOf(feature, impFeature)) {
+						IConstraint constraint = factory.createConstraint(fm, Prop4JUtils.createImplies(
+								Prop4JUtils.createLiteral(feature), Prop4JUtils.createLiteral(impFeature)));
+						FeatureUtils.addConstraint(fm, constraint);
+					}
+				}
 			}
 			// store the implemented products also as attributes to restore them in the
 			// roundtrip
@@ -123,9 +135,9 @@ public class PprDslToFeatureModelTransformer implements IModelTransformer<Assemb
 	}
 
 	private void storeNameAttributeAsProperty(final IFeature feature, final String name) {
-		if (name == null) {
-			return;
-		}
+//		if (name == null) {
+//			return;
+//		}
 		feature.getCustomProperties().set(NAME_ATTRIBUTE_KEY, NAME_ATTRIBUTE_TYPE, name);
 	}
 
