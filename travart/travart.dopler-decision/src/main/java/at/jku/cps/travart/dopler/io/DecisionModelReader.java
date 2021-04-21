@@ -52,8 +52,8 @@ public class DecisionModelReader implements IReader<IDecisionModel> {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(DELIMITER).withHeader(DMCSVHeader.stringArray())
 					.withFirstRecordAsHeader().parse(in);
 			for (CSVRecord record : records) {
-				String id = record.get(DMCSVHeader.ID);
-				String typeString = record.get(DMCSVHeader.TYPE);
+				String id = record.get(DMCSVHeader.ID).trim();
+				String typeString = record.get(DMCSVHeader.TYPE).trim();
 				ADecision decision = null;
 				if (DecisionType.BOOLEAN.equalString(typeString)) {
 					decision = factory.createBooleanDecision(id);
@@ -68,7 +68,7 @@ public class DecisionModelReader implements IReader<IDecisionModel> {
 				}
 
 				assert decision != null;
-				decision.setQuestion(record.get(DMCSVHeader.QUESTION));
+				decision.setQuestion(record.get(DMCSVHeader.QUESTION).trim());
 
 				String range = record.get(DMCSVHeader.RANGE);
 				if (!range.isBlank()) {
@@ -83,7 +83,7 @@ public class DecisionModelReader implements IReader<IDecisionModel> {
 					}
 				}
 
-				String cardinality = record.get(DMCSVHeader.CARDINALITY);
+				String cardinality = record.get(DMCSVHeader.CARDINALITY).trim();
 				if (!cardinality.isEmpty()) {
 					String[] values = TraVarTUtils.splitString(cardinality, ":");
 					if (!(decision instanceof EnumDecision) || !(values.length == 2)) {
@@ -109,6 +109,8 @@ public class DecisionModelReader implements IReader<IDecisionModel> {
 
 				String csvRules = record.get(DMCSVHeader.RULES);
 				if (!csvRules.isEmpty()) {
+					// TODO: Find better way to spit the string of rules (decision names may have
+					// "if" as part of their names)
 					String[] CSVruleSplit = TraVarTUtils.splitString(csvRules, "if");
 					Set<Rule> rules = rParser.parse(decision, CSVruleSplit);
 					decision.addRules(rules);

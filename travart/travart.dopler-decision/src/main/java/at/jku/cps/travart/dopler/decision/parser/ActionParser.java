@@ -45,7 +45,7 @@ public class ActionParser {
 	private final Queue<ICondition> actionElements = new LinkedList<>();
 
 	public ActionParser(final IDecisionModel decisions) {
-		this.dm = Objects.requireNonNull(decisions);
+		dm = Objects.requireNonNull(decisions);
 	}
 
 	public IAction parse(final String str) throws ParserException {
@@ -54,9 +54,8 @@ public class ActionParser {
 		input = TraVarTUtils.splitString(str, REGEX);
 		if (input.length > 0) {
 			return parseAction();
-		} else {
-			throw new ParserException("No action found in String " + str);
 		}
+		throw new ParserException("No action found in String " + str);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -82,6 +81,8 @@ public class ActionParser {
 				isAllowFunction = true;
 			} else if (symbol.equals(DisAllowAction.FUNCTION_NAME)) {
 				isDisAllowFunction = true;
+			} else if (symbol.equals("enforce")) {
+				isAssign = true;
 			} else if (RulesParser.isDoubleRangeValue(symbol)) {
 				actionElements.add(new DoubleValue(Double.parseDouble(symbol)));
 			} else if (RulesParser.isStringRangeValue(dm, symbol)) {
@@ -94,16 +95,15 @@ public class ActionParser {
 				if (isAssign) {
 					ICondition left = actionElements.remove();
 					ICondition right = actionElements.remove();
-					if (left instanceof IDecision) {
-						if (right == ICondition.TRUE) {
-							action = new SelectDecisionAction((BooleanDecision) left);
-						} else if (right == ICondition.FALSE) {
-							action = new DeSelectDecisionAction((BooleanDecision) left);
-						} else if (right instanceof ARangeValue) {
-							action = new SetValueAction((IDecision) left, (ARangeValue) right);
-						}
-					} else {
+					if (!(left instanceof IDecision)) {
 						throw new InvalidActionException("Lefthand operand is not a valid decision.");
+					}
+					if (right == ICondition.TRUE) {
+						action = new SelectDecisionAction((BooleanDecision) left);
+					} else if (right == ICondition.FALSE) {
+						action = new DeSelectDecisionAction((BooleanDecision) left);
+					} else if (right instanceof ARangeValue) {
+						action = new SetValueAction((IDecision) left, (ARangeValue) right);
 					}
 				} else if (isAllowFunction) {
 					ICondition left = actionElements.remove();

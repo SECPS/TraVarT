@@ -116,8 +116,10 @@ public class DecisionModelSampler implements ISampler<IDecisionModel> {
 			throws NotSupportedVariablityTypeException {
 		try {
 			dm.reset();
+//			dm.setAddPrefix(true);
 			for (Entry<IConfigurable, Boolean> entry : sample.entrySet()) {
 				if (entry.getValue()) {
+					// TODO: Add prefix if necessary
 					IDecision decision = dm.find(entry.getKey().getName());
 					if (decision == null) {
 						String name = entry.getKey().getName();
