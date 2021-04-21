@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.prop4j.Node;
 
@@ -100,12 +102,12 @@ public final class TraVarTUtils {
 		return false;
 	}
 
-	public static void printModelStatistics(final IFeatureModel fm) {
-		System.out.println("Feature Model Statistics: ");
-		System.out.println("Root Name: " + FeatureUtils.getRoot(fm).getName());
-		System.out.println("#Features: " + FeatureUtils.getNumberOfFeatures(fm));
-		System.out.println("#Constraints: " + FeatureUtils.getConstraintCount(fm));
-		System.out.println("Tree height: " + computeFMHeight(FeatureUtils.getRoot(fm)));
+	public static void logModelStatistics(final Logger logger, final IFeatureModel fm) {
+		logger.log(Level.INFO, "Feature Model Statistics: ");
+		logger.log(Level.INFO, String.format("Root Name: %s", FeatureUtils.getRoot(fm).getName()));
+		logger.log(Level.INFO, String.format("#Features: %s", FeatureUtils.getNumberOfFeatures(fm)));
+		logger.log(Level.INFO, String.format("#Constraints: %s", FeatureUtils.getConstraintCount(fm)));
+		logger.log(Level.INFO, String.format("Tree height: %s", computeFMHeight(FeatureUtils.getRoot(fm))));
 	}
 
 	private static int computeFMHeight(final IFeature feature) {
