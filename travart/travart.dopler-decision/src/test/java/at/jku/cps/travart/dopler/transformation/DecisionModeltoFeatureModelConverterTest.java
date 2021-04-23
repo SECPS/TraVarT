@@ -16,7 +16,9 @@ import at.jku.cps.travart.dopler.decision.impl.DecisionModel;
 import at.jku.cps.travart.dopler.decision.model.ICondition;
 import at.jku.cps.travart.dopler.decision.model.impl.And;
 import at.jku.cps.travart.dopler.decision.model.impl.BooleanDecision;
+import at.jku.cps.travart.dopler.decision.model.impl.BooleanValue;
 import at.jku.cps.travart.dopler.decision.model.impl.Cardinality;
+import at.jku.cps.travart.dopler.decision.model.impl.DecisionValueCondition;
 import at.jku.cps.travart.dopler.decision.model.impl.DisAllowAction;
 import at.jku.cps.travart.dopler.decision.model.impl.DoubleValue;
 import at.jku.cps.travart.dopler.decision.model.impl.EnumDecision;
@@ -25,8 +27,10 @@ import at.jku.cps.travart.dopler.decision.model.impl.Greater;
 import at.jku.cps.travart.dopler.decision.model.impl.GreaterEquals;
 import at.jku.cps.travart.dopler.decision.model.impl.Less;
 import at.jku.cps.travart.dopler.decision.model.impl.LessEquals;
+import at.jku.cps.travart.dopler.decision.model.impl.Not;
 import at.jku.cps.travart.dopler.decision.model.impl.NumberDecision;
 import at.jku.cps.travart.dopler.decision.model.impl.Rule;
+import at.jku.cps.travart.dopler.decision.model.impl.SelectDecisionAction;
 import at.jku.cps.travart.dopler.decision.model.impl.SetValueAction;
 import at.jku.cps.travart.dopler.decision.model.impl.StringDecision;
 import at.jku.cps.travart.dopler.decision.model.impl.StringValue;
@@ -383,8 +387,10 @@ public class DecisionModeltoFeatureModelConverterTest {
 		assertTrue(areFMEqual(controlModel, fm));
 	}
 
-	@Test//TODO not sure if controlModel constraint is right. might need a fix
-	public void testTransformTransformRulesCompareEqualDisAllow() throws NotSupportedVariablityTypeException {
+	// If the Value of NumberDecision nd1 is Equal to the value of DoubleValue
+	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
+	@Test // TODO not sure if controlModel constraint is right. might need a fix
+	public void testTransformRulesCompareEqualDisAllow() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
 		StringValue sv1 = new StringValue("sv1");
 		ed1.getRange().add(sv1);
@@ -437,9 +443,11 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
-	
-	@Test//TODO not sure if controlModel constraint is right. might need a fix
-	public void testTransformTransformRulesCompareGreaterDisAllow() throws NotSupportedVariablityTypeException {
+
+	// If the Value of NumberDecision nd1 is Greater than the value of DoubleValue
+	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
+	@Test // TODO not sure if controlModel constraint is right. might need a fix
+	public void testTransformRulesCompareGreaterDisAllow() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
 		StringValue sv1 = new StringValue("sv1");
 		ed1.getRange().add(sv1);
@@ -492,9 +500,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
-	
-	@Test//TODO not sure if controlModel constraint is right. might need a fix
-	public void testTransformTransformRulesCompareGreaterEqualDisAllow() throws NotSupportedVariablityTypeException {
+
+	// If the Value of NumberDecision nd1 is GreaterEquals than the value of
+	// DoubleValue
+	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
+	@Test // TODO not sure if controlModel constraint is right. might need a fix
+	public void testTransformRulesCompareGreaterEqualDisAllow() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
 		StringValue sv1 = new StringValue("sv1");
 		ed1.getRange().add(sv1);
@@ -547,9 +558,11 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
-	
-	@Test//TODO not sure if controlModel constraint is right. might need a fix
-	public void testTransformTransformRulesCompareLessDisAllow() throws NotSupportedVariablityTypeException {
+
+	// If the Value of NumberDecision nd1 is less than the value of DoubleValue
+	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
+	@Test // TODO not sure if controlModel constraint is right. might need a fix
+	public void testTransformRulesCompareLessDisAllow() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
 		StringValue sv1 = new StringValue("sv1");
 		ed1.getRange().add(sv1);
@@ -602,9 +615,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
-	
-	@Test //TODO not sure if controlModel constraint is right. might need a fix
-	public void testTransformTransformRulesCompareLessEqualsDisAllow() throws NotSupportedVariablityTypeException {
+
+	// If the Value of NumberDecision nd1 is lessEquals than the value of
+	// DoubleValue
+	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
+	@Test // TODO not sure if controlModel constraint is right. might need a fix
+	public void testTransformRulesCompareLessEqualsDisAllow() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
 		StringValue sv1 = new StringValue("sv1");
 		ed1.getRange().add(sv1);
@@ -658,6 +674,229 @@ public class DecisionModeltoFeatureModelConverterTest {
 		assertTrue(areFMEqual(controlModel, fm));
 	}
 
+	// Within the rule a BooleanDecision bd1 DisAllows a StringValue sv1 for
+	// EnumDecision ed1
+	@Test
+	public void testTransformRulesBooleanConditionDisAllow() throws NotSupportedVariablityTypeException {
+		EnumDecision ed1 = new EnumDecision("ed1");
+		StringValue sv1 = new StringValue("sv1");
+		BooleanDecision bd1 = new BooleanDecision("bd1");
+		ed1.getRange().add(sv1);
+		NumberDecision nd1 = new NumberDecision("nd1");
+		DoubleValue[] dv = new DoubleValue[] { new DoubleValue(0), new DoubleValue(1), new DoubleValue(2) };
+		for (DoubleValue v : dv) {
+			nd1.getRange().add(v);
+		}
+		Rule r = new Rule(bd1, new DisAllowAction(ed1, sv1));
+		nd1.addRule(r);
+		dm.add(ed1);
+		dm.add(nd1);
+		dm.add(bd1);
+
+		IFeatureModel controlModel = new FeatureModel("TestModel");
+		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+		FeatureUtils.setRoot(controlModel, vr);
+		FeatureUtils.setOr(vr);
+		IFeature cmed1 = new Feature(controlModel, "ed1");
+		IFeature cmbd1 = new Feature(controlModel, "bd1");
+		IFeature cmsv1 = new Feature(controlModel, "sv1");
+		IFeature cmnd1 = new Feature(controlModel, "nd1");
+		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		FeatureUtils.addChild(vr, cmed1);
+		FeatureUtils.addChild(vr, cmnd1);
+		FeatureUtils.addChild(vr, cmbd1);
+
+		FeatureUtils.addChild(cmed1, cmsv1);
+
+		FeatureUtils.addChild(cmnd1, cmdv1);
+		FeatureUtils.addChild(cmnd1, cmdv2);
+		FeatureUtils.addChild(cmnd1, cmdv3);
+
+		FeatureUtils.addFeature(controlModel, vr);
+		FeatureUtils.addFeature(controlModel, cmnd1);
+		FeatureUtils.addFeature(controlModel, cmbd1);
+		FeatureUtils.addFeature(controlModel, cmed1);
+		FeatureUtils.addFeature(controlModel, cmsv1);
+
+		FeatureUtils.addFeature(controlModel, cmdv1);
+		FeatureUtils.addFeature(controlModel, cmdv2);
+		FeatureUtils.addFeature(controlModel, cmdv3);
+		FeatureUtils.setMandatory(cmed1, true);
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmdv1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+		FeatureUtils.addConstraint(controlModel, constr);
+
+		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+		IFeatureModel fm = conv.transform(dm);
+
+		assertTrue(areFMEqual(controlModel, fm));
+	}
+
+	// if BooleanDecision bd1 is true, set also bd2 to true
+	@Test
+	public void testTransformBooleanImpliesOtherBooleanRule() throws NotSupportedVariablityTypeException {
+		BooleanDecision bd1 = new BooleanDecision("bd1");
+		BooleanDecision bd2 = new BooleanDecision("bd2");
+
+		Rule r = new Rule(bd1, new SetValueAction(bd2, BooleanValue.getTrue()));
+		bd1.addRule(r);
+		dm.add(bd1);
+
+		IFeatureModel controlModel = new FeatureModel("TestModel");
+		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+		FeatureUtils.setRoot(controlModel, vr);
+		FeatureUtils.setOr(vr);
+		IFeature cmbd1 = new Feature(controlModel, "bd1");
+		IFeature cmbd2 = new Feature(controlModel, "bd2");
+		FeatureUtils.addChild(vr, cmbd1);
+		FeatureUtils.addChild(vr, cmbd2);
+
+		FeatureUtils.addFeature(controlModel, vr);
+		FeatureUtils.addFeature(controlModel, cmbd1);
+		FeatureUtils.addFeature(controlModel, cmbd2);
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(controlModel,
+				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createLiteral(cmbd2)));
+		FeatureUtils.addConstraint(controlModel, constr);
+
+		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+		IFeatureModel fm = conv.transform(dm);
+
+		assertTrue(areFMEqual(controlModel, fm));
+	}
+
+	// if BooleanDecision bd1 is true, set also bd2 to False
+	@Test
+	public void testTransformBooleanImpliesNotOtherBooleanRule() throws NotSupportedVariablityTypeException {
+		BooleanDecision bd1 = new BooleanDecision("bd1");
+		BooleanDecision bd2 = new BooleanDecision("bd2");
+
+		Rule r = new Rule(bd1, new SetValueAction(bd2, BooleanValue.getFalse()));
+		bd1.addRule(r);
+		dm.add(bd1);
+
+		IFeatureModel controlModel = new FeatureModel("TestModel");
+		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+		FeatureUtils.setRoot(controlModel, vr);
+		FeatureUtils.setOr(vr);
+		IFeature cmbd1 = new Feature(controlModel, "bd1");
+		IFeature cmbd2 = new Feature(controlModel, "bd2");
+		FeatureUtils.addChild(vr, cmbd1);
+		FeatureUtils.addChild(vr, cmbd2);
+
+		FeatureUtils.addFeature(controlModel, vr);
+		FeatureUtils.addFeature(controlModel, cmbd1);
+		FeatureUtils.addFeature(controlModel, cmbd2);
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmbd2))));
+		FeatureUtils.addConstraint(controlModel, constr);
+
+		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+		IFeatureModel fm = conv.transform(dm);
+
+		assertTrue(areFMEqual(controlModel, fm));
+	}
+	
+	//if BooleanDecision bd1 is set to true, set EnumDecision ed1 to NoneValue
+	@Test
+	public void testTransformRulesBooleanConditionSetEnumNone() throws NotSupportedVariablityTypeException {
+		EnumDecision ed1 = new EnumDecision("ed1");
+		StringValue sv1 = new StringValue("sv1");
+		StringValue sv2 = (StringValue) ed1.getNoneOption();
+		BooleanDecision bd1 = new BooleanDecision("bd1");
+		ed1.getRange().add(sv1);
+		ed1.getRange().add(sv2);
+		Rule r = new Rule(bd1, new SetValueAction(ed1, sv2));
+		bd1.addRule(r);
+		dm.add(ed1);
+		dm.add(bd1);
+
+		IFeatureModel controlModel = new FeatureModel("TestModel");
+		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+		FeatureUtils.setRoot(controlModel, vr);
+		FeatureUtils.setOr(vr);
+		IFeature cmed1 = new Feature(controlModel, "ed1");
+		IFeature cmbd1 = new Feature(controlModel, "bd1");
+		IFeature cmsv1 = new Feature(controlModel, "sv1");
+		IFeature cmsv2 = new Feature(controlModel, "None");
+		FeatureUtils.addChild(vr, cmed1);
+		FeatureUtils.addChild(vr, cmbd1);
+
+		FeatureUtils.addChild(cmed1, cmsv1);
+		FeatureUtils.addChild(cmed1, cmsv2);
+
+
+		FeatureUtils.addFeature(controlModel, vr);
+		FeatureUtils.addFeature(controlModel, cmbd1);
+		FeatureUtils.addFeature(controlModel, cmed1);
+		FeatureUtils.addFeature(controlModel, cmsv1);
+		FeatureUtils.addFeature(controlModel, cmsv2);
+
+		FeatureUtils.setMandatory(cmed1, true);
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmed1))));
+		FeatureUtils.addConstraint(controlModel, constr);
+
+		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+		IFeatureModel fm = conv.transform(dm);
+
+		assertTrue(areFMEqual(controlModel, fm));
+	}
+	
+	//if EnumDecision ed1 is not None, select BooleanDecision bd1
+		@Test
+		public void testTransformRulesEnumNotNoneSelectBool() throws NotSupportedVariablityTypeException {
+			EnumDecision ed1 = new EnumDecision("ed1");
+			StringValue sv1 = new StringValue("sv1");
+			StringValue sv2 = (StringValue) ed1.getNoneOption();
+			BooleanDecision bd1 = new BooleanDecision("bd1");
+			ed1.getRange().add(sv1);
+			ed1.getRange().add(sv2);
+			DecisionValueCondition dvc1=new DecisionValueCondition(ed1,sv2);
+			Not n=new Not(dvc1);
+			Rule r = new Rule(n, new SelectDecisionAction(bd1));
+			bd1.addRule(r);
+			dm.add(ed1);
+			dm.add(bd1);
+
+			IFeatureModel controlModel = new FeatureModel("TestModel");
+			IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+			FeatureUtils.setRoot(controlModel, vr);
+			FeatureUtils.setOr(vr);
+			IFeature cmed1 = new Feature(controlModel, "ed1");
+			IFeature cmbd1 = new Feature(controlModel, "bd1");
+			IFeature cmsv1 = new Feature(controlModel, "sv1");
+			IFeature cmsv2 = new Feature(controlModel, "None");
+			FeatureUtils.addChild(vr, cmed1);
+			FeatureUtils.addChild(vr, cmbd1);
+
+			FeatureUtils.addChild(cmed1, cmsv1);
+			FeatureUtils.addChild(cmed1, cmsv2);
+
+
+			FeatureUtils.addFeature(controlModel, vr);
+			FeatureUtils.addFeature(controlModel, cmbd1);
+			FeatureUtils.addFeature(controlModel, cmed1);
+			FeatureUtils.addFeature(controlModel, cmsv1);
+			FeatureUtils.addFeature(controlModel, cmsv2);
+
+			FeatureUtils.setMandatory(cmed1, true);
+			DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+			IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+					Prop4JUtils.createLiteral(cmed1), Prop4JUtils.createLiteral(cmbd1)));
+			FeatureUtils.addConstraint(controlModel, constr);
+
+			DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+			IFeatureModel fm = conv.transform(dm);
+
+			assertTrue(areFMEqual(controlModel, fm));
+		}
+
 	private boolean areFMEqual(IFeatureModel fm1, IFeatureModel fm2) {
 		if (!fm1.getConstraints().equals(fm2.getConstraints()))
 			return false;
@@ -671,7 +910,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 			return false;
 		return true;
 	}
-	
+
 	private boolean areFeatureTablesEqual(Map<String, IFeature> m1, Map<String, IFeature> m2) {
 		if (m1.keySet().size() != m2.keySet().size()) {
 			return false;
