@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -90,13 +91,13 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 
-		IFeature cmed1 = new Feature(controlModel, "ed1");
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
 		FeatureUtils.setRoot(controlModel, cmed1);
 		FeatureUtils.setMandatory(cmed1, true);
 		FeatureUtils.setAlternative(cmed1);
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmsv2 = new Feature(controlModel, "sv2");
-		IFeature cmsv3 = new Feature(controlModel, "sv3");
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		IFeature cmsv3 = new Feature(controlModel, sv3.getValue());
 
 		FeatureUtils.addChild(cmed1, cmsv1);
 		FeatureUtils.addChild(cmed1, cmsv2);
@@ -129,11 +130,11 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 
-		IFeature cmed1 = new Feature(controlModel, "ed1");
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
 		FeatureUtils.setRoot(controlModel, cmed1);
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmsv2 = new Feature(controlModel, "sv2");
-		IFeature cmsv3 = new Feature(controlModel, "sv3");
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		IFeature cmsv3 = new Feature(controlModel, sv3.getValue());
 
 		FeatureUtils.addChild(cmed1, cmsv1);
 		FeatureUtils.addChild(cmed1, cmsv2);
@@ -171,12 +172,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		// more than one decision requires virtual root
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmed2 = new Feature(controlModel, "ed2");
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmed2 = new Feature(controlModel, ed2.getName());
 		FeatureUtils.setRoot(controlModel, vr);
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmsv2 = new Feature(controlModel, "sv2");
-		IFeature cmsv3 = new Feature(controlModel, "sv3");
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		IFeature cmsv3 = new Feature(controlModel, sv3.getValue());
 
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmed2);
@@ -217,20 +218,20 @@ public class DecisionModeltoFeatureModelConverterTest {
 	@Test
 	public void testTransformNumberDecision() throws NotSupportedVariablityTypeException {
 		IFeatureModel controlModel = new FeatureModel("TestModel");
-		NumberDecision bd1 = new NumberDecision("nd1");
+		NumberDecision nd1 = new NumberDecision("nd1");
 		DoubleValue dv1 = new DoubleValue(1);
 		DoubleValue dv2 = new DoubleValue(2);
 		DoubleValue dv3 = new DoubleValue(3);
-		bd1.getRange().add(dv1);
-		bd1.getRange().add(dv2);
-		bd1.getRange().add(dv3);
-		dm.add(bd1);
+		nd1.getRange().add(dv1);
+		nd1.getRange().add(dv2);
+		nd1.getRange().add(dv3);
+		dm.add(nd1);
 
-		IFeature cmbd1 = new Feature(controlModel, "nd1");
+		IFeature cmbd1 = new Feature(controlModel, nd1.getName());
 
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv1.getValue().toString());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv2.getValue().toString());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv3.getValue().toString());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv1.getValue().toString());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv2.getValue().toString());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv3.getValue().toString());
 
 		FeatureUtils.addChild(cmbd1, cmdv1);
 		FeatureUtils.addChild(cmbd1, cmdv2);
@@ -254,7 +255,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 		StringDecision sd1 = new StringDecision("sd1");
 		dm.add(sd1);
-		IFeature cmsd1 = new Feature(controlModel, "sd1");
+		IFeature cmsd1 = new Feature(controlModel, sd1.getName());
 		FeatureUtils.addFeature(controlModel, cmsd1);
 
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
@@ -284,11 +285,11 @@ public class DecisionModeltoFeatureModelConverterTest {
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmed2 = new Feature(controlModel, "ed2");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmsv2 = new Feature(controlModel, "sv2");
-		IFeature cmsv3 = new Feature(controlModel, "sv3");
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmed2 = new Feature(controlModel, ed2.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		IFeature cmsv3 = new Feature(controlModel, sv3.getValue());
 
 		FeatureUtils.setMandatory(cmed1, true);
 
@@ -335,12 +336,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setOr(vr);
 
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmed2 = new Feature(controlModel, "ed2");
-		IFeature cmbd1 = new Feature(controlModel, "bd1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmsv2 = new Feature(controlModel, "sv2");
-		IFeature cmsv3 = new Feature(controlModel, "sv3");
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmed2 = new Feature(controlModel, ed2.getName());
+		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		IFeature cmsv3 = new Feature(controlModel, sv3.getValue());
 
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.addChild(vr, cmed1);
@@ -409,12 +410,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmnd1 = new Feature(controlModel, "nd1");
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
 
@@ -466,12 +467,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmnd1 = new Feature(controlModel, "nd1");
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
 
@@ -524,12 +525,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmnd1 = new Feature(controlModel, "nd1");
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
 
@@ -581,12 +582,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmnd1 = new Feature(controlModel, "nd1");
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
 
@@ -639,12 +640,12 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmnd1 = new Feature(controlModel, "nd1");
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
 
@@ -697,13 +698,13 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmbd1 = new Feature(controlModel, "bd1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmnd1 = new Feature(controlModel, "nd1");
-		IFeature cmdv1 = new Feature(controlModel, "nd1_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, "nd1_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, "nd1_" + dv[2].getValue());
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
 		FeatureUtils.addChild(vr, cmbd1);
@@ -749,8 +750,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmbd1 = new Feature(controlModel, "bd1");
-		IFeature cmbd2 = new Feature(controlModel, "bd2");
+		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
+		IFeature cmbd2 = new Feature(controlModel, bd2.getName());
 		FeatureUtils.addChild(vr, cmbd1);
 		FeatureUtils.addChild(vr, cmbd2);
 
@@ -782,8 +783,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmbd1 = new Feature(controlModel, "bd1");
-		IFeature cmbd2 = new Feature(controlModel, "bd2");
+		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
+		IFeature cmbd2 = new Feature(controlModel, bd2.getName());
 		FeatureUtils.addChild(vr, cmbd1);
 		FeatureUtils.addChild(vr, cmbd2);
 
@@ -800,8 +801,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
-	
-	//if BooleanDecision bd1 is set to true, set EnumDecision ed1 to NoneValue
+
+	// if BooleanDecision bd1 is set to true, set EnumDecision ed1 to NoneValue
 	@Test
 	public void testTransformRulesBooleanConditionSetEnumNone() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
@@ -819,24 +820,21 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
 		FeatureUtils.setRoot(controlModel, vr);
 		FeatureUtils.setOr(vr);
-		IFeature cmed1 = new Feature(controlModel, "ed1");
-		IFeature cmbd1 = new Feature(controlModel, "bd1");
-		IFeature cmsv1 = new Feature(controlModel, "sv1");
-		IFeature cmsv2 = new Feature(controlModel, "None");
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmbd1);
 
 		FeatureUtils.addChild(cmed1, cmsv1);
 		FeatureUtils.addChild(cmed1, cmsv2);
 
-
 		FeatureUtils.addFeature(controlModel, vr);
 		FeatureUtils.addFeature(controlModel, cmbd1);
 		FeatureUtils.addFeature(controlModel, cmed1);
 		FeatureUtils.addFeature(controlModel, cmsv1);
 		FeatureUtils.addFeature(controlModel, cmsv2);
-
-		FeatureUtils.setMandatory(cmed1, true);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
 		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
 				Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmed1))));
@@ -847,58 +845,105 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
-	
-	//if EnumDecision ed1 is not None, select BooleanDecision bd1
-		@Test
-		public void testTransformRulesEnumNotNoneSelectBool() throws NotSupportedVariablityTypeException {
-			EnumDecision ed1 = new EnumDecision("ed1");
-			StringValue sv1 = new StringValue("sv1");
-			StringValue sv2 = (StringValue) ed1.getNoneOption();
-			BooleanDecision bd1 = new BooleanDecision("bd1");
-			ed1.getRange().add(sv1);
-			ed1.getRange().add(sv2);
-			DecisionValueCondition dvc1=new DecisionValueCondition(ed1,sv2);
-			Not n=new Not(dvc1);
-			Rule r = new Rule(n, new SelectDecisionAction(bd1));
-			bd1.addRule(r);
-			dm.add(ed1);
-			dm.add(bd1);
 
-			IFeatureModel controlModel = new FeatureModel("TestModel");
-			IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
-			FeatureUtils.setRoot(controlModel, vr);
-			FeatureUtils.setOr(vr);
-			IFeature cmed1 = new Feature(controlModel, "ed1");
-			IFeature cmbd1 = new Feature(controlModel, "bd1");
-			IFeature cmsv1 = new Feature(controlModel, "sv1");
-			IFeature cmsv2 = new Feature(controlModel, "None");
-			FeatureUtils.addChild(vr, cmed1);
-			FeatureUtils.addChild(vr, cmbd1);
+	// if EnumDecision ed1 is not None, select BooleanDecision bd1
+	@Test
+	public void testTransformRulesEnumNotNoneSelectBool() throws NotSupportedVariablityTypeException {
+		EnumDecision ed1 = new EnumDecision("ed1");
+		StringValue sv1 = new StringValue("sv1");
+		StringValue sv2 = (StringValue) ed1.getNoneOption();
+		BooleanDecision bd1 = new BooleanDecision("bd1");
+		ed1.getRange().add(sv1);
+		ed1.getRange().add(sv2);
+		DecisionValueCondition dvc1 = new DecisionValueCondition(ed1, sv2);
+		Not n = new Not(dvc1);
+		Rule r = new Rule(n, new SelectDecisionAction(bd1));
+		bd1.addRule(r);
+		dm.add(ed1);
+		dm.add(bd1);
 
-			FeatureUtils.addChild(cmed1, cmsv1);
-			FeatureUtils.addChild(cmed1, cmsv2);
+		IFeatureModel controlModel = new FeatureModel("TestModel");
+		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+		FeatureUtils.setRoot(controlModel, vr);
+		FeatureUtils.setOr(vr);
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		FeatureUtils.addChild(vr, cmed1);
+		FeatureUtils.addChild(vr, cmbd1);
 
+		FeatureUtils.addChild(cmed1, cmsv1);
+		FeatureUtils.addChild(cmed1, cmsv2);
 
-			FeatureUtils.addFeature(controlModel, vr);
-			FeatureUtils.addFeature(controlModel, cmbd1);
-			FeatureUtils.addFeature(controlModel, cmed1);
-			FeatureUtils.addFeature(controlModel, cmsv1);
-			FeatureUtils.addFeature(controlModel, cmsv2);
+		FeatureUtils.addFeature(controlModel, vr);
+		FeatureUtils.addFeature(controlModel, cmbd1);
+		FeatureUtils.addFeature(controlModel, cmed1);
+		FeatureUtils.addFeature(controlModel, cmsv1);
+		FeatureUtils.addFeature(controlModel, cmsv2);
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(controlModel,
+				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmed1), Prop4JUtils.createLiteral(cmbd1)));
+		FeatureUtils.addConstraint(controlModel, constr);
 
-			FeatureUtils.setMandatory(cmed1, true);
-			DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
-			IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
-					Prop4JUtils.createLiteral(cmed1), Prop4JUtils.createLiteral(cmbd1)));
-			FeatureUtils.addConstraint(controlModel, constr);
+		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+		IFeatureModel fm = conv.transform(dm);
 
-			DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
-			IFeatureModel fm = conv.transform(dm);
+		assertTrue(areFMEqual(controlModel, fm));
+	}
 
-			assertTrue(areFMEqual(controlModel, fm));
-		}
+	// If EnumDecision ed1 value is sv1, then set NumberDecision nd1 to value dv[0]
+	@Test
+	public void testTransformRulesEnumValueSetsEnumDecNone() throws NotSupportedVariablityTypeException {
+		EnumDecision ed1 = new EnumDecision("ed1");
+		EnumDecision ed2 = new EnumDecision("ed2");
+		StringValue sv1 = new StringValue("sv1");
+		StringValue sv2 = new StringValue("sv2");
+		StringValue sv3 = (StringValue) ed2.getNoneOption();
+		ed1.getRange().add(sv1);
+		ed2.getRange().add(sv2);
+		ed2.getRange().add(sv3);
+
+		Rule r = new Rule(sv1, new SetValueAction(ed2, sv3));
+		ed1.addRule(r);
+		dm.add(ed1);
+		dm.add(ed2);
+
+		IFeatureModel controlModel = new FeatureModel("TestModel");
+		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+		FeatureUtils.setRoot(controlModel, vr);
+		FeatureUtils.setOr(vr);
+		IFeature cmed1 = new Feature(controlModel, ed1.getName());
+		IFeature cmed2 = new Feature(controlModel, ed2.getName());
+		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
+		IFeature cmsv3 = new Feature(controlModel, sv3.getValue());
+		FeatureUtils.addChild(vr, cmed1);
+		FeatureUtils.addChild(vr, cmed2);
+
+		FeatureUtils.addChild(cmed1, cmsv1);
+		FeatureUtils.addChild(cmed2, cmsv2);
+		FeatureUtils.addChild(cmed2, cmsv3);
+
+		FeatureUtils.addFeature(controlModel, vr);
+		FeatureUtils.addFeature(controlModel, cmed1);
+		FeatureUtils.addFeature(controlModel, cmed2);
+		FeatureUtils.addFeature(controlModel, cmsv1);
+		FeatureUtils.addFeature(controlModel, cmsv2);
+		FeatureUtils.addFeature(controlModel, cmsv3);
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(controlModel,
+				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmsv1), Prop4JUtils.createLiteral(cmsv3)));
+		FeatureUtils.addConstraint(controlModel, constr);
+
+		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+		IFeatureModel fm = conv.transform(dm);
+
+		assertTrue(areFMEqual(controlModel, fm));
+	}
 
 	private boolean areFMEqual(IFeatureModel fm1, IFeatureModel fm2) {
-		if (!fm1.getConstraints().equals(fm2.getConstraints()))
+		if (!areConstraintListsEqual(fm1.getConstraints(), (fm2.getConstraints())))
 			return false;
 		if (!fm1.isFeatureOrderUserDefined() == fm2.isFeatureOrderUserDefined())
 			return false;
@@ -907,6 +952,37 @@ public class DecisionModeltoFeatureModelConverterTest {
 		if (!fm1.getProperty().equals(fm2.getProperty()))
 			return false;
 		if (!FeatureUtils.getConstraints(fm1).equals(FeatureUtils.getConstraints(fm2)))
+			return false;
+		return true;
+	}
+
+	private boolean areConstraintListsEqual(List<IConstraint> cl1, List<IConstraint> cl2) {
+		if (cl1 == cl2)
+			return true;
+		if (cl1 == null || cl2 == null)
+			return false;
+		if (cl1.size() != cl2.size())
+			return false;
+		for (IConstraint c1 : cl1) {
+			if (cl1 == null)
+				continue;
+			IConstraint c2= cl2.stream().filter(c-> c1.getNode().equals(c.getNode())).findFirst().get();
+			if (c2 == null || !areConstraintsEqual(c1, c2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean areConstraintsEqual(IConstraint c1, IConstraint c2) {
+		if (c1 == c2)
+			return true;
+		if (!c1.getNode().equals(c2.getNode()))
+			return false;
+		if (!c1.getCustomProperties().equals(c2.getCustomProperties()))
+			return false;
+		if (!c1.getContainedFeatures().equals(c2.getContainedFeatures()))
 			return false;
 		return true;
 	}
