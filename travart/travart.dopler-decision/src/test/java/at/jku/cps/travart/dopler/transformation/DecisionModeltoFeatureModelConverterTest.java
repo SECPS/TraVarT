@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import at.jku.cps.travart.core.common.Prop4JUtils;
@@ -892,7 +893,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 		assertTrue(areFMEqual(controlModel, fm));
 	}
 
-	// If EnumDecision ed1 value is sv1, then set NumberDecision nd1 to value dv[0]
+	// If EnumDecision ed1 value is sv1, then set EnumDecision ed2 to NoneOption
 	@Test
 	public void testTransformRulesEnumValueSetsEnumDecNone() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
@@ -941,6 +942,147 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		assertTrue(areFMEqual(controlModel, fm));
 	}
+	
+	// If EnumDecision ed1 value is not sv1, then set EnumDecision ed2 to NoneOption
+//	@Ignore	
+	@Test
+		public void testTransformRulesComplexConditionSelectDecisionAction() throws NotSupportedVariablityTypeException {
+			EnumDecision ed1 = new EnumDecision("ed1");
+			BooleanDecision bd1=new BooleanDecision("bd1");
+			BooleanDecision bd2=new BooleanDecision("bd2");
+			StringValue sv1 = new StringValue("sv1");
+			ed1.getRange().add(sv1);
+			Not n=new Not(bd1);
+			Rule r = new Rule(n, new SelectDecisionAction(bd2));
+			ed1.addRule(r);
+			dm.add(ed1);
+
+			IFeatureModel controlModel = new FeatureModel("TestModel");
+			IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+			FeatureUtils.setRoot(controlModel, vr);
+			FeatureUtils.setOr(vr);
+			IFeature cmed1 = new Feature(controlModel, ed1.getName());
+			IFeature cmbd1 = new Feature(controlModel, bd1.getName());			
+			IFeature cmbd2 = new Feature(controlModel, bd2.getName());
+			IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+			FeatureUtils.addChild(vr, cmed1);
+			FeatureUtils.addChild(vr, cmbd1);
+			FeatureUtils.addChild(vr, cmbd2);
+
+			FeatureUtils.addChild(cmed1, cmsv1);
+
+			FeatureUtils.addFeature(controlModel, vr);
+
+			FeatureUtils.addFeature(controlModel, cmbd1);
+			FeatureUtils.addFeature(controlModel, cmbd2);
+			FeatureUtils.addFeature(controlModel, cmed1);
+			FeatureUtils.addFeature(controlModel, cmsv1);
+			DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+			//FIXME still needs to be changed
+			IConstraint constr = factory.createConstraint(controlModel,
+					Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createLiteral(cmbd2)));
+			FeatureUtils.addConstraint(controlModel, constr);
+
+			DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+			IFeatureModel fm = conv.transform(dm);
+
+			assertTrue(areFMEqual(controlModel, fm));
+		}
+	
+	// If EnumDecision ed1 value is not sv1, then set EnumDecision ed2 to NoneOption
+//	@Ignore	
+	@Test
+		public void testTransformRulesComplexConditionWithAndNodeAndNotNodeSelectDecisionAction() throws NotSupportedVariablityTypeException {
+			EnumDecision ed1 = new EnumDecision("ed1");
+			BooleanDecision bd1=new BooleanDecision("bd1");
+			BooleanDecision bd2=new BooleanDecision("bd2");
+			StringValue sv1 = new StringValue("sv1");
+			ed1.getRange().add(sv1);
+			DecisionValueCondition dvc=new DecisionValueCondition(ed1,sv1);
+			Not n=new Not(bd1);
+			And a=new And(dvc,n);			
+			Rule r = new Rule(a, new SelectDecisionAction(bd2));
+			ed1.addRule(r);
+			dm.add(ed1);
+
+			IFeatureModel controlModel = new FeatureModel("TestModel");
+			IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+			FeatureUtils.setRoot(controlModel, vr);
+			FeatureUtils.setOr(vr);
+			IFeature cmed1 = new Feature(controlModel, ed1.getName());
+			IFeature cmbd1 = new Feature(controlModel, bd1.getName());			
+			IFeature cmbd2 = new Feature(controlModel, bd2.getName());
+			IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+			FeatureUtils.addChild(vr, cmed1);
+			FeatureUtils.addChild(vr, cmbd1);
+			FeatureUtils.addChild(vr, cmbd2);
+
+			FeatureUtils.addChild(cmed1, cmsv1);
+
+			FeatureUtils.addFeature(controlModel, vr);
+
+			FeatureUtils.addFeature(controlModel, cmbd1);
+			FeatureUtils.addFeature(controlModel, cmbd2);
+			FeatureUtils.addFeature(controlModel, cmed1);
+			FeatureUtils.addFeature(controlModel, cmsv1);
+			DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+			//FIXME still needs to be changed
+			IConstraint constr = factory.createConstraint(controlModel,
+					Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createLiteral(cmbd2)));
+			FeatureUtils.addConstraint(controlModel, constr);
+
+			DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+			IFeatureModel fm = conv.transform(dm);
+
+			assertTrue(areFMEqual(controlModel, fm));
+		}
+	
+	// If EnumDecision ed1 value is not sv1, then set EnumDecision ed2 to NoneOption
+//	@Ignore	
+	@Test
+		public void testTransformRulesComplexConditionWithAndNodeSelectDecisionAction() throws NotSupportedVariablityTypeException {
+			EnumDecision ed1 = new EnumDecision("ed1");
+			BooleanDecision bd1=new BooleanDecision("bd1");
+			BooleanDecision bd2=new BooleanDecision("bd2");
+			StringValue sv1 = new StringValue("sv1");
+			ed1.getRange().add(sv1);
+			DecisionValueCondition dvc=new DecisionValueCondition(ed1,sv1);
+			And a=new And(dvc,bd1);			
+			Rule r = new Rule(a, new SelectDecisionAction(bd2));
+			ed1.addRule(r);
+			dm.add(ed1);
+
+			IFeatureModel controlModel = new FeatureModel("TestModel");
+			IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
+			FeatureUtils.setRoot(controlModel, vr);
+			FeatureUtils.setOr(vr);
+			IFeature cmed1 = new Feature(controlModel, ed1.getName());
+			IFeature cmbd1 = new Feature(controlModel, bd1.getName());			
+			IFeature cmbd2 = new Feature(controlModel, bd2.getName());
+			IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
+			FeatureUtils.addChild(vr, cmed1);
+			FeatureUtils.addChild(vr, cmbd1);
+			FeatureUtils.addChild(vr, cmbd2);
+
+			FeatureUtils.addChild(cmed1, cmsv1);
+
+			FeatureUtils.addFeature(controlModel, vr);
+
+			FeatureUtils.addFeature(controlModel, cmbd1);
+			FeatureUtils.addFeature(controlModel, cmbd2);
+			FeatureUtils.addFeature(controlModel, cmed1);
+			FeatureUtils.addFeature(controlModel, cmsv1);
+			DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+			//FIXME still needs to be changed
+			IConstraint constr = factory.createConstraint(controlModel,
+					Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createLiteral(cmbd2)));
+			FeatureUtils.addConstraint(controlModel, constr);
+
+			DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
+			IFeatureModel fm = conv.transform(dm);
+
+			assertTrue(areFMEqual(controlModel, fm));
+		}
 
 	private boolean areFMEqual(IFeatureModel fm1, IFeatureModel fm2) {
 		if (!areConstraintListsEqual(fm1.getConstraints(), (fm2.getConstraints())))
