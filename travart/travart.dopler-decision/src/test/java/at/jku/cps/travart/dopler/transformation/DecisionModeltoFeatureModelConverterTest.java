@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import at.jku.cps.travart.core.common.Prop4JUtils;
 import at.jku.cps.travart.core.common.exc.NotSupportedVariablityTypeException;
+import at.jku.cps.travart.dopler.decision.exc.RangeValueException;
 import at.jku.cps.travart.dopler.decision.factory.impl.DecisionModelFactory;
 import at.jku.cps.travart.dopler.decision.impl.DecisionModel;
 import at.jku.cps.travart.dopler.decision.model.ICondition;
@@ -94,7 +95,6 @@ public class DecisionModeltoFeatureModelConverterTest {
 
 		IFeature cmed1 = new Feature(controlModel, ed1.getName());
 		FeatureUtils.setRoot(controlModel, cmed1);
-		FeatureUtils.setMandatory(cmed1, true);
 		FeatureUtils.setAlternative(cmed1);
 		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
 		IFeature cmsv2 = new Feature(controlModel, sv2.getValue());
@@ -353,6 +353,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 		FeatureUtils.addChild(cmed1, cmsv2);
 		FeatureUtils.addChild(cmed1, cmsv3);
 
+		FeatureUtils.addChild(cmbd1, cmed1);
+
 		FeatureUtils.addChild(cmed2, cmsv1);
 
 		FeatureUtils.addFeature(controlModel, vr);
@@ -393,21 +395,31 @@ public class DecisionModeltoFeatureModelConverterTest {
 	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
 	// Controlmodel has: propNode=d_nd1_0.0 => -sv1
 	// transformed model has: propNode=null => -sv1
+	// possibly impossible to reconstruct as a constraint in FeatureIDE because there is no
+	// way of checking the equality of 2 nodes. Current implementation creates ambiguity
 	@Test // TODO not sure if controlModel constraint is right. might need a fix
-	public void testTransformRulesCompareEqualDisAllow() throws NotSupportedVariablityTypeException {
+	public void testTransformRulesCompareEqualDisAllow() throws NotSupportedVariablityTypeException, RangeValueException {
 		EnumDecision ed1 = new EnumDecision("ed1");
 		StringValue sv1 = new StringValue("sv1");
 		ed1.getRange().add(sv1);
 		NumberDecision nd1 = new NumberDecision("nd1");
-		DoubleValue[] dv = new DoubleValue[] { new DoubleValue(0), new DoubleValue(1), new DoubleValue(2) };
-		for (DoubleValue v : dv) {
+		DoubleValue[] dv1 = new DoubleValue[] { new DoubleValue(0), new DoubleValue(1), new DoubleValue(2) };
+		for (DoubleValue v : dv1) {
 			nd1.getRange().add(v);
 		}
-		Equals e = new Equals(nd1, dv[0]);
+		nd1.setValue(dv1[1]);
+		NumberDecision nd2 = new NumberDecision("nd2");
+		DoubleValue[] dv2 = new DoubleValue[] { new DoubleValue(0), new DoubleValue(1), new DoubleValue(2) };
+		for (DoubleValue v : dv2) {
+			nd1.getRange().add(v);
+		}
+		nd2.setValue(dv2[1]);
+		Equals e = new Equals(nd1, nd2);
 		Rule r = new Rule(e, new DisAllowAction(ed1, sv1));
 		nd1.addRule(r);
 		dm.add(ed1);
 		dm.add(nd1);
+		dm.add(nd2);
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
@@ -416,30 +428,44 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature cmed1 = new Feature(controlModel, ed1.getName());
 		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
 		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
-		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
+		IFeature cmnd2 = new Feature(controlModel, nd2.getName());
+		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv1[0].getValue());
+		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv1[1].getValue());
+		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv1[2].getValue());
+		IFeature cmdv4 = new Feature(controlModel, nd2.getName() + "_" + dv2[0].getValue());
+		IFeature cmdv5 = new Feature(controlModel, nd2.getName() + "_" + dv2[1].getValue());
+		IFeature cmdv6 = new Feature(controlModel, nd2.getName() + "_" + dv2[2].getValue());
+		
 		FeatureUtils.addChild(vr, cmed1);
 		FeatureUtils.addChild(vr, cmnd1);
+		FeatureUtils.addChild(vr, cmnd2);
 
 		FeatureUtils.addChild(cmed1, cmsv1);
 
 		FeatureUtils.addChild(cmnd1, cmdv1);
 		FeatureUtils.addChild(cmnd1, cmdv2);
 		FeatureUtils.addChild(cmnd1, cmdv3);
+		
+		FeatureUtils.addChild(cmnd2, cmdv4);
+		FeatureUtils.addChild(cmnd2, cmdv5);
+		FeatureUtils.addChild(cmnd2, cmdv6);
 
 		FeatureUtils.addFeature(controlModel, vr);
 		FeatureUtils.addFeature(controlModel, cmnd1);
+		FeatureUtils.addFeature(controlModel, cmnd2);
 		FeatureUtils.addFeature(controlModel, cmed1);
 		FeatureUtils.addFeature(controlModel, cmsv1);
 
 		FeatureUtils.addFeature(controlModel, cmdv1);
 		FeatureUtils.addFeature(controlModel, cmdv2);
 		FeatureUtils.addFeature(controlModel, cmdv3);
+		FeatureUtils.addFeature(controlModel, cmdv4);
+		FeatureUtils.addFeature(controlModel, cmdv5);
+		FeatureUtils.addFeature(controlModel, cmdv6);
 		FeatureUtils.setMandatory(cmed1, true);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
 		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
-				Prop4JUtils.createLiteral(cmdv1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+				Prop4JUtils.createLiteral(cmdv2), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
 		FeatureUtils.addConstraint(controlModel, constr);
 
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
@@ -495,10 +521,14 @@ public class DecisionModeltoFeatureModelConverterTest {
 		FeatureUtils.addFeature(controlModel, cmdv3);
 		FeatureUtils.setMandatory(cmed1, true);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
-		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
-				Prop4JUtils.createLiteral(cmdv1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
-		FeatureUtils.addConstraint(controlModel, constr);
+		IConstraint constr1 = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmdv2), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+		IConstraint constr2 = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmdv3), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+		FeatureUtils.addConstraint(controlModel, constr1);
+		FeatureUtils.addConstraint(controlModel, constr2);
 
+		
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
 		IFeatureModel fm = conv.transform(dm);
 
@@ -508,6 +538,9 @@ public class DecisionModeltoFeatureModelConverterTest {
 	// If the Value of NumberDecision nd1 is GreaterEquals than the value of
 	// DoubleValue
 	// dv[0] (=0) then the StringValue sv1 should be disallowed for EnumDecision ed1
+	// controlModel= nd1_0.0 => -sv1, nd1_1.0 => -sv1, nd1_2.0 => -sv1
+	// transformed = null => -sv1,null => -sv1,null => -sv1
+	// reason is because right nodes can't be found because of d_ naming
 	@Test // TODO not sure if controlModel constraint is right. might need a fix
 	public void testTransformRulesCompareGreaterEqualDisAllow() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
@@ -553,9 +586,16 @@ public class DecisionModeltoFeatureModelConverterTest {
 		FeatureUtils.addFeature(controlModel, cmdv3);
 		FeatureUtils.setMandatory(cmed1, true);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
-		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+		IConstraint constr0 = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
 				Prop4JUtils.createLiteral(cmdv1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
-		FeatureUtils.addConstraint(controlModel, constr);
+		
+		IConstraint constr1 = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmdv2), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+		IConstraint constr2 = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
+				Prop4JUtils.createLiteral(cmdv3), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+		FeatureUtils.addConstraint(controlModel, constr0);
+		FeatureUtils.addConstraint(controlModel, constr1);
+		FeatureUtils.addConstraint(controlModel, constr2);
 
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
 		IFeatureModel fm = conv.transform(dm);
@@ -690,15 +730,9 @@ public class DecisionModeltoFeatureModelConverterTest {
 		StringValue sv1 = new StringValue("sv1");
 		BooleanDecision bd1 = new BooleanDecision("bd1");
 		ed1.getRange().add(sv1);
-		NumberDecision nd1 = new NumberDecision("nd1");
-		DoubleValue[] dv = new DoubleValue[] { new DoubleValue(0), new DoubleValue(1), new DoubleValue(2) };
-		for (DoubleValue v : dv) {
-			nd1.getRange().add(v);
-		}
 		Rule r = new Rule(bd1, new DisAllowAction(ed1, sv1));
-		nd1.addRule(r);
+		bd1.addRule(r);
 		dm.add(ed1);
-		dm.add(nd1);
 		dm.add(bd1);
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
@@ -708,33 +742,21 @@ public class DecisionModeltoFeatureModelConverterTest {
 		IFeature cmed1 = new Feature(controlModel, ed1.getName());
 		IFeature cmbd1 = new Feature(controlModel, bd1.getName());
 		IFeature cmsv1 = new Feature(controlModel, sv1.getValue());
-		IFeature cmnd1 = new Feature(controlModel, nd1.getName());
-		IFeature cmdv1 = new Feature(controlModel, nd1.getName() + "_" + dv[0].getValue());
-		IFeature cmdv2 = new Feature(controlModel, nd1.getName() + "_" + dv[1].getValue());
-		IFeature cmdv3 = new Feature(controlModel, nd1.getName() + "_" + dv[2].getValue());
 		FeatureUtils.addChild(vr, cmed1);
-		FeatureUtils.addChild(vr, cmnd1);
 		FeatureUtils.addChild(vr, cmbd1);
 
 		FeatureUtils.addChild(cmed1, cmsv1);
 
-		FeatureUtils.addChild(cmnd1, cmdv1);
-		FeatureUtils.addChild(cmnd1, cmdv2);
-		FeatureUtils.addChild(cmnd1, cmdv3);
-
+		
 		FeatureUtils.addFeature(controlModel, vr);
-		FeatureUtils.addFeature(controlModel, cmnd1);
 		FeatureUtils.addFeature(controlModel, cmbd1);
 		FeatureUtils.addFeature(controlModel, cmed1);
 		FeatureUtils.addFeature(controlModel, cmsv1);
 
-		FeatureUtils.addFeature(controlModel, cmdv1);
-		FeatureUtils.addFeature(controlModel, cmdv2);
-		FeatureUtils.addFeature(controlModel, cmdv3);
 		FeatureUtils.setMandatory(cmed1, true);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
 		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
-				Prop4JUtils.createLiteral(cmdv1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
+				Prop4JUtils.createLiteral(cmbd1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1))));
 		FeatureUtils.addConstraint(controlModel, constr);
 
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
@@ -785,6 +807,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 		Rule r = new Rule(bd1, new SetValueAction(bd2, BooleanValue.getFalse()));
 		bd1.addRule(r);
 		dm.add(bd1);
+		dm.add(bd2);
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
@@ -854,6 +877,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 	}
 
 	// if EnumDecision ed1 is not None, select BooleanDecision bd1
+	// controlModel = d_ed1 => d_bd1
+	// transformed = bd1 => bd1
 	@Test
 	public void testTransformRulesEnumNotNoneSelectBool() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
@@ -865,7 +890,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 		DecisionValueCondition dvc1 = new DecisionValueCondition(ed1, sv2);
 		Not n = new Not(dvc1);
 		Rule r = new Rule(n, new SelectDecisionAction(bd1));
-		bd1.addRule(r);
+		ed1.addRule(r);
 		dm.add(ed1);
 		dm.add(bd1);
 
@@ -900,7 +925,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 	}
 
 	// If EnumDecision ed1 value is sv1, then set EnumDecision ed2 to NoneOption
-	// ControlModel produces: propNode=sv1 => None
+	// ControlModel produces: propNode=sv1 => -d_ed2
 	// transformation produces: propNode=sv1 => ed2
 	@Test
 	public void testTransformRulesEnumValueSetsEnumDecNone() throws NotSupportedVariablityTypeException {
@@ -912,8 +937,10 @@ public class DecisionModeltoFeatureModelConverterTest {
 		ed1.getRange().add(sv1);
 		ed2.getRange().add(sv2);
 		ed2.getRange().add(sv3);
-
-		Rule r = new Rule(sv1, new SetValueAction(ed2, sv3));
+		
+		DecisionValueCondition dvc1=new DecisionValueCondition(ed1, sv1);
+		
+		Rule r = new Rule(dvc1, new SetValueAction(ed2, sv3));
 		ed1.addRule(r);
 		dm.add(ed1);
 		dm.add(ed2);
@@ -942,7 +969,7 @@ public class DecisionModeltoFeatureModelConverterTest {
 		FeatureUtils.addFeature(controlModel, cmsv3);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
 		IConstraint constr = factory.createConstraint(controlModel,
-				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmsv1), Prop4JUtils.createLiteral(cmsv3)));
+				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmsv1), Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmed2))));
 		FeatureUtils.addConstraint(controlModel, constr);
 
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
@@ -952,7 +979,9 @@ public class DecisionModeltoFeatureModelConverterTest {
 	}
 
 	// If EnumDecision ed1 value is not sv1, then select BooleanDecision bd2
-//	@Ignore	
+	// controlModel= -d_bd1 => d_bd2
+	// transformed= bd1 | bd2
+	//	@Ignore	
 	@Test
 	public void testTransformRulesComplexConditionSelectDecisionAction() throws NotSupportedVariablityTypeException {
 		EnumDecision ed1 = new EnumDecision("ed1");
@@ -964,6 +993,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 		Rule r = new Rule(n, new SelectDecisionAction(bd2));
 		ed1.addRule(r);
 		dm.add(ed1);
+		dm.add(bd1);
+		dm.add(bd2);
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
@@ -986,9 +1017,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 		FeatureUtils.addFeature(controlModel, cmed1);
 		FeatureUtils.addFeature(controlModel, cmsv1);
 		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
-		// FIXME still needs to be changed
 		IConstraint constr = factory.createConstraint(controlModel, Prop4JUtils.createImplies(
-				Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmsv1)), Prop4JUtils.createLiteral(cmbd2)));
+				Prop4JUtils.createNot(Prop4JUtils.createLiteral(cmbd1)), Prop4JUtils.createLiteral(cmbd2)));
 		FeatureUtils.addConstraint(controlModel, constr);
 
 		DecisionModeltoFeatureModelConverter conv = new DecisionModeltoFeatureModelConverter();
@@ -1015,6 +1045,8 @@ public class DecisionModeltoFeatureModelConverterTest {
 		Rule r = new Rule(a, new SelectDecisionAction(bd2));
 		ed1.addRule(r);
 		dm.add(ed1);
+		dm.add(bd2);
+		dm.add(bd1);
 
 		IFeatureModel controlModel = new FeatureModel("TestModel");
 		IFeature vr = new Feature(controlModel, "VIRTUAL_ROOT");
