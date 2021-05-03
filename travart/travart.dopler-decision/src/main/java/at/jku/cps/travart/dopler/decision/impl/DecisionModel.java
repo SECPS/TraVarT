@@ -314,4 +314,34 @@ public class DecisionModel extends LinkedHashSet<IDecision> implements IDecision
 		}
 		return configuration;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof DecisionModel))
+			return false;
+		DecisionModel other = (DecisionModel) o;
+		if (!name.equals(other.name))
+			return false;
+		if (this.isAddPrefix() != other.isAddPrefix())
+			return false;
+		if (size() != other.size())
+			return false;
+		if (!this.containsAll(other))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int i = 1;
+		if (this.addPrefix)
+			i = 2;
+		int hash = 0;
+		for (IDecision d : this) {
+			hash += d.hashCode();
+		}
+		return (hash * i) % 14851;
+	}
 }
