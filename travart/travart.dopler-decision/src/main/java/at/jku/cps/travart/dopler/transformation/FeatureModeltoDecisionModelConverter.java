@@ -136,7 +136,7 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 			updateRules(enumDecision, rule);
 		}
 		// create rule for optional parent features
-		if (!FeatureUtils.isMandatorySet(feature)) {
+		if (!FeatureUtils.isRoot(feature)&&!FeatureUtils.isMandatorySet(feature)) {
 			Rule rule = new Rule(new Not(parent), new SetValueAction(enumDecision, enumDecision.getNoneOption()));
 			parent.addRule(rule);
 			updateRules(parent, rule);
