@@ -3,7 +3,6 @@ package at.jku.cps.travart.dopler.io;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -101,7 +100,7 @@ public class DecisionModelReader implements IReader<IDecisionModel> {
 			}
 		}
 
-		try (Reader secondIn = new FileReader(path.toFile())) {
+		try (Reader secondIn = new FileReader(path.toFile(),StandardCharsets.UTF_8)) {
 			Iterable<CSVRecord> secondParse = CSVFormat.EXCEL.withDelimiter(DELIMITER)
 					.withHeader(DMCSVHeader.stringArray()).withFirstRecordAsHeader().parse(secondIn);
 			ConditionParser vParser = new ConditionParser(dm);
