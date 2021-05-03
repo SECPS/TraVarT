@@ -103,6 +103,8 @@ public class ConditionParser {
 					value = new DoubleValue(Double.parseDouble(symbol));
 				} else if (RulesParser.isStringRangeValue(dm, symbol)) {
 					value = new StringValue(symbol);
+				}else {
+					throw new ParserException("The value of comparison \"" + v + " > " + symbol +"\" could not be parsed." );
 				}
 				v = new Greater(v, value);
 			} else if (first.equals(LESS)) {
@@ -112,6 +114,8 @@ public class ConditionParser {
 					value = new DoubleValue(Double.parseDouble(symbol));
 				} else if (RulesParser.isStringRangeValue(dm, symbol)) {
 					value = new StringValue(symbol);
+				}else {
+					throw new ParserException("The value of comparison \"" + v + " < " + symbol +"\" could not be parsed." );
 				}
 				v = new Less(v, value);
 			}
