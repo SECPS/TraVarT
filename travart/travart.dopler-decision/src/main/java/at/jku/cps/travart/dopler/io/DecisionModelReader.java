@@ -3,7 +3,10 @@ package at.jku.cps.travart.dopler.io;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
@@ -43,12 +46,13 @@ public class DecisionModelReader implements IReader<IDecisionModel> {
 
 	@Override
 	public IDecisionModel read(final Path path) throws IOException, NotSupportedVariablityTypeException {
+		Objects.requireNonNull(path);
 		DecisionModel dm = factory.create();
 		dm.setName(path.getFileName().toString());
 		dm.setSourceFile(path.toAbsolutePath().toString());
 		dm.setAddPrefix(false);
 
-		try (Reader in = new FileReader(path.toFile())) {
+		try (Reader in = new FileReader(path.toFile(),StandardCharsets.UTF_8)) {
 			Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(DELIMITER).withHeader(DMCSVHeader.stringArray())
 					.withFirstRecordAsHeader().parse(in);
 			for (CSVRecord record : records) {
