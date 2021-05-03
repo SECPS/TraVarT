@@ -3,6 +3,7 @@ package at.jku.cps.travart.dopler.transformation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,6 +92,7 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 				decision.setVisibility(new And(ICondition.FALSE, parent));
 			} else if (!hasVirtualParent(feature)) {
 				IFeature parentFeature = FeatureUtils.getParent(feature);
+				Objects.requireNonNull(parentFeature);
 				IDecision parent = dm.find(parentFeature.getName());
 				decision.setVisibility(parent);
 			} else {
