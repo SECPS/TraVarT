@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import at.jku.cps.travart.core.common.Prop4JUtils;
