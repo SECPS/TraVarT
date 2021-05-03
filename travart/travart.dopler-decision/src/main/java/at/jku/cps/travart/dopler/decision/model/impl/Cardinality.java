@@ -28,11 +28,11 @@ public class Cardinality {
 	}
 
 	public boolean isOr() {
-		return min == 1 && !(max < 0) && max > 1;
+		return min == 1 && max > 1;
 	}
 
 	public boolean isMutex() {
-		return !(min < 0) && min > 1 && !(max < 0) && max > 1;
+		return min > 1 && max > 1;
 	}
 
 	public boolean isWithinCardinality(int i) {
@@ -46,6 +46,11 @@ public class Cardinality {
 	@Override
 	public String toString() {
 		return isNoCardinality() ? "" : min + ":" + max;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (min+max)%13;
 	}
 	
 	@Override
