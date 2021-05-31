@@ -199,6 +199,9 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 			deriveUnidirectionalRules(cnfNode);
 		} else if (Prop4JUtils.countLiterals(cnfNode) == 2 && Prop4JUtils.hasPositiveLiteral(cnfNode)
 				&& Prop4JUtils.countPositiveLiterals(cnfNode) == 1) {
+			// TODO this path may be identical with the one in line 194.
+			//better double check before deleting this though, that functionality is not
+			// impaired.
 			Node positive = Prop4JUtils.getFirstPositiveLiteral(cnfNode);
 			String feature = Prop4JUtils.getLiteralName((Literal) positive);
 			IDecision decision = dm.find(feature);
