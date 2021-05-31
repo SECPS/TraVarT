@@ -180,8 +180,8 @@ public abstract class ADecision<T> implements IDecision<T> {
 			return false;
 		}
 		ADecision other = (ADecision) obj;
-		if (!Objects.equals(id, other.id))
-			return false;
+//		if (!Objects.equals(id, other.id))
+//			return false;
 		if (!Objects.equals(type, other.type))
 			return false;
 		if (!Objects.equals(rules, other.rules))
