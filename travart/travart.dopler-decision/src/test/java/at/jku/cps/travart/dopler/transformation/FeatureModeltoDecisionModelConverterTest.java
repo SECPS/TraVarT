@@ -668,6 +668,82 @@ public class FeatureModeltoDecisionModelConverterTest {
 
 		assertTrue(equalValidSamples(dm, dSamples, fm, fSamples));
 	}
+	
+	@Test
+	public void testTransformConstraintEnumDecisionWithNoneSelectsBoolean() throws NotSupportedVariablityTypeException {
+		IFeature cmvr = new Feature(fm, "VIRTUAL_ROOT");
+		IFeature cmed1 = new Feature(fm, "ed1");
+		IFeature cmbd1 = new Feature(fm, "bd1");
+		FeatureUtils.setRoot(fm, cmvr);
+		FeatureUtils.setOr(cmed1);
+
+		IFeature cmsv1 = new Feature(fm, "sv1");
+		IFeature cmsv2 = new Feature(fm, "None");
+
+		FeatureUtils.addFeature(fm, cmvr);
+		FeatureUtils.addFeature(fm, cmed1);
+		FeatureUtils.addFeature(fm, cmbd1);
+		FeatureUtils.addFeature(fm, cmsv1);
+		FeatureUtils.addFeature(fm, cmsv2);
+
+		FeatureUtils.addChild(cmvr, cmed1);
+		FeatureUtils.addChild(cmvr, cmbd1);
+		FeatureUtils.addChild(cmed1, cmsv1);
+		FeatureUtils.addChild(cmed1, cmsv2);
+
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(fm, 
+				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmed1), Prop4JUtils.createLiteral(cmbd1)));
+		FeatureUtils.addConstraint(fm, constr);
+
+		ISampler<IDecisionModel> dsamp = new DecisionModelSampler();
+		ISampler<IFeatureModel> fsamp = new FeatureModelSampler();
+		FeatureModeltoDecisionModelConverter conv = new FeatureModeltoDecisionModelConverter();
+
+		DecisionModel dm = conv.transform(fm);
+		Set<Map<IConfigurable, Boolean>> dSamples = dsamp.sample(dm);
+		Set<Map<IConfigurable, Boolean>> fSamples = fsamp.sample(fm);
+
+		assertTrue(equalValidSamples(dm, dSamples, fm, fSamples));
+	}
+	
+	@Test
+	public void testTransformConstraintBooleanSelectsEnumDecisionWithNone() throws NotSupportedVariablityTypeException {
+		IFeature cmvr = new Feature(fm, "VIRTUAL_ROOT");
+		IFeature cmed1 = new Feature(fm, "ed1");
+		IFeature cmbd1 = new Feature(fm, "bd1");
+		FeatureUtils.setRoot(fm, cmvr);
+		FeatureUtils.setOr(cmed1);
+
+		IFeature cmsv1 = new Feature(fm, "sv1");
+		IFeature cmsv2 = new Feature(fm, "None");
+
+		FeatureUtils.addFeature(fm, cmvr);
+		FeatureUtils.addFeature(fm, cmed1);
+		FeatureUtils.addFeature(fm, cmbd1);
+		FeatureUtils.addFeature(fm, cmsv1);
+		FeatureUtils.addFeature(fm, cmsv2);
+
+		FeatureUtils.addChild(cmvr, cmed1);
+		FeatureUtils.addChild(cmvr, cmbd1);
+		FeatureUtils.addChild(cmed1, cmsv1);
+		FeatureUtils.addChild(cmed1, cmsv2);
+
+		DefaultFeatureModelFactory factory = new DefaultFeatureModelFactory();
+		IConstraint constr = factory.createConstraint(fm, 
+				Prop4JUtils.createImplies(Prop4JUtils.createLiteral(cmbd1),Prop4JUtils.createLiteral(cmsv2)));
+		FeatureUtils.addConstraint(fm, constr);
+
+		ISampler<IDecisionModel> dsamp = new DecisionModelSampler();
+		ISampler<IFeatureModel> fsamp = new FeatureModelSampler();
+		FeatureModeltoDecisionModelConverter conv = new FeatureModeltoDecisionModelConverter();
+
+		DecisionModel dm = conv.transform(fm);
+		Set<Map<IConfigurable, Boolean>> dSamples = dsamp.sample(dm);
+		Set<Map<IConfigurable, Boolean>> fSamples = fsamp.sample(fm);
+
+		assertTrue(equalValidSamples(dm, dSamples, fm, fSamples));
+	}
 
 	private boolean equalValidSamples(IDecisionModel dm, Set<Map<IConfigurable, Boolean>> d, IFeatureModel fm,
 			Set<Map<IConfigurable, Boolean>> f) throws NotSupportedVariablityTypeException {
