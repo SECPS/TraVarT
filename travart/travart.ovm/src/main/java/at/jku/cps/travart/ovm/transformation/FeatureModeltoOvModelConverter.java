@@ -25,7 +25,7 @@ import at.jku.cps.travart.ovm.model.IOvModelVariant;
 import at.jku.cps.travart.ovm.model.IOvModelVariationBase;
 import at.jku.cps.travart.ovm.model.IOvModelVariationPoint;
 import at.jku.cps.travart.ovm.model.constraint.IOvModelConstraint;
-import at.jku.cps.vmt.ovm.transformation.exc.NotSupportedTransformationException;
+import at.jku.cps.travart.ovm.transformation.exc.NotSupportedTransformationException;
 import de.ovgu.featureide.fm.core.base.FeatureUtils;
 import de.ovgu.featureide.fm.core.base.IConstraint;
 import de.ovgu.featureide.fm.core.base.IFeature;
@@ -329,11 +329,12 @@ public class FeatureModeltoOvModelConverter implements IModelTransformer<IFeatur
 
 			constraint = ovModelRequiresConstraint;
 
-		} else {
-			// throw new NotSupportedTransformationException(node.getClass(),
-			// IOvModelElement.class);
-			System.err.println(String.format("Can not transform contraint: %s", node.toCNF()));
 		}
+//		else {
+//			// throw new NotSupportedTransformationException(node.getClass(),
+//			// IOvModelElement.class);
+//			System.err.println(String.format("Can not transform contraint: %s", node.toCNF()));
+//		}
 		return constraint;
 	}
 

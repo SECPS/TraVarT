@@ -1,4 +1,4 @@
-package at.jku.cps.vmt.ovm.transformation.exc;
+package at.jku.cps.travart.ovm.transformation.exc;
 
 /**
  * This exception is thrown whenever a transformation is not valid.

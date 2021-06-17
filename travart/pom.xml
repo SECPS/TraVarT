@@ -81,9 +81,6 @@
 						<version>3.6.2</version>
 					</dependency>
 				</dependencies>
-				<activation>
-					<activeByDefault>true</activeByDefault>
-				</activation>
 			</profile>
 			<profile>
 				<id>uvl</id>
@@ -94,6 +91,9 @@
 						<version>3.7.0</version>
 					</dependency>
 				</dependencies>	
+				<activation>
+					<activeByDefault>true</activeByDefault>
+				</activation>
 			</profile>
 		</profiles>
   <organization>

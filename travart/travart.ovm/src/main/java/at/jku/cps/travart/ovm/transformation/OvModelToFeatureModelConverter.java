@@ -32,7 +32,7 @@ import at.jku.cps.travart.ovm.model.IOvModelVariationPoint;
 import at.jku.cps.travart.ovm.model.constraint.IOvModelConstraint;
 import at.jku.cps.travart.ovm.model.constraint.IOvModelExcludesConstraint;
 import at.jku.cps.travart.ovm.model.constraint.IOvModelRequiresConstraint;
-import at.jku.cps.vmt.ovm.transformation.exc.NotSupportedTransformationException;
+import at.jku.cps.travart.ovm.transformation.exc.NotSupportedTransformationException;
 import de.ovgu.featureide.fm.core.ExtensionManager.NoSuchExtensionException;
 import de.ovgu.featureide.fm.core.base.FeatureUtils;
 import de.ovgu.featureide.fm.core.base.IConstraint;

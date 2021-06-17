@@ -256,9 +256,10 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 					updateRules(boolDecision, rule);
 				}
 			}
-		} else {
-			System.out.println("Could not transform CNF: " + cnfNode);
 		}
+//		else {
+//			// System.out.println("Could not transform CNF: " + cnfNode);
+//		}
 	}
 
 	private void deriveRequiresRules(final Node cnfNode) {
