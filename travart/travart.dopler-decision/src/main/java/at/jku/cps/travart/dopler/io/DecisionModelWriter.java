@@ -2,7 +2,9 @@ package at.jku.cps.travart.dopler.io;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
@@ -25,7 +27,9 @@ public class DecisionModelWriter implements IWriter<IDecisionModel> {
 	@Override
 	public void write(final IDecisionModel decisions, final Path path)
 			throws IOException, NotSupportedVariablityTypeException {
-		try (FileWriter out = new FileWriter(path.toFile());
+		Objects.requireNonNull(decisions);
+		Objects.requireNonNull(path);
+		try (FileWriter out = new FileWriter(path.toFile(),StandardCharsets.UTF_8);
 				CSVPrinter printer = new CSVPrinter(out,
 						CSVFormat.EXCEL.withDelimiter(DELIMITER).withHeader(DMCSVHeader.stringArray()))) {
 			for (IDecision decision : decisions) {

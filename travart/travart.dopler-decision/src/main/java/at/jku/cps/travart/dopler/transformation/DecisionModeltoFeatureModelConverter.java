@@ -220,25 +220,25 @@ public class DecisionModeltoFeatureModelConverter implements IModelTransformer<I
 				createExcludesConstraint(numberDecision, disAllowLiteral, conditionValue);
 			} else if (condition instanceof Greater) {
 				Set<ARangeValue<Double>> values = numberDecision.getRange().stream()
-						.filter(v -> v.getValue() >= conditionValue.getValue()).collect(Collectors.toSet());
+						.filter(v -> v.getValue() > conditionValue.getValue()).collect(Collectors.toSet());
 				for (ARangeValue<Double> value : values) {
 					createExcludesConstraint(numberDecision, disAllowLiteral, value);
 				}
 			} else if (condition instanceof Less) {
 				Set<ARangeValue<Double>> values = numberDecision.getRange().stream()
-						.filter(v -> v.getValue() <= conditionValue.getValue()).collect(Collectors.toSet());
+						.filter(v -> v.getValue() < conditionValue.getValue()).collect(Collectors.toSet());
 				for (ARangeValue<Double> value : values) {
 					createExcludesConstraint(numberDecision, disAllowLiteral, value);
 				}
 			} else if (condition instanceof GreaterEquals) {
 				Set<ARangeValue<Double>> values = numberDecision.getRange().stream()
-						.filter(v -> v.getValue() > conditionValue.getValue()).collect(Collectors.toSet());
+						.filter(v -> v.getValue() >= conditionValue.getValue()).collect(Collectors.toSet());
 				for (ARangeValue<Double> value : values) {
 					createExcludesConstraint(numberDecision, disAllowLiteral, value);
 				}
 			} else if (condition instanceof LessEquals) {
 				Set<ARangeValue<Double>> values = numberDecision.getRange().stream()
-						.filter(v -> v.getValue() < conditionValue.getValue()).collect(Collectors.toSet());
+						.filter(v -> v.getValue() <= conditionValue.getValue()).collect(Collectors.toSet());
 				for (ARangeValue<Double> value : values) {
 					createExcludesConstraint(numberDecision, disAllowLiteral, value);
 				}
@@ -364,13 +364,13 @@ public class DecisionModeltoFeatureModelConverter implements IModelTransformer<I
 			}
 			if (Prop4JUtils.isAnd(conditionNode)) {
 				if (Prop4JUtils.hasNegativeLiteral(conditionNode)) {
-					conditionNode = Prop4JUtils.consumeToOrGroup(conditionLiterals, false);
+					conditionNode = Prop4JUtils.consumeToOrGroup(conditionLiterals, true);
 				} else {
 					conditionNode = Prop4JUtils.consumeToAndGroup(conditionLiterals, false);
 				}
 			} else {
 				if (Prop4JUtils.hasNegativeLiteral(conditionNode)) {
-					conditionNode = Prop4JUtils.consumeToAndGroup(conditionLiterals, false);
+					conditionNode = Prop4JUtils.consumeToAndGroup(conditionLiterals, true);
 				} else {
 					conditionNode = Prop4JUtils.consumeToOrGroup(conditionLiterals, false);
 				}

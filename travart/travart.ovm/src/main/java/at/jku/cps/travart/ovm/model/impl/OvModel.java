@@ -193,8 +193,7 @@ public class OvModel extends Identifiable implements IOvModel {
 			vp.getMandatoryChildren().forEach(child -> isPossibleToSelect(child, store));
 			vp.getOptionalChildren().forEach(child -> isPossibleToSelect(child, store));
 		}
-		if (vb instanceof IOvModelVariationPoint && store.get(vb) == CanAssume.CANT_ASSUME
-				&& vb instanceof IOvModelVariationPoint) {
+		if (vb instanceof IOvModelVariationPoint && store.get(vb) == CanAssume.CANT_ASSUME) {
 			IOvModelVariationPoint vp = (IOvModelVariationPoint) vb;
 			List<IOvModelVariationBase> cantDecideMandatoryVbs = getVariationBaseElements(vp.getMandatoryChildren(),
 					store, CanAssume.CANT_ASSUME);

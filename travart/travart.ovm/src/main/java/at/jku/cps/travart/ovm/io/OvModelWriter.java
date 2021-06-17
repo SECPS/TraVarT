@@ -2,6 +2,7 @@ package at.jku.cps.travart.ovm.io;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,7 +37,7 @@ public class OvModelWriter implements IWriter<IOvModel> {
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty(INDENT_CONSTANT, DEFAULT_INDET_NUMBER);
 			DOMSource source = new DOMSource(document);
-			FileWriter writer = new FileWriter(path.toFile());
+			FileWriter writer = new FileWriter(path.toFile(),StandardCharsets.UTF_8);
 			StreamResult result = new StreamResult(writer);
 			transformer.transform(source, result);
 		} catch (ParserConfigurationException | OvModelSerialisationException | TransformerFactoryConfigurationError

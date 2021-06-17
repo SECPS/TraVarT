@@ -2,6 +2,7 @@ package at.jku.cps.travart.ppr.dsl.io;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import at.jku.cps.travart.core.common.IWriter;
@@ -29,7 +30,7 @@ public class PprDslWriter implements IWriter<AssemblySequence> {
 				resourceWriter, processWriter, constraintWriter);
 		try {
 			String asqString = asqWriter.serializeAssemblySequence(asq);
-			FileWriter writer = new FileWriter(path.toFile());
+			FileWriter writer = new FileWriter(path.toFile(),StandardCharsets.UTF_8);
 			writer.append(asqString);
 			writer.flush();
 		} catch (DslSerializerException e) {

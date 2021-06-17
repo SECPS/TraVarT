@@ -3,6 +3,7 @@ package at.jku.cps.travart.dopler.transformation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,6 +92,7 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 				decision.setVisibility(new And(ICondition.FALSE, parent));
 			} else if (!hasVirtualParent(feature)) {
 				IFeature parentFeature = FeatureUtils.getParent(feature);
+				Objects.requireNonNull(parentFeature);
 				IDecision parent = dm.find(parentFeature.getName());
 				decision.setVisibility(parent);
 			} else {
@@ -134,7 +136,7 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 			updateRules(enumDecision, rule);
 		}
 		// create rule for optional parent features
-		if (!FeatureUtils.isMandatorySet(feature)) {
+		if (!FeatureUtils.isRoot(feature) && !FeatureUtils.isMandatorySet(feature)) {
 			Rule rule = new Rule(new Not(parent), new SetValueAction(enumDecision, enumDecision.getNoneOption()));
 			parent.addRule(rule);
 			updateRules(parent, rule);
@@ -164,25 +166,53 @@ public final class FeatureModeltoDecisionModelConverter implements IModelTransfo
 		}
 	}
 
+	private void deriveUnidirectionalRules(Node cnfNode) throws CircleInConditionException, ConditionCreationException {
+		Node negative = Prop4JUtils.getFirstNegativeLiteral(cnfNode);
+		String feature = Prop4JUtils.getLiteralName((Literal) negative);
+		IDecision decision = dm.find(feature);
+		if (DecisionModelUtils.isBooleanDecision(decision)) {
+			BooleanDecision target = DecisionModelUtils.toBooleanDecision(decision);
+			Set<Node> positiveLiterals = Prop4JUtils.getPositiveLiterals(cnfNode);
+			List<IDecision> conditionDecisions = findDecisionsForLiterals(positiveLiterals);
+			List<IDecision> ruleDecisions = findDecisionsForLiterals(positiveLiterals);
+			ICondition ruleCondition = DecisionModelUtils.consumeToBinaryCondition(conditionDecisions, And.class, true);
+			Rule rule = new Rule(ruleCondition, new DeSelectDecisionAction(target));
+			// add new rule to all rule decisions
+			for (IDecision source : ruleDecisions) {
+				source.addRule(rule);
+				updateRules(source, rule);
+			}
+		}
+	}
+
 	private void convertConstraintNode(final Node cnfNode)
 			throws CircleInConditionException, ConditionCreationException {
 		if (Prop4JUtils.isRequires(cnfNode)) {
 			deriveRequiresRules(cnfNode);
 		} else if (Prop4JUtils.isExcludes(cnfNode)) {
 			deriveExcludeRules(cnfNode);
+		} else if (Prop4JUtils.countLiterals(cnfNode) == 2 && Prop4JUtils.hasNegativeLiteral(cnfNode)
+				&& Prop4JUtils.countNegativeLiterals(cnfNode) == 1) {
+			deriveUnidirectionalRules(cnfNode);
 		} else if (Prop4JUtils.countLiterals(cnfNode) > 1 && Prop4JUtils.hasNegativeLiteral(cnfNode)
 				&& Prop4JUtils.countNegativeLiterals(cnfNode) == 1) {
-			Node negative = Prop4JUtils.getFirstNegativeLiteral(cnfNode);
-			String feature = Prop4JUtils.getLiteralName((Literal) negative);
+			deriveUnidirectionalRules(cnfNode);
+		} else if (Prop4JUtils.countLiterals(cnfNode) == 2 && Prop4JUtils.hasPositiveLiteral(cnfNode)
+				&& Prop4JUtils.countPositiveLiterals(cnfNode) == 1) {
+			// TODO this path may be identical with the one in line 194.
+			//better double check before deleting this though, that functionality is not
+			// impaired.
+			Node positive = Prop4JUtils.getFirstPositiveLiteral(cnfNode);
+			String feature = Prop4JUtils.getLiteralName((Literal) positive);
 			IDecision decision = dm.find(feature);
 			if (DecisionModelUtils.isBooleanDecision(decision)) {
 				BooleanDecision target = DecisionModelUtils.toBooleanDecision(decision);
-				Set<Node> positiveLiterals = Prop4JUtils.getPositiveLiterals(cnfNode);
-				List<IDecision> conditionDecisions = findDecisionsForLiterals(positiveLiterals);
-				List<IDecision> ruleDecisions = findDecisionsForLiterals(positiveLiterals);
+				Set<Node> negativeLiterals = Prop4JUtils.getNegativeLiterals(cnfNode);
+				List<IDecision> conditionDecisions = findDecisionsForLiterals(negativeLiterals);
+				List<IDecision> ruleDecisions = findDecisionsForLiterals(negativeLiterals);
 				ICondition ruleCondition = DecisionModelUtils.consumeToBinaryCondition(conditionDecisions, And.class,
-						true);
-				Rule rule = new Rule(ruleCondition, new DeSelectDecisionAction(target));
+						false);
+				Rule rule = new Rule(ruleCondition, new SelectDecisionAction(target));
 				// add new rule to all rule decisions
 				for (IDecision source : ruleDecisions) {
 					source.addRule(rule);
