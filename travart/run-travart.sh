@@ -10,7 +10,7 @@ mvn clean package -DskipTests
 
 # copy required files into travart-run
 cp plugins/*.jar travart-run/plugins
-cp target/travart-runtime-*-SNAPSHOT.zip travart-run
+cp target/travart-*-SNAPSHOT.zip travart-run
 
 # change the current directory
 cd travart-run
@@ -35,9 +35,9 @@ for filename in plugins/*.jar; do
 done
 
 # unzip app
-jar xf travart-runtime-*.zip
-rm travart-runtime-*.zip
+jar xf travart-*.zip
+rm travart-*.zip
 
 # run travart
-mv travart-runtime-*-SNAPSHOT.jar travart-runtime.jar
-java -jar travart-runtime.jar
+mv travart-*-SNAPSHOT.jar travart.jar
+java -jar travart.jar

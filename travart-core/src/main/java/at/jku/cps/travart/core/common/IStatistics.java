@@ -5,7 +5,7 @@ package at.jku.cps.travart.core.common;
  * @author Prankur Agarwal
  */
 public interface IStatistics<T> {
-    // count number of variability elements
-    // constraints
-    //
+    Integer getVariabilityElementsCount(T model);
+
+    Integer getConstraintsCount(T model);
 }
