@@ -41,3 +41,5 @@ rm travart-*.zip
 # run travart
 mv travart-*-SNAPSHOT.jar travart.jar
 java -jar travart.jar
+
+#java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8080 travart.jar
