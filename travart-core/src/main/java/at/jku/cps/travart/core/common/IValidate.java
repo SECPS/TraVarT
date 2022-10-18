@@ -8,10 +8,10 @@ package at.jku.cps.travart.core.common;
  */
 public interface IValidate {
 
-	/**
-	 * This method returns whether an configuration is valid or not.
-	 *
-	 * @return true whenever the current configuration is valid.
-	 */
-	boolean isValid();
+    /**
+     * This method returns whether an configuration is valid or not.
+     *
+     * @return true whenever the current configuration is valid.
+     */
+    boolean isValid();
 }

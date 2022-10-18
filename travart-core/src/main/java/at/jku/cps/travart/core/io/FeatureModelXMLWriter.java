@@ -6,10 +6,10 @@ import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelFormat;
 
 public class FeatureModelXMLWriter extends AFeatureModelWriter {
 
-	public static final String FM_XML_EXTENSION = ".xml";
+    public static final String FM_XML_EXTENSION = ".xml";
 
-	@Override
-	IPersistentFormat<IFeatureModel> getPersistentFormat() {
-		return new XmlFeatureModelFormat();
-	}
+    @Override
+    IPersistentFormat<IFeatureModel> getPersistentFormat() {
+        return new XmlFeatureModelFormat();
+    }
 }

@@ -6,11 +6,11 @@ import de.ovgu.featureide.fm.core.io.fama.FAMAFormat;
 
 public class FeatureModelFAMAWriter extends AFeatureModelWriter {
 
-	public static final String FM_FAMA_EXTENSION = ".fama";
+    public static final String FM_FAMA_EXTENSION = ".fama";
 
-	@Override
-	IPersistentFormat<IFeatureModel> getPersistentFormat() {
-		return new FAMAFormat();
-	}
+    @Override
+    IPersistentFormat<IFeatureModel> getPersistentFormat() {
+        return new FAMAFormat();
+    }
 
 }

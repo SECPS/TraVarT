@@ -17,7 +17,7 @@ public class FeatureModelReader implements IReader<IFeatureModel> {
     }
 
     @Override
-    public IFeatureModel read(Path path) throws IOException, NotSupportedVariabilityTypeException {
+    public IFeatureModel read(final Path path) throws IOException, NotSupportedVariabilityTypeException {
         return FeatureModelManager.load(path);
     }
 }

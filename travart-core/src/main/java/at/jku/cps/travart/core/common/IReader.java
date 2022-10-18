@@ -14,7 +14,7 @@ public interface IReader<T> {
 
     T read(Path filePath) throws IOException, NotSupportedVariabilityTypeException;
 
-    default T read(File file) throws IOException, NotSupportedVariabilityTypeException {
+    default T read(final File file) throws IOException, NotSupportedVariabilityTypeException {
         return this.read(file.toPath());
     }
 

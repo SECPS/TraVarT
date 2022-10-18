@@ -9,24 +9,24 @@ package at.jku.cps.travart.core.common;
  */
 public interface IConfigurable {
 
-	/**
-	 * Returns whether the feature is selected or not.
-	 *
-	 * @return whether the feature is selected or not.
-	 */
-	boolean isSelected();
+    /**
+     * Returns whether the feature is selected or not.
+     *
+     * @return whether the feature is selected or not.
+     */
+    boolean isSelected();
 
-	/**
-	 * Selects the feature.
-	 *
-	 * @param selected
-	 */
-	void setSelected(boolean selected);
+    /**
+     * Selects the feature.
+     *
+     * @param selected
+     */
+    void setSelected(boolean selected);
 
-	/**
-	 * This method returns the name of an IConfigurable of a variability model
-	 *
-	 * @return the name of the identifiable.
-	 */
-	String getName();
+    /**
+     * This method returns the name of an IConfigurable of a variability model
+     *
+     * @return the name of the identifiable.
+     */
+    String getName();
 }

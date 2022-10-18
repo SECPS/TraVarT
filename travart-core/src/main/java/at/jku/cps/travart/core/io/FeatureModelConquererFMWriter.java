@@ -6,11 +6,11 @@ import de.ovgu.featureide.fm.core.io.splconquerer.ConquererFMWriter;
 
 public class FeatureModelConquererFMWriter extends AFeatureModelWriter {
 
-	public static final String FM_CONQUERFM_EXTENSION = ".conquer";
+    public static final String FM_CONQUERFM_EXTENSION = ".conquer";
 
-	@Override
-	IPersistentFormat<IFeatureModel> getPersistentFormat() {
-		return new ConquererFMWriter();
-	}
+    @Override
+    IPersistentFormat<IFeatureModel> getPersistentFormat() {
+        return new ConquererFMWriter();
+    }
 
 }

@@ -6,10 +6,10 @@ import de.ovgu.featureide.fm.core.io.uvl.UVLFeatureModelFormat;
 
 public class FeatureModelUVLWriter extends AFeatureModelWriter {
 
-	public static final String FM_UVL_EXTENSION = ".uvl";
+    public static final String FM_UVL_EXTENSION = ".uvl";
 
-	@Override
-	IPersistentFormat<IFeatureModel> getPersistentFormat() {
-		return new UVLFeatureModelFormat();
-	}
+    @Override
+    IPersistentFormat<IFeatureModel> getPersistentFormat() {
+        return new UVLFeatureModelFormat();
+    }
 }

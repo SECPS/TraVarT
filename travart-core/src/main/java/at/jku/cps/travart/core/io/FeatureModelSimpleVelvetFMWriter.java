@@ -6,11 +6,11 @@ import de.ovgu.featureide.fm.core.io.velvet.SimpleVelvetFeatureModelFormat;
 
 public class FeatureModelSimpleVelvetFMWriter extends AFeatureModelWriter {
 
-	public static final String FM_SIMPLE_VELVET_EXTENSION = ".simplevelvet";
+    public static final String FM_SIMPLE_VELVET_EXTENSION = ".simplevelvet";
 
-	@Override
-	IPersistentFormat<IFeatureModel> getPersistentFormat() {
-		return new SimpleVelvetFeatureModelFormat();
-	}
+    @Override
+    IPersistentFormat<IFeatureModel> getPersistentFormat() {
+        return new SimpleVelvetFeatureModelFormat();
+    }
 
 }

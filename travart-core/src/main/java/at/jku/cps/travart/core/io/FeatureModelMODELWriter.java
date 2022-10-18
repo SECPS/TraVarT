@@ -6,11 +6,11 @@ import de.ovgu.featureide.fm.core.io.propositionalModel.MODELFormat;
 
 public class FeatureModelMODELWriter extends AFeatureModelWriter {
 
-	public static final String FM_MODEL_EXTENSION = ".model";
+    public static final String FM_MODEL_EXTENSION = ".model";
 
-	@Override
-	IPersistentFormat<IFeatureModel> getPersistentFormat() {
-		return new MODELFormat();
-	}
+    @Override
+    IPersistentFormat<IFeatureModel> getPersistentFormat() {
+        return new MODELFormat();
+    }
 
 }

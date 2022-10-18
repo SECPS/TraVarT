@@ -22,9 +22,9 @@ public abstract class AFeatureModelWriter implements IWriter<IFeatureModel> {
     abstract IPersistentFormat<IFeatureModel> getPersistentFormat();
 
     @Override
-    public void write(IFeatureModel fm, Path filePath)
+    public void write(final IFeatureModel fm, final Path filePath)
             throws IOException, NotSupportedVariabilityTypeException {
-        IPersistentFormat<IFeatureModel> format = this.getPersistentFormat();
+        final IPersistentFormat<IFeatureModel> format = this.getPersistentFormat();
         if (!format.supportsWrite()) {
             throw new NotSupportedVariabilityTypeException(new IOException(
                     String.format(ERROR_FORMAT_DOES_NOT_SUPPORT_WRITING, format.getClass().getCanonicalName())));
