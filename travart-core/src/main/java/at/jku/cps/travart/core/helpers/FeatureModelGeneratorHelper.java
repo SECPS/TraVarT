@@ -6,36 +6,10 @@ import de.vill.model.FeatureModel;
 import de.vill.model.Group;
 import de.vill.model.constraint.Constraint;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FeatureModelGeneratorHelper {
-    public static Map<String, List<String>> createParentChildRelationship(final Map<String, FeatureMetaData> featureMetaDataMap) {
-        final Map<String, List<String>> parentChildRelationshipMap = new HashMap<>();
-
-        featureMetaDataMap.keySet()
-                .forEach(
-                        key -> {
-                            if (featureMetaDataMap.get(key).getHasParent()) {
-                                final List<String> children = parentChildRelationshipMap.getOrDefault(
-                                        featureMetaDataMap.get(key).getParentName(),
-                                        new ArrayList<>()
-                                );
-                                children.add(key);
-                                parentChildRelationshipMap.put(
-                                        featureMetaDataMap.get(key).getParentName(),
-                                        children
-                                );
-                            }
-                        }
-                );
-
-
-        return parentChildRelationshipMap;
-    }
-
     public static FeatureModel generateModel(
             final FeatureModel model,
             final String rootFeatureName,
