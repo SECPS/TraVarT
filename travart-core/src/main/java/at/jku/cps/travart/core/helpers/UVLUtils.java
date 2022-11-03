@@ -1,5 +1,6 @@
-package at.jku.cps.travart.core.common;
+package at.jku.cps.travart.core.helpers;
 
+import at.jku.cps.travart.core.common.FeatureMetaData;
 import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties;
 import de.vill.model.Attribute;
 import de.vill.model.Feature;
