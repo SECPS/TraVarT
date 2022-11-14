@@ -9,10 +9,12 @@ import de.vill.model.Group;
 import de.vill.model.Group.GroupType;
 import de.vill.model.constraint.AndConstraint;
 import de.vill.model.constraint.Constraint;
+import de.vill.model.constraint.EquivalenceConstraint;
 import de.vill.model.constraint.ImplicationConstraint;
 import de.vill.model.constraint.LiteralConstraint;
 import de.vill.model.constraint.NotConstraint;
 import de.vill.model.constraint.OrConstraint;
+import de.vill.model.constraint.ParenthesisConstraint;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,6 +28,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.logicng.formulas.Formula;
+import org.logicng.formulas.FormulaFactory;
 
 
 public class TraVarTUtils {
@@ -55,6 +60,50 @@ public class TraVarTUtils {
         }
         return configurations;
     }
+    
+    /**
+	 * This function recursively translates a propositional logic formula from the
+	 * data model used in the de.neominik.uvl library to the data model used in the
+	 * logicng library, to facilitate the later translation to pure variants
+	 * relations. Does not allow expression constraints.
+	 * 
+	 * @param o the current node of the propositional formula
+	 * @param f The FormulaFactory required to create formulas for logicng
+	 * @return the logic formula parsed for the logicng library
+	 */
+	public static Formula buildFormulaFromConstraint(Constraint o, FormulaFactory f) {
+		Formula term = null;
+		if (o instanceof ImplicationConstraint) {
+			term = f.implication(buildFormulaFromConstraint(((ImplicationConstraint) o).getLeft(), f),
+					buildFormulaFromConstraint(((ImplicationConstraint) o).getRight(), f));
+		} else if (o instanceof EquivalenceConstraint) {
+			term = f.equivalence(buildFormulaFromConstraint(((EquivalenceConstraint) o).getLeft(), f),
+					buildFormulaFromConstraint(((EquivalenceConstraint) o).getRight(), f));
+		} else if (o instanceof AndConstraint) {
+			term = f.and(buildFormulaFromConstraint(((AndConstraint) o).getLeft(), f),
+					buildFormulaFromConstraint(((AndConstraint) o).getRight(), f));
+		} else if (o instanceof OrConstraint) {
+			term = f.or(buildFormulaFromConstraint(((OrConstraint) o).getLeft(), f),
+					buildFormulaFromConstraint(((OrConstraint) o).getRight(), f));
+		} else if (o instanceof NotConstraint) {
+			term = f.not(buildFormulaFromConstraint(((NotConstraint) o).getContent(), f));
+		}else if(o instanceof ParenthesisConstraint) {
+			term = buildFormulaFromConstraint(((ParenthesisConstraint) o).getContent(),f);
+		} else if (o instanceof LiteralConstraint) {
+			term = f.literal(((LiteralConstraint) o).getLiteral(), true);
+		}
+		return term;
+	}
+	
+	/**
+	 * Translates a Formula back to a constraint format.
+	 * @param f		the formula in logicNG format
+	 * @return		the same formula represented by UVLs Constraint hierarchy.
+	 */
+	public static Constraint buildConstraintFromFormula(Formula f) {
+		//replace negation sign for uvl parser to recognize it.
+		return factory.parseConstraint(f.toString().replace("~", "!"));
+	}
 
     /**
      * Iterate over the {@code createConfigurationNameSet} configurations and find
@@ -238,7 +287,11 @@ public class TraVarTUtils {
         return count;
     }
 
-    // todo: check
+    /**
+     * if the given constraint can have a right sub-constraint, it returns it.Otherwise null.
+     * @param constraint	the constraint from which to get the right part of
+     * @return				the right sub-constraint
+     */
     public static Constraint getRightConstraint(final Constraint constraint) {
     	 List<Method> methods=Arrays.asList(constraint.getClass().getMethods());
          Optional<Method> getRightMethod=methods.stream().filter(m->m.getName().equals("getRight")).findAny();
@@ -252,6 +305,11 @@ public class TraVarTUtils {
         return null;
     }
     
+    /**
+     * if the given constraint can have a left sub-constraint, it returns it. Otherwise null.
+     * @param constraint	the constraint from which to get the left part of
+     * @return				the left sub-constraint
+     */
     public static Constraint getLeftConstraint(final Constraint constraint) {
         List<Method> methods=Arrays.asList(constraint.getClass().getMethods());
         Optional<Method> getLeftMethod=methods.stream().filter(m->m.getName().equals("getLeft")).findAny();
@@ -265,11 +323,23 @@ public class TraVarTUtils {
         return null;
     }
 
+    /**
+     * Finds all features in a featuremap that do not have a parent are therefore roots.
+     * @param featureMap		featuremap containing all features of an UVL model
+     * @return					A list of features that don't have a parent
+     */
     private static List<Feature> findRoots(final Map<String, Feature> featureMap) {
     	//return all features with no parent
         return featureMap.values().stream().filter(f-> f.getParentFeature()==null).collect(Collectors.toList());
     }
 
+    /**
+     * Gives back a valid feature tree for an UVL model. If more than one root are contained in the
+     * feature map, they are united under one single virtual root.
+     * @param featureMap		featuremap containing all features of an UVL model
+     * @param rootName			Name of the artificial root
+     * @return					name of the root feature
+     */
     public static String deriveFeatureModelRoot(final Map<String,Feature> featureMap,
                                                 final String rootName
     ) {
