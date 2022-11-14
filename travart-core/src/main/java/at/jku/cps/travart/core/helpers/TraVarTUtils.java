@@ -295,19 +295,6 @@ public class TraVarTUtils {
             mandatoryGroup.getFeatures().addAll(roots);
             artificialRoot.addChildren(mandatoryGroup);
             featureMap.put(rootName,artificialRoot);
-//            featureMetaDataMap.put(rootName, new FeatureMetaData(
-//                    Boolean.FALSE,
-//                    null,
-//                    null,
-//                    artificialRoot,
-//                    new HashMap<>()
-//            ));
-
-//            for (final Feature feature : roots) {
-//                final FeatureMetaData temp = featureMetaDataMap.get(feature.getFeatureName());
-//                temp.setHasParent(Boolean.TRUE);
-//                temp.setParentName(artificialRoot.getFeatureName());
-//            }
 
             return rootName;
         }
