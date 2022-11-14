@@ -6,6 +6,7 @@ import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperti
 import de.vill.model.Attribute;
 import de.vill.model.Feature;
 import de.vill.model.Group;
+import de.vill.model.Group.GroupType;
 import de.vill.model.constraint.AndConstraint;
 import de.vill.model.constraint.Constraint;
 import de.vill.model.constraint.ImplicationConstraint;
@@ -13,6 +14,8 @@ import de.vill.model.constraint.LiteralConstraint;
 import de.vill.model.constraint.NotConstraint;
 import de.vill.model.constraint.OrConstraint;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class TraVarTUtils {
@@ -236,33 +240,42 @@ public class TraVarTUtils {
 
     // todo: check
     public static Constraint getRightConstraint(final Constraint constraint) {
-        if (constraint instanceof AndConstraint) {
-            return ((AndConstraint) constraint).getRight();
-        } else if (constraint instanceof OrConstraint) {
-            return ((OrConstraint) constraint).getRight();
-        } else if (constraint instanceof ImplicationConstraint) {
-            return ((ImplicationConstraint) constraint).getRight();
+    	 List<Method> methods=Arrays.asList(constraint.getClass().getMethods());
+         Optional<Method> getRightMethod=methods.stream().filter(m->m.getName().equals("getRight")).findAny();
+         if(getRightMethod.isPresent()) {
+         	try {
+ 				return (Constraint) getRightMethod.get().invoke(constraint);
+ 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+ 				e.printStackTrace();
+ 			}
+         }
+        return null;
+    }
+    
+    public static Constraint getLeftConstraint(final Constraint constraint) {
+        List<Method> methods=Arrays.asList(constraint.getClass().getMethods());
+        Optional<Method> getLeftMethod=methods.stream().filter(m->m.getName().equals("getLeft")).findAny();
+        if(getLeftMethod.isPresent()) {
+        	try {
+				return (Constraint) getLeftMethod.get().invoke(constraint);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
         }
-
-        // not yet implemented
         return null;
     }
 
-    private static List<Feature> findRoots(final Map<String, FeatureMetaData> featureMetaDataMap) {
-        final List<Feature> roots = new ArrayList<>();
-        for (final String key : featureMetaDataMap.keySet()) {
-            if (Boolean.FALSE.equals(featureMetaDataMap.get(key).getHasParent())) {
-                roots.add(featureMetaDataMap.get(key).getFeature());
-            }
-        }
-        return roots;
+    private static List<Feature> findRoots(final Map<String, Feature> featureMap) {
+    	//return all features with no parent
+        return featureMap.values().stream().filter(f-> f.getParentFeature()==null).collect(Collectors.toList());
     }
 
-    public static String deriveFeatureModelRoot(final Map<String, FeatureMetaData> featureMetaDataMap,
+    public static String deriveFeatureModelRoot(final Map<String,Feature> featureMap,
                                                 final String rootName
     ) {
-        final List<Feature> roots = findRoots(featureMetaDataMap);
-        if (roots.size() != 1) {
+        final List<Feature> roots = findRoots(featureMap);
+        if(roots.isEmpty()) return null;
+        if (roots.size() > 1) {
             // artificial root - abstract and hidden
             final Feature artificialRoot = new Feature(rootName);
             artificialRoot.getAttributes().put(
@@ -278,19 +291,23 @@ public class TraVarTUtils {
                     "ARTIFICIAL_MODEL_NAME",
                     new Attribute("ARTIFICIAL_MODEL_NAME", DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME)
             );
-            featureMetaDataMap.put(rootName, new FeatureMetaData(
-                    Boolean.FALSE,
-                    null,
-                    null,
-                    artificialRoot,
-                    new HashMap<>()
-            ));
+            Group mandatoryGroup=new Group(GroupType.MANDATORY);
+            mandatoryGroup.getFeatures().addAll(roots);
+            artificialRoot.addChildren(mandatoryGroup);
+            featureMap.put(rootName,artificialRoot);
+//            featureMetaDataMap.put(rootName, new FeatureMetaData(
+//                    Boolean.FALSE,
+//                    null,
+//                    null,
+//                    artificialRoot,
+//                    new HashMap<>()
+//            ));
 
-            for (final Feature feature : roots) {
-                final FeatureMetaData temp = featureMetaDataMap.get(feature.getFeatureName());
-                temp.setHasParent(Boolean.TRUE);
-                temp.setParentName(artificialRoot.getFeatureName());
-            }
+//            for (final Feature feature : roots) {
+//                final FeatureMetaData temp = featureMetaDataMap.get(feature.getFeatureName());
+//                temp.setHasParent(Boolean.TRUE);
+//                temp.setParentName(artificialRoot.getFeatureName());
+//            }
 
             return rootName;
         }
