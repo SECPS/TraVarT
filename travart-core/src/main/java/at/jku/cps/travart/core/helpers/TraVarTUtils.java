@@ -1,12 +1,12 @@
 package at.jku.cps.travart.core.helpers;
 
-import at.jku.cps.travart.core.common.FeatureMetaData;
 import at.jku.cps.travart.core.common.IConfigurable;
 import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties;
 import de.vill.model.Attribute;
 import de.vill.model.Feature;
 import de.vill.model.Group;
 import de.vill.model.Group.GroupType;
+import de.vill.main.*;
 import de.vill.model.constraint.AndConstraint;
 import de.vill.model.constraint.Constraint;
 import de.vill.model.constraint.EquivalenceConstraint;
@@ -20,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -32,8 +31,10 @@ import java.util.stream.Collectors;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 
-
 public class TraVarTUtils {
+
+private static final UVLModelFactory factory= new UVLModelFactory();
+	
     public static String[] splitString(final String toSplit, final String delimiter) {
         return Arrays.stream(toSplit.split(delimiter))
                 .map(String::trim)
