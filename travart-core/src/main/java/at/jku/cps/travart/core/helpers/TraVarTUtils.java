@@ -468,4 +468,20 @@ public class TraVarTUtils {
 		return constraint instanceof LiteralConstraint || constraint instanceof NotConstraint
 				&& ((NotConstraint) constraint).getContent() instanceof LiteralConstraint;
 	}
+
+	public static Set<Constraint> getPositiveLiterals(Constraint constraint) {
+		Constraint localConstraint = constraint;
+		Set<Constraint> literals = new HashSet<>();
+		if (localConstraint instanceof LiteralConstraint) {
+			literals.add(localConstraint);
+			return literals;
+		}
+		if (localConstraint instanceof ParenthesisConstraint)
+			((ParenthesisConstraint) localConstraint).getContent();
+		for (Constraint subConst : localConstraint.getConstraintSubParts()) {
+			literals.addAll(getNegativeLiterals(subConst));
+		}
+
+		return literals;
+	}
 }
