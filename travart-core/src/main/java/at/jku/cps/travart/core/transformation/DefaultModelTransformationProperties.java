@@ -8,6 +8,8 @@ public final class DefaultModelTransformationProperties {
      */
     public static final String ARTIFICIAL_MODEL_NAME = "VIRTUAL_ROOT";
 
+    public static final String ABSTRACT_ATTRIBUTE = "abstract";
+
     private DefaultModelTransformationProperties() {
     }
 }
