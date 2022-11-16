@@ -5,7 +5,6 @@ import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperti
 import de.vill.main.UVLModelFactory;
 import de.vill.model.Attribute;
 import de.vill.model.Feature;
-import de.vill.model.FeatureModel;
 import de.vill.model.Group;
 import de.vill.model.Group.GroupType;
 import de.vill.model.constraint.AndConstraint;
@@ -469,47 +468,5 @@ public class TraVarTUtils {
         }
 
         return literals;
-    }
-
-    public static Feature createOrUpdateGroup(final Feature child, final Feature parent) {
-        final Optional<Group> currentGroup = parent.getChildren().stream()
-                .filter(g -> g.equals(child.getParentGroup()))
-                .findFirst();
-
-        if (currentGroup.isPresent()) {
-            currentGroup.get().getFeatures().add(child);
-        } else {
-            final Group newGroup = new Group(GroupType.OPTIONAL);
-            newGroup.getFeatures().add(child);
-            parent.addChildren(newGroup);
-        }
-
-        return parent;
-    }
-
-    public static FeatureModel generateModel(
-            final FeatureModel model,
-            final Map<String, Feature> featureMap,
-            final List<Constraint> constraints,
-            final Feature rootFeature
-    ) {
-        featureMap.values()
-                .forEach(
-                        feature -> {
-                            if (feature.getParentGroup() != null) {
-                                final Feature parent = feature.getParentFeature();
-                                featureMap.put(parent.getFeatureName(), createOrUpdateGroup(feature, parent));
-                            }
-                        }
-                );
-
-        // the root feature is already a tree with all the features
-        model.setRootFeature(rootFeature);
-
-        // add constraints
-        model.getOwnConstraints().addAll(constraints);
-
-        // return result
-        return model;
     }
 }
