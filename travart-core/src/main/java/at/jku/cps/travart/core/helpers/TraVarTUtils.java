@@ -5,6 +5,7 @@ import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperti
 import de.vill.main.UVLModelFactory;
 import de.vill.model.Attribute;
 import de.vill.model.Feature;
+import de.vill.model.FeatureModel;
 import de.vill.model.Group;
 import de.vill.model.Group.GroupType;
 import de.vill.model.constraint.AndConstraint;
@@ -34,6 +35,9 @@ import static at.jku.cps.travart.core.transformation.DefaultModelTransformationP
 
 public class TraVarTUtils {
     private static final UVLModelFactory factory = new UVLModelFactory();
+
+    private TraVarTUtils() {
+    }
 
     public static String[] splitString(final String toSplit, final String delimiter) {
         return Arrays.stream(toSplit.split(delimiter)).map(String::trim).filter(s -> !s.isEmpty() && !s.isBlank())
@@ -143,20 +147,12 @@ public class TraVarTUtils {
         return commonNames;
     }
 
-    public static boolean isParentFeatureOf(final Feature child, final Feature parent) {
-        if (child == null || parent == null) {
+    public static boolean isParentOf(final Feature child, final Feature parent) {
+        if (child.getParentFeature() == null) {
             return false;
         }
-        Optional<Feature> iterate = getParent(child, child, null);
-        final String parentName = parent.getFeatureName();
-        while (iterate.isPresent()) {
-            if (iterate.get().getFeatureName().equals(parentName)) {
-                return true;
-            }
-            iterate = getParent(iterate.get(), iterate.get(), null);
-        }
 
-        return false;
+        return child.getParentFeature().equals(parent);
     }
 
     public static boolean isEnumerationType(final Feature feature) {
@@ -167,19 +163,6 @@ public class TraVarTUtils {
                         // todo: there was something multiple here, check if it works without it :D
                         // || group.GROUPTYPE.equals(Group.GroupType.GROUP_CARDINALITY)
                 ));
-    }
-
-    public static Optional<Feature> getParent(final Feature feature, final Feature root, final Feature parent) {
-        if (root.getChildren().isEmpty()) {
-            return Optional.of(parent);
-        }
-
-        final List<Feature> children = getChildren(root);
-        if (children.contains(feature)) {
-            return Optional.of(root);
-        }
-
-        return children.stream().map(child -> getParent(feature, child, parent)).flatMap(Optional::stream).findFirst();
     }
 
     public static boolean isAbstract(final Feature feature) {
@@ -486,5 +469,47 @@ public class TraVarTUtils {
         }
 
         return literals;
+    }
+
+    public static Feature createOrUpdateGroup(final Feature child, final Feature parent) {
+        final Optional<Group> currentGroup = parent.getChildren().stream()
+                .filter(g -> g.equals(child.getParentGroup()))
+                .findFirst();
+
+        if (currentGroup.isPresent()) {
+            currentGroup.get().getFeatures().add(child);
+        } else {
+            final Group newGroup = new Group(GroupType.OPTIONAL);
+            newGroup.getFeatures().add(child);
+            parent.addChildren(newGroup);
+        }
+
+        return parent;
+    }
+
+    public static FeatureModel generateModel(
+            final FeatureModel model,
+            final Map<String, Feature> featureMap,
+            final List<Constraint> constraints,
+            final Feature rootFeature
+    ) {
+        featureMap.values()
+                .forEach(
+                        feature -> {
+                            if (feature.getParentGroup() != null) {
+                                final Feature parent = feature.getParentFeature();
+                                featureMap.put(parent.getFeatureName(), createOrUpdateGroup(feature, parent));
+                            }
+                        }
+                );
+
+        // the root feature is already a tree with all the features
+        model.setRootFeature(rootFeature);
+
+        // add constraints
+        model.getOwnConstraints().addAll(constraints);
+
+        // return result
+        return model;
     }
 }
