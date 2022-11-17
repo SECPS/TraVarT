@@ -5,6 +5,7 @@ import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperti
 import de.vill.main.UVLModelFactory;
 import de.vill.model.Attribute;
 import de.vill.model.Feature;
+import de.vill.model.FeatureModel;
 import de.vill.model.Group;
 import de.vill.model.Group.GroupType;
 import de.vill.model.constraint.AndConstraint;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties.ABSTRACT_ATTRIBUTE;
+import static at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties.HIDDEN_ATTRIBUTE;
 
 public class TraVarTUtils {
     private static final UVLModelFactory factory = new UVLModelFactory();
@@ -133,12 +135,11 @@ public class TraVarTUtils {
      * @return A Set of name sets of the configuration samples.
      */
     public static Set<String> getCommonConfigurationNameSet(final Set<Map<IConfigurable, Boolean>> samples) {
-        final Set<String> commonNames = new HashSet<>();
         final Set<Set<String>> configurations = createConfigurationNameSet(samples);
         final Iterator<Set<String>> iterator = configurations.iterator();
         Set<String> element = iterator.next();
         iterator.remove();
-        commonNames.addAll(element);
+        final Set<String> commonNames = new HashSet<>(element);
         while (iterator.hasNext()) {
             element = iterator.next();
             commonNames.retainAll(element);
@@ -166,6 +167,10 @@ public class TraVarTUtils {
 
     public static boolean isAbstract(final Feature feature) {
         return feature.getAttributes().get(ABSTRACT_ATTRIBUTE) != null && Boolean.parseBoolean(feature.getAttributes().get(ABSTRACT_ATTRIBUTE).getValue().toString());
+    }
+
+    public static boolean isHidden(final Feature feature) {
+        return feature.getAttributes().get(HIDDEN_ATTRIBUTE) != null && Boolean.parseBoolean(feature.getAttributes().get(HIDDEN_ATTRIBUTE).getValue().toString());
     }
 
     public static Object getAttributeValue(final Feature feature, final String attributeName) {
@@ -468,5 +473,15 @@ public class TraVarTUtils {
         }
 
         return literals;
+    }
+
+    public static void setGroup(final FeatureModel featureModel, final Feature feature, final Feature parent, final GroupType groupType) {
+        feature.getParentGroup().getFeatures().remove(feature);
+        final Group group = new Group(groupType);
+        group.getFeatures().add(feature);
+        parent.addChildren(group);
+        feature.setParentGroup(group);
+        featureModel.getFeatureMap().put(parent.getFeatureName(), parent);
+        featureModel.getFeatureMap().put(feature.getFeatureName(), feature);
     }
 }
