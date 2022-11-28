@@ -16,8 +16,11 @@ import de.vill.model.constraint.LiteralConstraint;
 import de.vill.model.constraint.NotConstraint;
 import de.vill.model.constraint.OrConstraint;
 import de.vill.model.constraint.ParenthesisConstraint;
+
+import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -158,10 +161,9 @@ public class TraVarTUtils {
     public static boolean isEnumerationType(final Feature feature) {
         return feature.getChildren()
                 .stream()
-                .anyMatch(group -> (group.GROUPTYPE.equals(Group.GroupType.ALTERNATIVE)
-                        || group.GROUPTYPE.equals(Group.GroupType.OR)
+                .anyMatch(group -> (group.GROUPTYPE.equals(GroupType.ALTERNATIVE)
+                        || group.GROUPTYPE.equals(GroupType.OR) || group.GROUPTYPE.equals(GroupType.GROUP_CARDINALITY)
                         // todo: there was something multiple here, check if it works without it :D
-                        // || group.GROUPTYPE.equals(Group.GroupType.GROUP_CARDINALITY)
                 ));
     }
 
@@ -194,7 +196,7 @@ public class TraVarTUtils {
         }
         boolean isComplex = false;
         for (final Constraint child : constraint.getConstraintSubParts()) {
-            isComplex = isComplex || !(child instanceof LiteralConstraint);
+            isComplex = isComplex || !(child instanceof LiteralConstraint || isNegativeLiteral(child));
         }
         return isComplex;
     }
@@ -211,13 +213,13 @@ public class TraVarTUtils {
                 || isPositiveLiteral(left) && isNegativeLiteral(right);
     }
 
-    public static Constraint getFirstNegativeLiteral(final Constraint constraint) {
+    public static NotConstraint getFirstNegativeLiteral(final Constraint constraint) {
         if (isNegativeLiteral(constraint)) {
-            return constraint;
+            return (NotConstraint)constraint;
         }
         for (final Constraint child : constraint.getConstraintSubParts()) {
             if (isNegativeLiteral(child)) {
-                return child;
+                return (NotConstraint)child;
             }
         }
         return null;
@@ -235,16 +237,23 @@ public class TraVarTUtils {
         return null;
     }
 
+    /**
+     * checks if the constraint is an excludes constraint. If a constraint is deconstructed into a
+     * CNF form, and all literals are negative it is an excludes constraint. In all other cases it's not.
+     * @param constraint		a constraint of arbitrary form.
+     * @return					true if constraint is an exludes constraint, false otherwise
+     */
     public static boolean isExcludes(final Constraint constraint) {
-        if (!(constraint instanceof OrConstraint) || constraint.getConstraintSubParts().size() != 2) {
-            return false;
-        }
-        final OrConstraint or = (OrConstraint) constraint;
-        final Constraint left = or.getLeft();
-        final Constraint right = or.getRight();
-        // Not(A) or Not(B) --> excludes
-        // TODO: check
-        return (isNegativeLiteral(left)) && (isNegativeLiteral(right));
+    	Formula formula=buildFormulaFromConstraint(constraint, new FormulaFactory());
+    	formula=formula.cnf();
+    	List<Literal> positiveLiterals = formula.literals().stream().filter(lit -> lit.phase())
+				.collect(Collectors.toList());
+		List<Literal> negativeLiterals = formula.literals().stream().filter(lit -> !lit.phase())
+				.collect(Collectors.toList());
+		if (formula.type().equals(FType.OR) && positiveLiterals.isEmpty() && !negativeLiterals.isEmpty()) {
+			return true;
+		}
+        return false;
     }
 
     public static boolean isNegativeLiteral(final Constraint constraint) {
