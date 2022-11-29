@@ -78,7 +78,7 @@ public class TraVarTUtils {
 		List<Feature> childFeatures=feature.getChildren().stream().flatMap(g->g.getFeatures().stream()).collect(Collectors.toList());
 		//add all children
 		for(Feature childFeature:childFeatures) {
-			featureMap.entrySet().addAll(getFeatureMapFromRoot(childFeature).entrySet());			
+			featureMap.putAll(getFeatureMapFromRoot(childFeature));
 		}
 		return featureMap;
 	}
