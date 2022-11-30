@@ -36,3 +36,9 @@ hs_err_pid*
 
 # custom folders
 **/travart-run/
+
+### Others
+.project
+.git/**
+.settings/**
+.classpath
