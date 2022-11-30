@@ -1,4 +1,3 @@
-# TraVarT2.0
+# TraVarT Core
 
-Yet to add a proper documentation :(
-(maybe copy from the original TraVarT)
+This directory contains the core interfaces / classes to be used across the TraVarT Ecosystem.
