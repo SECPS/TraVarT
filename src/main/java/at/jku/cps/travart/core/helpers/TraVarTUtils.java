@@ -21,6 +21,7 @@ import org.logicng.formulas.FType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
 import org.logicng.formulas.Literal;
+import org.logicng.formulas.Or;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -71,13 +72,14 @@ public class TraVarTUtils {
 
 	public static Map<String, Feature> getFeatureMapFromRoot(Feature feature) {
 		Map<String, Feature> featureMap = new HashMap<>();
-		//add self
+		// add self
 		featureMap.put(feature.getFeatureName(), feature);
 		if (feature.getChildren().isEmpty())
 			return featureMap;
-		List<Feature> childFeatures=feature.getChildren().stream().flatMap(g->g.getFeatures().stream()).collect(Collectors.toList());
-		//add all children
-		for(Feature childFeature:childFeatures) {
+		List<Feature> childFeatures = feature.getChildren().stream().flatMap(g -> g.getFeatures().stream())
+				.collect(Collectors.toList());
+		// add all children
+		for (Feature childFeature : childFeatures) {
 			featureMap.putAll(getFeatureMapFromRoot(childFeature));
 		}
 		return featureMap;
@@ -178,7 +180,6 @@ public class TraVarTUtils {
 	public static boolean isEnumerationType(final Feature feature) {
 		return feature.getChildren().stream().anyMatch(group -> (group.GROUPTYPE.equals(GroupType.ALTERNATIVE)
 				|| group.GROUPTYPE.equals(GroupType.OR) || group.GROUPTYPE.equals(GroupType.GROUP_CARDINALITY)
-		// todo: there was something multiple here, check if it works without it :D
 		));
 	}
 
@@ -209,27 +210,38 @@ public class TraVarTUtils {
 	}
 
 	public static boolean isComplexConstraint(final Constraint constraint) {
-		if (constraint instanceof LiteralConstraint) {
-			return false;
-		}
-		boolean isComplex = false;
-		for (final Constraint child : constraint.getConstraintSubParts()) {
-			isComplex = isComplex || !(child instanceof LiteralConstraint || isNegativeLiteral(child));
-		}
-		return isComplex;
+		Formula f = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
+		return f.stream().anyMatch(subf -> !subf.isAtomicFormula());
 	}
 
-	//FIXME this expects CNF form of a constraint to be passed, and only 2 literals
 	public static boolean isRequires(final Constraint constraint) {
-		if (!(constraint instanceof OrConstraint) || constraint.getConstraintSubParts().size() != 2) {
-			return false;
+		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
+		Formula cnfFormula = formula.cnf();
+		return (cnfFormula instanceof Or) && TraVarTUtils.countNegativeFormulaLiterals(cnfFormula) == 1
+				&& TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) > 0;
+	}
+	
+	public static boolean isRequiredForAllConstraint(final Constraint constraint) {
+		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
+		Formula cnfFormula = formula.cnf();
+		return (cnfFormula instanceof Or) && TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) == 1
+				&& TraVarTUtils.countNegativeFormulaLiterals(cnfFormula) > 1;
+	}
+
+	public static long countPositiveFormulaLiterals(final Formula formula) {
+		return countFormulaLiterals(formula, false);
+	}
+
+	public static long countNegativeFormulaLiterals(final Formula formula) {
+		return countFormulaLiterals(formula, true);
+	}
+
+	private static long countFormulaLiterals(final Formula formula, boolean negated) {
+		if (negated) {
+			return formula.literals().stream().filter(lit -> !lit.phase()).count();
 		}
-		final OrConstraint or = (OrConstraint) constraint;
-		final Constraint left = or.getLeft();
-		final Constraint right = or.getRight();
-		// Not(A) or B || A or Not(B) --> Both are implies constraints
-		return isNegativeLiteral(left) && isPositiveLiteral(right)
-				|| isPositiveLiteral(left) && isNegativeLiteral(right);
+
+		return formula.literals().stream().filter(Literal::phase).count();
 	}
 
 	public static NotConstraint getFirstNegativeLiteral(final Constraint constraint) {
@@ -271,10 +283,7 @@ public class TraVarTUtils {
 				.collect(Collectors.toList());
 		List<Literal> negativeLiterals = formula.literals().stream().filter(lit -> !lit.phase())
 				.collect(Collectors.toList());
-		if (formula.type().equals(FType.OR) && positiveLiterals.isEmpty() && !negativeLiterals.isEmpty()) {
-			return true;
-		}
-		return false;
+		return formula.type().equals(FType.OR) && positiveLiterals.isEmpty() && !negativeLiterals.isEmpty();
 	}
 
 	public static boolean isNegativeLiteral(final Constraint constraint) {
@@ -382,8 +391,7 @@ public class TraVarTUtils {
 		return root.getFeatureName();
 	}
 
-	
-	//TODO check if this does what it is actually supposed to
+	// TODO check if this does what it is actually supposed to
 	public static boolean isSingleFeatureRequires(final Constraint constraint) {
 		return constraint instanceof LiteralConstraint;
 	}
