@@ -214,6 +214,15 @@ public class TraVarTUtils {
 		return f.stream().anyMatch(subf -> !subf.isAtomicFormula());
 	}
 
+	/**
+	 * Detects if the given constraint is a Requires-Constraint. A constraint like this could be of the form
+	 * A => B
+	 * A => B | C
+	 * !A | B | C
+	 * 
+	 * @param constraint	The constraint the check
+	 * @return				Boolean if constraint is requires-constraint
+	 */
 	public static boolean isRequires(final Constraint constraint) {
 		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
 		Formula cnfFormula = formula.cnf();
@@ -221,6 +230,13 @@ public class TraVarTUtils {
 				&& TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) > 0;
 	}
 	
+	/**
+	 * Detects if the given constraint is a RequiresForAll-Constraint. A constraint like this could be of the form
+	 * (A & B) => C
+	 * !A | !B | C
+	 * @param constraint	The constraint to check	
+	 * @return				boolean if constraint is a RequiresForAll-constraint
+	 */
 	public static boolean isRequiredForAllConstraint(final Constraint constraint) {
 		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
 		Formula cnfFormula = formula.cnf();
