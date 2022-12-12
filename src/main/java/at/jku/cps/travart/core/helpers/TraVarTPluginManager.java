@@ -6,14 +6,19 @@ import org.pf4j.ManifestPluginDescriptorFinder;
 import org.pf4j.PluginDescriptorFinder;
 import org.pf4j.PluginManager;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TraVarTPluginManager {
-    public static Map<String, IPlugin> availablePlugins = new HashMap<>();
+public final class TraVarTPluginManager {
+    private static Map<String, IPlugin> availablePlugins = new HashMap<>();
 
-    public static PluginManager pluginManager;
+    private static PluginManager pluginManager;
+    
+    private TraVarTPluginManager() {
+		
+	}
 
     public static void startPlugins() {
         // create the plugin manager
@@ -28,17 +33,25 @@ public class TraVarTPluginManager {
 
         // start the plugins
         pluginManager.startPlugins();
+        
+        // find plugins
+        findAvailablePlugins();
     }
 
-    public static void getAvailablePlugins() {
+    public static void findAvailablePlugins() {
         // retrieves the extensions for IPlugin extension point
-        final List<IPlugin> plugins = pluginManager.getExtensions(IPlugin.class);
+    	final List<IPlugin> plugins = pluginManager.getExtensions(IPlugin.class);
         for (final IPlugin plugin : plugins) {
             availablePlugins.put(plugin.getId(), plugin);
         }
+		
+	}
+
+	public static Map<String, IPlugin> getAvailablePlugins() {		
+        return Collections.unmodifiableMap(availablePlugins);
     }
 
     public static void stopPlugins() {
-        pluginManager.stopPlugins();
+        pluginManager.stopPlugins();  
     }
 }
