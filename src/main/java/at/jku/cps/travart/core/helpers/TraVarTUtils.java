@@ -41,6 +41,7 @@ import static at.jku.cps.travart.core.transformation.DefaultModelTransformationP
 
 public class TraVarTUtils {
 	private static final UVLModelFactory factory = new UVLModelFactory();
+	private static final FormulaFactory formulaFactory= new FormulaFactory();
 
 	private TraVarTUtils() {
 	}
@@ -210,7 +211,7 @@ public class TraVarTUtils {
 	}
 
 	public static boolean isComplexConstraint(final Constraint constraint) {
-		Formula f = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
+		Formula f = TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);
 		return f.stream().anyMatch(subf -> !subf.isAtomicFormula());
 	}
 
@@ -224,7 +225,7 @@ public class TraVarTUtils {
 	 * @return				Boolean if constraint is requires-constraint
 	 */
 	public static boolean isRequires(final Constraint constraint) {
-		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
+		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);
 		Formula cnfFormula = formula.cnf();
 		return (cnfFormula instanceof Or) && TraVarTUtils.countNegativeFormulaLiterals(cnfFormula) == 1
 				&& TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) > 0;
@@ -238,7 +239,7 @@ public class TraVarTUtils {
 	 * @return				boolean if constraint is a RequiresForAll-constraint
 	 */
 	public static boolean isRequiredForAllConstraint(final Constraint constraint) {
-		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, new FormulaFactory());
+		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);
 		Formula cnfFormula = formula.cnf();
 		return (cnfFormula instanceof Or) && TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) == 1
 				&& TraVarTUtils.countNegativeFormulaLiterals(cnfFormula) > 1;
@@ -293,7 +294,7 @@ public class TraVarTUtils {
 	 * @return true if constraint is an exludes constraint, false otherwise
 	 */
 	public static boolean isExcludes(final Constraint constraint) {
-		Formula formula = buildFormulaFromConstraint(constraint, new FormulaFactory());
+		Formula formula = buildFormulaFromConstraint(constraint, formulaFactory);
 		formula = formula.cnf();
 		List<Literal> positiveLiterals = formula.literals().stream().filter(lit -> lit.phase())
 				.collect(Collectors.toList());
@@ -407,9 +408,15 @@ public class TraVarTUtils {
 		return root.getFeatureName();
 	}
 
-	// TODO check if this does what it is actually supposed to
+	/**
+	 * Tests if the given constraint is a constraint that requires a single constraint for a single other one
+	 * @param constraint		the constraint to thest
+	 * @return					boolean signaling if the constraint is a single feature that requires another.
+	 */
 	public static boolean isSingleFeatureRequires(final Constraint constraint) {
-		return constraint instanceof LiteralConstraint;
+		Formula formula =TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);		
+		
+		return (formula instanceof Or) && countNegativeFormulaLiterals(formula)==1 && countPositiveFormulaLiterals(formula)==1;
 	}
 
 	public static boolean isSingleFeatureExcludes(final Constraint constraint) {
@@ -427,38 +434,18 @@ public class TraVarTUtils {
 		return countNegativeLiterals(constraint) > 0;
 	}
 
-	public static int countNegativeLiterals(final Constraint constraint) {
-		if (constraint instanceof NotConstraint
-				&& ((NotConstraint) constraint).getContent() instanceof LiteralConstraint) {
-			return 1;
-		}
-		if (constraint instanceof ParenthesisConstraint) {
-			((ParenthesisConstraint) constraint).getContent();
-		}
-		int i = 0;
-		for (final Constraint subConst : constraint.getConstraintSubParts()) {
-			i += countPositiveLiterals(subConst);
-		}
-		return i;
+	public static long countNegativeLiterals(final Constraint constraint) {
+		Formula formula = buildFormulaFromConstraint(constraint, formulaFactory);
+		return countNegativeFormulaLiterals(formula);
 	}
 
 	public static boolean hasPositiveLiteral(final Constraint constraint) {
 		return countPositiveLiterals(constraint) > 0;
 	}
 
-	public static int countPositiveLiterals(final Constraint constraint) {
-		if (constraint instanceof NotConstraint
-				&& ((NotConstraint) constraint).getContent() instanceof LiteralConstraint) {
-			return 0;
-		}
-		if (constraint instanceof ParenthesisConstraint) {
-			((ParenthesisConstraint) constraint).getContent();
-		}
-		int i = 0;
-		for (final Constraint subConst : constraint.getConstraintSubParts()) {
-			i += countPositiveLiterals(subConst);
-		}
-		return i;
+	public static long countPositiveLiterals(final Constraint constraint) {
+		Formula formula = buildFormulaFromConstraint(constraint, formulaFactory);
+		return countPositiveFormulaLiterals(formula);
 	}
 
 	public static Set<Constraint> getNegativeLiterals(final Constraint constraint) {
