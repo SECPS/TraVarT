@@ -365,7 +365,7 @@ public class TraVarTUtils {
 		}
 		for (final Constraint child : constraint.getConstraintSubParts()) {
 			NotConstraint childsFirstNegative = getFirstNegativeLiteral(child);
-			if (isNegativeLiteral(childsFirstNegative)) {
+			if (childsFirstNegative != null && isNegativeLiteral(childsFirstNegative)) {
 				return childsFirstNegative;
 			}
 		}
@@ -385,7 +385,7 @@ public class TraVarTUtils {
 		}
 		for (final Constraint child : constraint.getConstraintSubParts()) {
 			Constraint childsFirstPositive = getFirstPositiveLiteral(child);
-			if (isPositiveLiteral(childsFirstPositive)) {
+			if (childsFirstPositive != null && isPositiveLiteral(childsFirstPositive)) {
 				return childsFirstPositive;
 			}
 		}
