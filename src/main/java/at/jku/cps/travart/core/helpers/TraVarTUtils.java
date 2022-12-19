@@ -97,6 +97,19 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * returns true if the given feature does not have a parent feature and is a
+	 * root.
+	 *
+	 * @param feature the feature to be checked
+	 * @return true if the given feature does not have a parent feature and is a
+	 *         root, otherwise false.
+	 */
+	public static boolean isRoot(final Feature feature) {
+		Objects.requireNonNull(feature);
+		return feature.getParentFeature() != null;
+	}
+
+	/**
 	 * This function recursively translates a propositional logic formula from the
 	 * data model used in the de.neominik.uvl library to the data model used in the
 	 * logicng library, to facilitate the later translation to pure variants
@@ -185,6 +198,50 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * adds the given feature to a feature model
+	 *
+	 * @param fm      the feature model to which the feature is added.
+	 * @param feature the feature to add.
+	 */
+	public static void addFeature(final FeatureModel fm, final Feature feature) {
+		fm.getFeatureMap().put(feature.getFeatureName(), feature);
+	}
+
+	/**
+	 * returns the feature given by the id from the feature model as an Optional
+	 * feature.
+	 *
+	 * @param fm the feature model in which the feature is hopefully present.
+	 * @param id the feature name.
+	 * @return returns an Optional feature, of the feature.
+	 */
+	public static Optional<Feature> getFeatureOptional(final FeatureModel fm, final String id) {
+		return Optional.ofNullable(fm.getFeatureMap().get(id));
+	}
+
+	/**
+	 * returns the feature given by the id from the feature model if available,
+	 * otherwise <code>null</code>.
+	 *
+	 * @param fm the feature model in which the feature is hopefully present.
+	 * @param id the feature name.
+	 * @return returns the feature identified by id, otherwise null.
+	 */
+	public static Feature getFeature(final FeatureModel fm, final String id) {
+		return fm.getFeatureMap().get(id);
+	}
+
+	/**
+	 * removes the given feature from a feature model
+	 *
+	 * @param fm      the feature model from which the feature is removed.
+	 * @param feature the feature to remove.
+	 */
+	public static void removeFeature(final FeatureModel fm, final Feature feature) {
+		fm.getFeatureMap().remove(feature.getFeatureName(), feature);
+	}
+
+	/**
 	 * checks if a feature is the child of another one.
 	 *
 	 * @param child  the feature to check
@@ -195,7 +252,6 @@ public class TraVarTUtils {
 		if (child.getParentFeature() == null) {
 			return false;
 		}
-
 		return child.getParentFeature().equals(parent);
 	}
 
@@ -223,6 +279,20 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * adds or removes the Abstract-attribute to/from the feature
+	 *
+	 * @param feature    the feature to add/remove the Abstract-attribute from.
+	 * @param isAbstract specifies if the Abstract-attribute is added or removed.
+	 */
+	public static void setAbstract(final Feature feature, final boolean isAbstract) {
+		if (isAbstract) {
+			feature.getAttributes().put(ABSTRACT_ATTRIBUTE, new Attribute<>(ABSTRACT_ATTRIBUTE, Boolean.TRUE));
+		} else {
+			feature.getAttributes().remove(ABSTRACT_ATTRIBUTE);
+		}
+	}
+
+	/**
 	 * checks if the passed feature has the Hidden-attribute
 	 *
 	 * @param feature the feature to check
@@ -231,6 +301,31 @@ public class TraVarTUtils {
 	public static boolean isHidden(final Feature feature) {
 		return feature.getAttributes().get(HIDDEN_ATTRIBUTE) != null
 				&& Boolean.parseBoolean(feature.getAttributes().get(HIDDEN_ATTRIBUTE).getValue().toString());
+	}
+
+	/**
+	 * adds or removes the Hidden-attribute to/from the feature
+	 *
+	 * @param feature    the feature to add/remove the Hidden-attribute from.
+	 * @param isAbstract specifies if the Hidden-attribute is added or removed.
+	 */
+	public static void setHidden(final Feature feature, final boolean isHidden) {
+		if (isHidden) {
+			feature.getAttributes().put(HIDDEN_ATTRIBUTE, new Attribute<>(HIDDEN_ATTRIBUTE, Boolean.TRUE));
+		} else {
+			feature.getAttributes().remove(HIDDEN_ATTRIBUTE);
+		}
+	}
+
+	/**
+	 * returns true if the given feature is mandatory, otherwise false. Root
+	 * features are mandatory by default.
+	 *
+	 * @param feature the feature to be checked
+	 * @return true if the feature is mandatory, otherwise false.
+	 */
+	public static boolean isMandatory(final Feature feature) {
+		return feature.getParentGroup().GROUPTYPE.equals(GroupType.MANDATORY);
 	}
 
 	/**
@@ -255,7 +350,24 @@ public class TraVarTUtils {
 	public static Set<Feature> getChildren(final Feature feature) {
 		final Set<Feature> children = new HashSet<>();
 		feature.getChildren().forEach(group -> children.addAll(group.getFeatures()));
+		return children;
+	}
 
+	/**
+	 * get a list of all child features from a given group type. This pools features
+	 * from all groups of the given type.
+	 *
+	 * @param feature   the feature from which to get the children
+	 * @param grouptype the group type from which the children are
+	 * @return a List of all features of the given group type
+	 */
+	public static Set<Feature> getChildren(final Feature feature, final Group.GroupType grouptype) {
+		final Set<Feature> children = new HashSet<>();
+		for (Group group : feature.getChildren()) {
+			if (group.GROUPTYPE.equals(grouptype)) {
+				children.addAll(group.getFeatures());
+			}
+		}
 		return children;
 	}
 
@@ -703,14 +815,14 @@ public class TraVarTUtils {
 	 * Moves the given feature from one Group to a group of specified type under the
 	 * given parent feature.
 	 *
-	 * @param featureModel the feature model containing all features
+	 * @param fm the feature model containing all features
 	 * @param feature      the feature to move
 	 * @param parent       the new parent feature
 	 * @param groupType    the {@link Group.GroupType GroupType} to add feature to
 	 */
-	public static void setGroup(final FeatureModel featureModel, final Feature feature, final Feature parent,
+	public static void setGroup(final FeatureModel fm, final Feature feature, final Feature parent,
 			final GroupType groupType) {
-		Objects.requireNonNull(featureModel);
+		Objects.requireNonNull(fm);
 		Objects.requireNonNull(feature);
 		feature.getParentGroup().getFeatures().remove(feature);
 		Optional<Group> optGroup = parent.getChildren().stream().filter(g -> g.GROUPTYPE.equals(groupType)).findFirst();
@@ -718,8 +830,8 @@ public class TraVarTUtils {
 		group.getFeatures().add(feature);
 		parent.addChildren(group);
 		feature.setParentGroup(group);
-		featureModel.getFeatureMap().put(parent.getFeatureName(), parent);
-		featureModel.getFeatureMap().put(feature.getFeatureName(), feature);
+		TraVarTUtils.addFeature(fm, parent);
+		TraVarTUtils.addFeature(fm, feature);
 	}
 
 	public static FeatureModel createSingleFeatureModel(final FeatureModel... featureModels) {
@@ -727,7 +839,7 @@ public class TraVarTUtils {
 		for (FeatureModel fm : featureModels) {
 			Import imp = new Import(fm.getRootFeature().getFeatureName(), fm.getRootFeature().getFeatureName());
 			singleFm.getImports().add(imp);
-			singleFm.getFeatureMap().put(fm.getRootFeature().getFeatureName(), fm.getRootFeature());
+			TraVarTUtils.addFeature(fm, fm.getRootFeature());
 		}
 		return singleFm;
 	}
