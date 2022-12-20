@@ -1,26 +1,27 @@
 package at.jku.cps.travart.core.common;
 
-import org.pf4j.ExtensionPoint;
-
 import java.util.List;
+
+import org.pf4j.ExtensionPoint;
 
 /**
  * The meta-data of the plugin being implemented
  *
  * @author Prankur Agarwal
  */
+@SuppressWarnings("rawtypes")
 public interface IPlugin extends ExtensionPoint {
-    IModelTransformer getTransformer();
+	IModelTransformer getTransformer();
 
-    IReader getReader();
+	IReader getReader();
 
-    IWriter getWriter();
+	IWriter getWriter();
 
-    String getName();
+	String getName();
 
-    String getVersion();
+	String getVersion();
 
-    String getId();
+	String getId();
 
-    List<String> getSupportedFileExtensions();
+	List<String> getSupportedFileExtensions();
 }
