@@ -6,6 +6,7 @@ import static at.jku.cps.travart.core.transformation.DefaultModelTransformationP
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,13 @@ public class TraVarTUtils {
 	private TraVarTUtils() {
 	}
 
+	/**
+	 * Splits the given String by the given delimiter.
+	 *
+	 * @param toSplit   the String to split.
+	 * @param delimiter the delimiter to split the String.
+	 * @return a array of Strings containing the elements of the original String.
+	 */
 	public static String[] splitString(final String toSplit, final String delimiter) {
 		return Arrays.stream(toSplit.split(delimiter)).map(String::trim).filter(s -> !s.isEmpty() && !s.isBlank())
 				.toArray(String[]::new);
@@ -105,8 +113,195 @@ public class TraVarTUtils {
 	 *         root, otherwise false.
 	 */
 	public static boolean isRoot(final Feature feature) {
-		Objects.requireNonNull(feature);
-		return feature.getParentFeature() != null;
+		return Objects.requireNonNull(feature).getParentFeature() == null;
+	}
+
+	/**
+	 * returns the {@link List} of own {@link Constraint}s of the given feature
+	 * model.
+	 *
+	 * @param fm the feature model from which the own {@link Constraint}s are
+	 *           returned.
+	 * @return A {@link List} of own {@link Constraint}s of the feature model
+	 */
+	public static List<Constraint> getOwnConstraints(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getOwnConstraints();
+	}
+
+	/**
+	 * Adds the given constraint as an own {@link Constraint} to the given feature
+	 * model.
+	 *
+	 * @param fm         the feature model to which the constraint is added.
+	 * @param constraint the constraint to add.
+	 */
+	public static void addOwnConstraint(final FeatureModel fm, final Constraint constraint) {
+		getOwnConstraints(fm).add(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Removes the given constraint from the given feature model.
+	 *
+	 * @param fm         the feature model from which the constraint is removed.
+	 * @param constraint the constraint to remove.
+	 */
+	public static void removeOwnConstraint(final FeatureModel fm, final Constraint constraint) {
+		getOwnConstraints(fm).remove(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Returns true if the given constraint is contained in the feature model own
+	 * constraints, otherwise false.
+	 *
+	 * @param fm         the feature model to check if it contains this own
+	 *                   constraint.
+	 * @param constraint the constraint to check.
+	 * @return true if the given constraint is contained in the feature model own
+	 *         constraints, otherwise false
+	 */
+	public static boolean hasOwnConstraint(final FeatureModel fm, final Constraint constraint) {
+		return getOwnConstraints(fm).contains(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * returns the {@link List} of {@link LiteralConstraint}s of the given feature
+	 * model.
+	 *
+	 * @param fm the feature model from which the {@link LiteralConstraint}s are
+	 *           returned.
+	 * @return A {@link List} of {@link LiteralConstraint}s of the feature model
+	 */
+	public static List<LiteralConstraint> getLiteralConstraints(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getLiteralConstraints();
+	}
+
+	/**
+	 * Adds the given constraint as an {@link LiteralConstraint} to the given
+	 * feature model.
+	 *
+	 * @param fm         the feature model to which the constraint is added.
+	 * @param constraint the literal constraint to add.
+	 */
+	public static void addLiteralConstraint(final FeatureModel fm, final LiteralConstraint constraint) {
+		getLiteralConstraints(fm).add(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Removes the given {@link LiteralConstraint} from the given feature model.
+	 *
+	 * @param fm         the feature model from which the constraint is removed.
+	 * @param constraint the constraint to remove.
+	 */
+	public static void removeLiteralConstraint(final FeatureModel fm, final LiteralConstraint constraint) {
+		getLiteralConstraints(fm).remove(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Returns true if the given {@link LiteralConstraint} is contained in the
+	 * feature model own constraints, otherwise false.
+	 *
+	 * @param fm         the feature model to check if it contains this
+	 *                   {@link LiteralConstraint}.
+	 * @param constraint the constraint to check.
+	 * @return true if the given {@link LiteralConstraint} is contained in the
+	 *         feature model own constraints, otherwise false
+	 */
+	public static boolean hasOwnConstraint(final FeatureModel fm, final LiteralConstraint constraint) {
+		return getLiteralConstraints(fm).contains(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * returns the {@link List} of feature {@link Constraint}s of the given feature
+	 * model.
+	 *
+	 * @param fm the feature model from which the feature {@link Constraint}s are
+	 *           returned.
+	 * @return A {@link List} of feature {@link Constraint}s of the feature model
+	 */
+	public static List<Constraint> getFeatureConstraints(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getFeatureConstraints();
+	}
+
+	/**
+	 * Adds the given constraint as a feature {@link Constraint} to the given
+	 * feature model.
+	 *
+	 * @param fm         the feature model to which the constraint is added.
+	 * @param constraint the constraint to add.
+	 */
+	public static void addFeatureConstraint(final FeatureModel fm, final Constraint constraint) {
+		getFeatureConstraints(fm).add(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Removes the given feature {@link Constraint} from the given feature model.
+	 *
+	 * @param fm         the feature model from which the constraint is removed.
+	 * @param constraint the constraint to remove.
+	 */
+	public static void removeFeatureConstraint(final FeatureModel fm, final Constraint constraint) {
+		getFeatureConstraints(fm).remove(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Returns true if the given feature {@link Constraint} is contained in the
+	 * feature model own constraints, otherwise false.
+	 *
+	 * @param fm         the feature model to check if it contains this feature
+	 *                   {@link Constraint}.
+	 * @param constraint the constraint to check.
+	 * @return true if the given feature {@link Constraint} is contained in the
+	 *         feature model own constraints, otherwise false
+	 */
+	public static boolean hasFeatureConstraint(final FeatureModel fm, final Constraint constraint) {
+		return getFeatureConstraints(fm).contains(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * returns the {@link List} of global {@link Constraint}s of the given feature
+	 * model.
+	 *
+	 * @param fm the feature model from which the global {@link Constraint}s are
+	 *           returned.
+	 * @return A {@link List} of global {@link Constraint}s of the feature model
+	 */
+	public static List<Constraint> getGlobalConstraints(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getConstraints();
+	}
+
+	/**
+	 * Adds the given constraint as a global {@link Constraint} to the given feature
+	 * model.
+	 *
+	 * @param fm         the feature model to which the constraint is added.
+	 * @param constraint the constraint to add.
+	 */
+	public static void addGlobalConstraint(final FeatureModel fm, final Constraint constraint) {
+		getGlobalConstraints(fm).add(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Removes the given global {@link Constraint} from the given feature model.
+	 *
+	 * @param fm         the feature model from which the constraint is removed.
+	 * @param constraint the constraint to remove.
+	 */
+	public static void removeGlobalConstraint(final FeatureModel fm, final Constraint constraint) {
+		getGlobalConstraints(fm).remove(Objects.requireNonNull(constraint));
+	}
+
+	/**
+	 * Returns true if the given {@link Constraint} is contained in the feature
+	 * model global constraints, otherwise false.
+	 *
+	 * @param fm         the feature model to check if it contains this global
+	 *                   constraint.
+	 * @param constraint the constraint to check.
+	 * @return true if the given constraint is contained in the feature model global
+	 *         constraints, otherwise false
+	 */
+	public static boolean hasGlobalConstraint(final FeatureModel fm, final Constraint constraint) {
+		return getGlobalConstraints(fm).contains(Objects.requireNonNull(constraint));
 	}
 
 	/**
@@ -141,7 +336,7 @@ public class TraVarTUtils {
 			term = factory.not(buildFormulaFromConstraint(((NotConstraint) constraint).getContent(), factory));
 		} else if (constraint instanceof ParenthesisConstraint) {
 			term = buildFormulaFromConstraint(((ParenthesisConstraint) constraint).getContent(), factory);
-		} else if (constraint instanceof LiteralConstraint) {
+		} else {
 			term = factory.literal(((LiteralConstraint) constraint).getLiteral(), true);
 		}
 		return term;
@@ -249,10 +444,12 @@ public class TraVarTUtils {
 	 * @return boolean if child is - in fact - a child of parent
 	 */
 	public static boolean isParentOf(final Feature child, final Feature parent) {
-		if (child.getParentFeature() == null) {
+		Feature c = Objects.requireNonNull(child);
+		Feature p = Objects.requireNonNull(parent);
+		if (TraVarTUtils.isRoot(c)) {
 			return false;
 		}
-		return child.getParentFeature().equals(parent);
+		return c.getParentFeature().equals(p);
 	}
 
 	/**
@@ -390,10 +587,8 @@ public class TraVarTUtils {
 	 * @return true if the constraint is complex, false otherwise
 	 */
 	public static boolean isComplexConstraint(final Constraint constraint) {
-		Objects.requireNonNull(constraint);
-		Formula f = TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);
-		Objects.requireNonNull(f);
-		return f.stream().anyMatch(subf -> !subf.isAtomicFormula());
+		Formula f = TraVarTUtils.buildFormulaFromConstraint(Objects.requireNonNull(constraint), formulaFactory);
+		return Objects.requireNonNull(f).stream().anyMatch(subf -> !subf.isAtomicFormula());
 	}
 
 	/**
@@ -404,7 +599,7 @@ public class TraVarTUtils {
 	 * @return Boolean if constraint is requires-constraint
 	 */
 	public static boolean isRequires(final Constraint constraint) {
-		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);
+		Formula formula = TraVarTUtils.buildFormulaFromConstraint(Objects.requireNonNull(constraint), formulaFactory);
 		Formula cnfFormula = formula.cnf();
 		return cnfFormula instanceof Or && TraVarTUtils.countNegativeFormulaLiterals(cnfFormula) == 1
 				&& TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) > 0;
@@ -418,8 +613,8 @@ public class TraVarTUtils {
 	 * @return boolean if constraint is a RequiresForAll-constraint
 	 */
 	public static boolean isRequiredForAllConstraint(final Constraint constraint) {
-		Objects.requireNonNull(constraint);
-		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constraint, formulaFactory);
+		Constraint constr = Objects.requireNonNull(constraint);
+		Formula formula = TraVarTUtils.buildFormulaFromConstraint(constr, formulaFactory);
 		Formula cnfFormula = formula.cnf();
 		return cnfFormula instanceof Or && TraVarTUtils.countPositiveFormulaLiterals(cnfFormula) == 1
 				&& TraVarTUtils.countNegativeFormulaLiterals(cnfFormula) > 1;
@@ -795,6 +990,14 @@ public class TraVarTUtils {
 				&& ((NotConstraint) constraint).getContent() instanceof LiteralConstraint;
 	}
 
+	/**
+	 * Returns a set of {@link LiteralConstraint}s of all positive, i.e., not
+	 * negated, literals in the given constraints.
+	 *
+	 * @param constraint the constraint to be checked
+	 * @return a set of {@link LiteralConstraint}s of all positive, i.e., not
+	 *         negated, literals in the given constraints
+	 */
 	public static Set<Constraint> getPositiveLiterals(final Constraint constraint) {
 		Objects.requireNonNull(constraint);
 		final Set<Constraint> literals = new HashSet<>();
@@ -812,13 +1015,29 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * Checks if the given feature is in the specified group of the parent feature.
+	 * The method returns false if the feature is a root feature
+	 * {@link #isRoot(Feature)}.
+	 *
+	 * @param feature   the feature to check.
+	 * @param grouptype the grouptype in which the feature should be in the parent
+	 *                  feature.
+	 * @return true if the feature is in a group of the parent feature, otherwise
+	 *         false.
+	 *
+	 */
+	public static boolean isInGroup(final Feature feature, final Group.GroupType grouptype) {
+		return !isRoot(Objects.requireNonNull(feature)) && feature.getParentGroup().GROUPTYPE.equals(grouptype);
+	}
+
+	/**
 	 * Moves the given feature from one Group to a group of specified type under the
 	 * given parent feature.
 	 *
-	 * @param fm the feature model containing all features
-	 * @param feature      the feature to move
-	 * @param parent       the new parent feature
-	 * @param groupType    the {@link Group.GroupType GroupType} to add feature to
+	 * @param fm        the feature model containing all features
+	 * @param feature   the feature to move
+	 * @param parent    the new parent feature
+	 * @param groupType the {@link Group.GroupType GroupType} to add feature to
 	 */
 	public static void setGroup(final FeatureModel fm, final Feature feature, final Feature parent,
 			final GroupType groupType) {
@@ -832,6 +1051,42 @@ public class TraVarTUtils {
 		feature.setParentGroup(group);
 		TraVarTUtils.addFeature(fm, parent);
 		TraVarTUtils.addFeature(fm, feature);
+	}
+
+	/**
+	 * Adds a new group to the parent feature of type grouptype, which contains the
+	 * feature.
+	 *
+	 * @param fm        the feature model to work on.
+	 * @param feature   the feature which should be added to the group.
+	 * @param parent    the parent feature to which the group is added.
+	 * @param groupType the type of the group.
+	 */
+	public static void addGroup(final FeatureModel fm, final Feature feature, final Feature parent,
+			final GroupType groupType) {
+		Feature p = Objects.requireNonNull(parent);
+		final Group optionalGroup = new Group(groupType);
+		optionalGroup.getFeatures().add(feature);
+		p.addChildren(optionalGroup);
+		TraVarTUtils.addFeature(fm, parent);
+	}
+
+	/**
+	 * Adds a new group to the parent feature of type grouptype, which contains the
+	 * features.
+	 *
+	 * @param fm        the feature model to work on.
+	 * @param features  the features which should be added to the group.
+	 * @param parent    the parent feature to which the group is added.
+	 * @param groupType the type of the group.
+	 */
+	public static void addGroup(final FeatureModel fm, final Collection<Feature> features, final Feature parent,
+			final GroupType groupType) {
+		Feature p = Objects.requireNonNull(parent);
+		final Group optionalGroup = new Group(groupType);
+		optionalGroup.getFeatures().addAll(features);
+		p.addChildren(optionalGroup);
+		TraVarTUtils.addFeature(fm, parent);
 	}
 
 	public static FeatureModel createSingleFeatureModel(final FeatureModel... featureModels) {
