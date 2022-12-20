@@ -516,13 +516,13 @@ public class TraVarTUtils {
 
 	/**
 	 * returns true if the given feature is mandatory, otherwise false. Root
-	 * features are mandatory by default.
+	 * features are mandatory by default. {@link #isRoot(Feature)}.
 	 *
 	 * @param feature the feature to be checked
 	 * @return true if the feature is mandatory, otherwise false.
 	 */
 	public static boolean isMandatory(final Feature feature) {
-		return feature.getParentGroup().GROUPTYPE.equals(GroupType.MANDATORY);
+		return isRoot(feature) || feature.getParentGroup().GROUPTYPE.equals(GroupType.MANDATORY);
 	}
 
 	/**
