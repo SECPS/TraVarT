@@ -105,7 +105,7 @@ public class TraVarTUtils {
 	}
 
 	/**
-	 * returns true if the given feature does not have a parent feature and is a
+	 * Returns true if the given feature does not have a parent feature and is a
 	 * root.
 	 *
 	 * @param feature the feature to be checked
@@ -114,6 +114,16 @@ public class TraVarTUtils {
 	 */
 	public static boolean isRoot(final Feature feature) {
 		return Objects.requireNonNull(feature).getParentFeature() == null;
+	}
+
+	/**
+	 * Returns the root feature of the given feature model.
+	 *
+	 * @param fm the feature model to return the root feature from.
+	 * @return the root feature of the feature model.
+	 */
+	public static Feature getRoot(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getRootFeature();
 	}
 
 	/**
@@ -393,13 +403,23 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * Returns the name of the given feature.
+	 *
+	 * @param feature the feature from which the name is returned.
+	 * @return the name of the feature.
+	 */
+	public static String getFeatureName(final Feature feature) {
+		return Objects.requireNonNull(feature).getFeatureName();
+	}
+
+	/**
 	 * adds the given feature to a feature model
 	 *
 	 * @param fm      the feature model to which the feature is added.
 	 * @param feature the feature to add.
 	 */
 	public static void addFeature(final FeatureModel fm, final Feature feature) {
-		fm.getFeatureMap().put(feature.getFeatureName(), feature);
+		Objects.requireNonNull(fm).getFeatureMap().put(getFeatureName(feature), feature);
 	}
 
 	/**
