@@ -74,9 +74,11 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 			if (TraVarTUtils.isRequires(constr)) {
 				final de.vill.model.constraint.Constraint left = TraVarTUtils.getLeftConstraint(cnf);
 				final de.vill.model.constraint.Constraint right = TraVarTUtils.getRightConstraint(cnf);
-				if (left != null && right != null && TraVarTUtils.isLiteral(left) && TraVarTUtils.isLiteral(right)) {
-					final Feature leftFeature = ((LiteralConstraint) left).getFeature();
-					final Feature rightFeature = ((LiteralConstraint) right).getFeature();
+				if (left != null && right != null && TraVarTUtils.isNegativeLiteral(left)
+						&& TraVarTUtils.isLiteral(right)) {
+					final Feature leftFeature = TraVarTUtils.getFeature(fm,
+							((LiteralConstraint) left.getConstraintSubParts().get(0)).getLiteral());
+					final Feature rightFeature = TraVarTUtils.getFeature(fm, ((LiteralConstraint) right).getLiteral());
 
 					if (TraVarTUtils.isInGroup(leftFeature, Group.GroupType.MANDATORY)
 							&& TraVarTUtils.isInGroup(rightFeature, Group.GroupType.MANDATORY)) {

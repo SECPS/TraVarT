@@ -31,7 +31,6 @@ import de.vill.model.Feature;
 import de.vill.model.FeatureModel;
 import de.vill.model.Group;
 import de.vill.model.Group.GroupType;
-import de.vill.model.Import;
 import de.vill.model.constraint.AndConstraint;
 import de.vill.model.constraint.Constraint;
 import de.vill.model.constraint.EquivalenceConstraint;
@@ -114,6 +113,16 @@ public class TraVarTUtils {
 	 */
 	public static boolean isRoot(final Feature feature) {
 		return Objects.requireNonNull(feature).getParentFeature() == null;
+	}
+
+	/**
+	 * Sets the given feature to be the root of the feature model.
+	 *
+	 * @param fm      the feature model to set the new root.
+	 * @param feature the new root feature.
+	 */
+	public static void setRoot(final FeatureModel fm, final Feature feature) {
+		fm.setRootFeature(feature);
 	}
 
 	/**
@@ -453,7 +462,7 @@ public class TraVarTUtils {
 	 * @param feature the feature to remove.
 	 */
 	public static void removeFeature(final FeatureModel fm, final Feature feature) {
-		fm.getFeatureMap().remove(feature.getFeatureName(), feature);
+		Objects.requireNonNull(fm).getFeatureMap().remove(feature.getFeatureName());
 	}
 
 	/**
@@ -558,6 +567,31 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * Adds an attribute to the given feature. The key-value pair is defined by the
+	 * parameters <code>key</code> and <code>values</code>.
+	 *
+	 * @param feature the feature to add the attribute to.
+	 * @param key     the key of the attribute.
+	 * @param value   the value of the attribute
+	 */
+	public static <T> void addAttribute(final Feature feature, final String key, final T value) {
+		Objects.requireNonNull(feature).getAttributes().put(key, new Attribute<>(key, value));
+	}
+
+	/**
+	 * Adds an attribute to the given feature. The key-value pair is defined by the
+	 * parameters <code>key</code> and <code>values</code>.
+	 *
+	 * @param <T>     the type of the attribute.
+	 * @param feature the feature to add the attribute to.
+	 * @param key     the key of the attribute.
+	 * @param value   the value of the attribute
+	 */
+	public static <T> void addAttribute(final Feature feature, final String key, final Collection<T> values) {
+		Objects.requireNonNull(feature).getAttributes().put(key, new Attribute<>(key, values));
+	}
+
+	/**
 	 * get a list of all child features of a feature. This pools features from ALL
 	 * groups
 	 *
@@ -566,7 +600,7 @@ public class TraVarTUtils {
 	 */
 	public static Set<Feature> getChildren(final Feature feature) {
 		final Set<Feature> children = new HashSet<>();
-		feature.getChildren().forEach(group -> children.addAll(group.getFeatures()));
+		Objects.requireNonNull(feature).getChildren().forEach(group -> children.addAll(group.getFeatures()));
 		return children;
 	}
 
@@ -596,7 +630,8 @@ public class TraVarTUtils {
 	 * @return
 	 */
 	public static boolean checkGroupType(final Feature feature, final Group.GroupType groupType) {
-		return feature.getParentGroup().GROUPTYPE.equals(groupType);
+		return Objects.requireNonNull(feature).getParentGroup() != null
+				&& feature.getParentGroup().GROUPTYPE.equals(groupType);
 	}
 
 	/**
@@ -1006,8 +1041,7 @@ public class TraVarTUtils {
 	 */
 	public static boolean isLiteral(final Constraint constraint) {
 		Objects.requireNonNull(constraint);
-		return constraint instanceof LiteralConstraint || constraint instanceof NotConstraint
-				&& ((NotConstraint) constraint).getContent() instanceof LiteralConstraint;
+		return constraint instanceof LiteralConstraint || isNegativeLiteral(constraint);
 	}
 
 	/**
@@ -1063,11 +1097,19 @@ public class TraVarTUtils {
 			final GroupType groupType) {
 		Objects.requireNonNull(fm);
 		Objects.requireNonNull(feature);
-		feature.getParentGroup().getFeatures().remove(feature);
+		if (feature.getParentGroup() != null) {
+			feature.getParentGroup().getFeatures().remove(feature);
+		}
 		Optional<Group> optGroup = parent.getChildren().stream().filter(g -> g.GROUPTYPE.equals(groupType)).findFirst();
-		Group group = optGroup.isPresent() ? optGroup.get() : new Group(groupType);
+		Group group = null;
+		if (optGroup.isPresent()) {
+			group = optGroup.get();
+		} else {
+			group = new Group(groupType);
+			group.setParentFeature(parent);
+			parent.addChildren(group);
+		}
 		group.getFeatures().add(feature);
-		parent.addChildren(group);
 		feature.setParentGroup(group);
 		TraVarTUtils.addFeature(fm, parent);
 		TraVarTUtils.addFeature(fm, feature);
@@ -1084,11 +1126,40 @@ public class TraVarTUtils {
 	 */
 	public static void addGroup(final FeatureModel fm, final Feature feature, final Feature parent,
 			final GroupType groupType) {
-		Feature p = Objects.requireNonNull(parent);
-		final Group optionalGroup = new Group(groupType);
-		optionalGroup.getFeatures().add(feature);
-		p.addChildren(optionalGroup);
+		final Group group = new Group(groupType);
+		group.getFeatures().add(feature);
+		parent.addChildren(group);
+		feature.setParentGroup(group);
+		TraVarTUtils.addFeature(fm, feature);
+	}
+
+	/**
+	 * Adds a feature to the given group grouptype of the parent feature. If no such
+	 * group is available yet, the group is created.
+	 *
+	 * @param fm        the feature model to work on.
+	 * @param feature   the feature which should be added to the group.
+	 * @param parent    the parent feature to which the group is added.
+	 * @param groupType the type of the group.
+	 */
+	public static void addToGroup(final FeatureModel fm, final Feature feature, final Feature parent,
+			final GroupType groupType) {
+		final Group group = getGroup(parent, groupType);
+		group.getFeatures().add(feature);
+		parent.addChildren(group);
 		TraVarTUtils.addFeature(fm, parent);
+	}
+
+	public static boolean hasGroup(final Feature feature, final GroupType groupType) {
+		return Objects.requireNonNull(feature).getChildren().stream().anyMatch(g -> groupType.equals(g.GROUPTYPE));
+	}
+
+	public static Group getGroup(final Feature feature, final GroupType groupType) {
+		Optional<Group> group = feature.getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE)).findAny();
+		if (group.isPresent()) {
+			return group.get();
+		}
+		return new Group(groupType);
 	}
 
 	/**
@@ -1107,21 +1178,5 @@ public class TraVarTUtils {
 		optionalGroup.getFeatures().addAll(features);
 		p.addChildren(optionalGroup);
 		TraVarTUtils.addFeature(fm, parent);
-	}
-
-	public static FeatureModel createSingleFeatureModel(final FeatureModel... featureModels) {
-		FeatureModel singleFm = new FeatureModel();
-		for (FeatureModel fm : featureModels) {
-			Import imp = new Import(fm.getRootFeature().getFeatureName(), fm.getRootFeature().getFeatureName());
-			singleFm.getImports().add(imp);
-			TraVarTUtils.addFeature(fm, fm.getRootFeature());
-		}
-		return singleFm;
-	}
-
-	public static FeatureModel createSingleFeatureModel(final String modelName, final FeatureModel... featureModels) {
-		FeatureModel singleFm = createSingleFeatureModel(featureModels);
-		TraVarTUtils.deriveFeatureModelRoot(singleFm.getFeatureMap(), modelName);
-		return singleFm;
 	}
 }
