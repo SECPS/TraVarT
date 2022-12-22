@@ -1099,6 +1099,9 @@ public class TraVarTUtils {
 		Objects.requireNonNull(feature);
 		if (feature.getParentGroup() != null) {
 			feature.getParentGroup().getFeatures().remove(feature);
+			if (feature.getParentGroup().getFeatures().isEmpty()) {
+				feature.getParentFeature().getChildren().remove(feature.getParentGroup());
+			}
 		}
 		Optional<Group> optGroup = parent.getChildren().stream().filter(g -> g.GROUPTYPE.equals(groupType)).findFirst();
 		Group group = null;
@@ -1112,24 +1115,6 @@ public class TraVarTUtils {
 		group.getFeatures().add(feature);
 		feature.setParentGroup(group);
 		TraVarTUtils.addFeature(fm, parent);
-		TraVarTUtils.addFeature(fm, feature);
-	}
-
-	/**
-	 * Adds a new group to the parent feature of type grouptype, which contains the
-	 * feature.
-	 *
-	 * @param fm        the feature model to work on.
-	 * @param feature   the feature which should be added to the group.
-	 * @param parent    the parent feature to which the group is added.
-	 * @param groupType the type of the group.
-	 */
-	public static void addGroup(final FeatureModel fm, final Feature feature, final Feature parent,
-			final GroupType groupType) {
-		final Group group = new Group(groupType);
-		group.getFeatures().add(feature);
-		parent.addChildren(group);
-		feature.setParentGroup(group);
 		TraVarTUtils.addFeature(fm, feature);
 	}
 
