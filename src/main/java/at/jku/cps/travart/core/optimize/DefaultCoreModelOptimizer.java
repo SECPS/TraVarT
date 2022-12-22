@@ -3,8 +3,8 @@ package at.jku.cps.travart.core.optimize;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.logicng.formulas.FormulaFactory;
 
@@ -14,6 +14,7 @@ import at.jku.cps.travart.core.helpers.TraVarTUtils;
 import de.vill.model.Feature;
 import de.vill.model.FeatureModel;
 import de.vill.model.Group;
+import de.vill.model.constraint.Constraint;
 import de.vill.model.constraint.LiteralConstraint;
 
 public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> {
@@ -115,36 +116,44 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 
 	private static void transformConstraintsToAlternativeGroup(final FeatureModel fm, final Feature feature) {
 		final Set<Feature> children = TraVarTUtils.getChildren(feature);
-		final List<de.vill.model.constraint.Constraint> excludesConstraints = TraVarTUtils.getOwnConstraints(fm)
-				.stream().filter(TraVarTUtils::isExcludes).collect(Collectors.toList());
 		final Set<de.vill.model.constraint.Constraint> relevantExcludesConstraints = new HashSet<>();
 		for (final Feature childFeature : children) {
 			transformConstraintsToAlternativeGroup(fm, childFeature);
 			final Set<Feature> otherChildren = new HashSet<>(children);
 			otherChildren.remove(childFeature);
-			for (final de.vill.model.constraint.Constraint constr : excludesConstraints) {
-				Set<LiteralConstraint> lcs = otherChildren.stream()
-						.map(oc -> factory.createLiteralConstraint(TraVarTUtils.getFeatureName(oc)))
-						.collect(Collectors.toSet());
-				if (constr.getConstraintSubParts()
-						.contains(factory.createLiteralConstraint(TraVarTUtils.getFeatureName(childFeature)))
-						&& constr.getConstraintSubParts().stream().anyMatch(lcs::contains)) {
-					for (final Feature other : otherChildren) {
-						final de.vill.model.constraint.Constraint constraint = factory.createImplicationConstraint(
-								factory.createLiteralConstraint(TraVarTUtils.getFeatureName(childFeature)),
-								factory.createLiteralConstraint(TraVarTUtils.getFeatureName(other)));
-						if (constr.equals(constraint)) {
-							relevantExcludesConstraints.add(constr);
-						}
-					}
-
+			for (final Feature other : otherChildren) {
+				final de.vill.model.constraint.Constraint constraint = factory.createImplicationConstraint(
+						factory.createLiteralConstraint(TraVarTUtils.getFeatureName(childFeature)),
+						factory.createNotConstraint(
+								factory.createLiteralConstraint(TraVarTUtils.getFeatureName(other))));
+				// TODO: toStringEquals: hack for now but should be removed as soon library
+				// properly overrieds equals hashcode
+				if (TraVarTUtils.hasOwnConstraint(fm, constraint)
+						|| toStringEquals(fm.getOwnConstraints(), constraint)) {
+					relevantExcludesConstraints.add(constraint);
 				}
 			}
 		}
 		if (isAlternativeGroup(children, relevantExcludesConstraints)) {
-			TraVarTUtils.setGroup(fm, feature, feature.getParentFeature(), Group.GroupType.ALTERNATIVE);
-			relevantExcludesConstraints.forEach(excludesConstraints::remove);
+			children.forEach(c -> TraVarTUtils.setGroup(fm, c, feature, Group.GroupType.ALTERNATIVE));
+			// TODO: toStringEquals: hack for now but should be removed as soon library
+			// properly overrieds equals hashcode; code in the next line is the replacement
+			relevantExcludesConstraints.forEach(c -> removeExcludesConstraint(fm.getOwnConstraints(), c));
+			// relevantExcludesConstraints.forEach(c -> TraVarTUtils.removeOwnConstraint(fm,
+			// c));
 		}
+	}
+
+	private static void removeExcludesConstraint(final List<Constraint> ownConstraints, final Constraint constraint) {
+		Optional<Constraint> constr = ownConstraints.stream().filter(oc -> oc.toString().equals(constraint.toString()))
+				.findFirst();
+		if (constr.isPresent()) {
+			ownConstraints.remove(constr.get());
+		}
+	}
+
+	private static boolean toStringEquals(final List<Constraint> ownConstraints, final Constraint constraint) {
+		return ownConstraints.stream().anyMatch(oc -> oc.toString().equals(constraint.toString()));
 	}
 
 	private static boolean isAlternativeGroup(final Set<Feature> children,
