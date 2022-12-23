@@ -31,6 +31,10 @@ public interface IModelTransformer<I> {
 	FeatureModel transform(I model, String modelName, TRANSFORMATION_LEVEL level)
 			throws NotSupportedVariabilityTypeException;
 
+	default FeatureModel transform(final I model, final String modelName) throws NotSupportedVariabilityTypeException {
+		return this.transform(model, modelName, TRANSFORMATION_LEVEL.ONE_WAY);
+	}
+
 	default FeatureModel transform(final I model) throws NotSupportedVariabilityTypeException {
 		return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
 				TRANSFORMATION_LEVEL.ONE_WAY);
@@ -38,6 +42,10 @@ public interface IModelTransformer<I> {
 
 	I transform(FeatureModel model, String modelName, TRANSFORMATION_LEVEL level)
 			throws NotSupportedVariabilityTypeException;
+
+	default I transform(final FeatureModel model, final String modelName) throws NotSupportedVariabilityTypeException {
+		return this.transform(model, modelName, TRANSFORMATION_LEVEL.ONE_WAY);
+	}
 
 	default I transform(final FeatureModel model) throws NotSupportedVariabilityTypeException {
 		return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
