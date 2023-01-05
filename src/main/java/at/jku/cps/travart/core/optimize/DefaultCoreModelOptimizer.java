@@ -2,6 +2,7 @@ package at.jku.cps.travart.core.optimize;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,14 +40,14 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 		fixFalseOptionalFeaturesByFeatureGroupConstraints(fm, TraVarTUtils.getRoot(fm));
 		// find mandatory features within abstract feature groups
 		fixFalseOptionalFeaturesByAbstractFeatureGroup(fm, TraVarTUtils.getRoot(fm));
-		// find mandatory features within requires constraints
-		fixFalseOptionalFeaturesByConstraints(fm);
 		// find alternative groups
 		transformConstraintsToAlternativeGroup(fm, TraVarTUtils.getRoot(fm));
+		// find mandatory features within requires constraints
+		fixFalseOptionalFeaturesByConstraints(fm);
+		// find duplicated Constraints and remove one of them
+		fixDuplicatedConstraints(fm);
 	}
 
-	// TODO: This must be possible during creation of the feature tree. child parent
-	// check should do it.
 	private static void fixFalseOptionalFeaturesByFeatureGroupConstraints(final FeatureModel fm,
 			final Feature feature) {
 		final Set<Feature> children = TraVarTUtils.getChildren(feature);
@@ -81,8 +82,12 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 							((LiteralConstraint) left.getConstraintSubParts().get(0)).getLiteral());
 					final Feature rightFeature = TraVarTUtils.getFeature(fm, ((LiteralConstraint) right).getLiteral());
 
-					if (TraVarTUtils.isInGroup(leftFeature, Group.GroupType.MANDATORY)
-							&& TraVarTUtils.isInGroup(rightFeature, Group.GroupType.MANDATORY)) {
+					if (TraVarTUtils.isInGroup(rightFeature, Group.GroupType.MANDATORY)) {
+						toDelete.add(constr);
+					} else if (TraVarTUtils.isInGroup(leftFeature, Group.GroupType.MANDATORY) // &&
+																								// TraVarTUtils.isInGroup(rightFeature,
+																								// Group.GroupType.OPTIONAL)
+					) {
 						TraVarTUtils.setGroup(fm, rightFeature, rightFeature.getParentFeature(),
 								Group.GroupType.MANDATORY);
 						toDelete.add(constr);
@@ -94,8 +99,6 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 	}
 
 	private static void fixFalseOptionalFeaturesByAbstractFeatureGroup(final FeatureModel fm, final Feature feature) {
-		// TODO: think about multiple getChildren calls
-		// TODO: check if it works
 		final Set<Feature> children = TraVarTUtils.getChildren(feature);
 		for (final Feature child : children) {
 			fixFalseOptionalFeaturesByAbstractFeatureGroup(fm, child);
@@ -160,5 +163,16 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 			final Set<de.vill.model.constraint.Constraint> relevantExcludesConstraints) {
 		return !relevantExcludesConstraints.isEmpty()
 				&& children.size() * (children.size() - 1) <= relevantExcludesConstraints.size();
+	}
+
+	private void fixDuplicatedConstraints(final FeatureModel fm) {
+		Iterator<de.vill.model.constraint.Constraint> iterator = TraVarTUtils.getOwnConstraints(fm).iterator();
+		while (iterator.hasNext()) {
+			de.vill.model.constraint.Constraint constr = iterator.next();
+			if (TraVarTUtils.getOwnConstraints(fm).stream().filter(oc -> oc.toString().equals(constr.toString()))
+					.count() > 1) {
+				iterator.remove();
+			}
+		}
 	}
 }
