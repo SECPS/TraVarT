@@ -9,6 +9,8 @@ public final class DefaultModelTransformationProperties {
 
 	public static final String ABSTRACT_ATTRIBUTE = "abstract";
 
+	public static final String EXTENDED_FEATURE_MODEL = "extended__";
+
 	public static final String HIDDEN_ATTRIBUTE = "hidden";
 
 	private DefaultModelTransformationProperties() {

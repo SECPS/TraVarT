@@ -136,12 +136,23 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * Returns if the given feature model has a root feature specified or not.
+	 *
+	 * @param fm the feature model to check if it has a root feature specified.
+	 * @return {@code true} if the given feature model has a root feature, otherwise
+	 *         {@code false}.
+	 */
+	public static boolean hasRoot(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getRootFeature() != null;
+	}
+
+	/**
 	 * returns the {@link List} of own {@link Constraint}s of the given feature
 	 * model.
 	 *
 	 * @param fm the feature model from which the own {@link Constraint}s are
 	 *           returned.
-	 * @return A {@link List} of own {@link Constraint}s of the feature model
+	 * @return A {@link List} of own {@link Constraint}s of the feature model.
 	 */
 	public static List<Constraint> getOwnConstraints(final FeatureModel fm) {
 		return Objects.requireNonNull(fm).getOwnConstraints();
@@ -494,10 +505,11 @@ public class TraVarTUtils {
 	}
 
 	/**
-	 * checks if the passed feature has the Abstract-attribute
+	 * checks if the passed feature has the Abstract-attribute.
 	 *
 	 * @param feature the feature to check
-	 * @return true abstract attribute is present, false otherwise.
+	 * @return {@code true} if the given feature model is abstract, otherwise
+	 *         {@code false}.
 	 */
 	public static boolean isAbstract(final Feature feature) {
 		return feature.getAttributes().get(ABSTRACT_ATTRIBUTE) != null
@@ -515,6 +527,43 @@ public class TraVarTUtils {
 			feature.getAttributes().put(ABSTRACT_ATTRIBUTE, new Attribute<>(ABSTRACT_ATTRIBUTE, Boolean.TRUE));
 		} else {
 			feature.getAttributes().remove(ABSTRACT_ATTRIBUTE);
+		}
+	}
+
+	/**
+	 * checks if the passed feature model is an extended feature model. If the given
+	 * feature model does not specify a root feature, the method returns
+	 * {@code false} {@link #hasRoot(FeatureModel)}.
+	 *
+	 * @param fm the feature model to check
+	 * @return {@code true} if the given feature model is an extended feature model,
+	 *         otherwise {@code false}.
+	 */
+	public static boolean isExtendedFeatureModel(final FeatureModel fm) {
+		if (!hasRoot(fm)) {
+			return false;
+		}
+		return getRoot(fm).getAttributes().get(DefaultModelTransformationProperties.EXTENDED_FEATURE_MODEL) != null
+				&& Boolean.parseBoolean(getRoot(fm).getAttributes().get(ABSTRACT_ATTRIBUTE).getValue().toString());
+	}
+
+	/**
+	 * adds or removes the Extended-attribute to/from the root feature of the
+	 * feature model. If the given feature model does not specify a root feature,
+	 * the method executes without any effect {@link #hasRoot(FeatureModel)}.
+	 *
+	 * @param fm         the feature model to add/remove the Extended-attribute
+	 *                   from.
+	 * @param isExtended specifies if the Extended-attribute is added or removed.
+	 */
+	public static void setExtendedFeatureModel(final FeatureModel fm, final boolean isExtended) {
+		if (hasRoot(fm)) {
+			if (isExtended) {
+				getRoot(fm).getAttributes().put(DefaultModelTransformationProperties.EXTENDED_FEATURE_MODEL,
+						new Attribute<>(DefaultModelTransformationProperties.EXTENDED_FEATURE_MODEL, Boolean.TRUE));
+			} else {
+				getRoot(fm).getAttributes().remove(DefaultModelTransformationProperties.EXTENDED_FEATURE_MODEL);
+			}
 		}
 	}
 
@@ -1137,6 +1186,7 @@ public class TraVarTUtils {
 		TraVarTUtils.addFeature(fm, parent);
 	}
 
+	// TODO: Java doc
 	public static boolean hasGroup(final Feature feature, final GroupType groupType) {
 		return Objects.requireNonNull(feature).getChildren().stream().anyMatch(g -> groupType.equals(g.GROUPTYPE));
 	}
