@@ -37,11 +37,6 @@ public final class CoreModelFactory implements ICoreModelFactory {
 	}
 
 	@Override
-	public boolean initExtension() {
-		return true;
-	}
-
-	@Override
 	public FeatureModel create() {
 		return new FeatureModel();
 	}
