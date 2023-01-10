@@ -20,6 +20,10 @@ public interface IModelOptimizer<I> {
 	 * reducing the number of modeling elements. It is the default case.
 	 * <p>
 	 * </p>
+	 * Optimizations may influence the roundtrip transformation of a model.
+	 * {@code IModelTransformer.TRANSFORMATION_LEVEL}.
+	 * <p>
+	 * </p>
 	 *
 	 * @author Kevin Feichtinger
 	 *
