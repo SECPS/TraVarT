@@ -715,19 +715,19 @@ public class TraVarTUtils {
 	}
 
 	/**
-	 * Gets the first negative literal that is within the constraint
+	 * Gets the first negative {@code Literal} that is within the {@code Constraint}
 	 *
 	 * @param constraint the constraint from which to get the first negated literal
 	 *                   from
 	 * @return The negated Literal as NotConstraint
 	 */
-	public static NotConstraint getFirstNegativeLiteral(final Constraint constraint) {
+	public static Constraint getFirstNegativeLiteral(final Constraint constraint) {
 		Objects.requireNonNull(constraint);
 		if (isNegativeLiteral(constraint)) {
-			return (NotConstraint) constraint;
+			return constraint;
 		}
 		for (final Constraint child : constraint.getConstraintSubParts()) {
-			NotConstraint childsFirstNegative = getFirstNegativeLiteral(child);
+			Constraint childsFirstNegative = getFirstNegativeLiteral(child);
 			if (childsFirstNegative != null && isNegativeLiteral(childsFirstNegative)) {
 				return childsFirstNegative;
 			}
@@ -736,7 +736,7 @@ public class TraVarTUtils {
 	}
 
 	/**
-	 * Get's the first positive Literal in a constraint.
+	 * Gets the first positive Literal in a Constraint.
 	 *
 	 * @param constraint the constraint from which to get the literal from
 	 * @return the first found positive literal
@@ -747,9 +747,11 @@ public class TraVarTUtils {
 			return constraint;
 		}
 		for (final Constraint child : constraint.getConstraintSubParts()) {
-			Constraint childsFirstPositive = getFirstPositiveLiteral(child);
-			if (childsFirstPositive != null && isPositiveLiteral(childsFirstPositive)) {
-				return childsFirstPositive;
+			if (!isNegativeLiteral(child)) {
+				Constraint childsFirstPositive = getFirstPositiveLiteral(child);
+				if (childsFirstPositive != null && isPositiveLiteral(childsFirstPositive)) {
+					return childsFirstPositive;
+				}
 			}
 		}
 		return null;
