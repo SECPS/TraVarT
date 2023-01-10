@@ -43,7 +43,12 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 		// find alternative groups
 		transformConstraintsToAlternativeGroup(fm, TraVarTUtils.getRoot(fm));
 		// find mandatory features within requires constraints
-		fixFalseOptionalFeaturesByConstraints(fm);
+		try {
+			fixFalseOptionalFeaturesByConstraints(fm);
+		} catch (ReflectiveOperationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// find duplicated Constraints and remove one of them
 		fixDuplicatedConstraints(fm);
 	}
@@ -67,7 +72,7 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 		}
 	}
 
-	private static void fixFalseOptionalFeaturesByConstraints(final FeatureModel fm) {
+	private static void fixFalseOptionalFeaturesByConstraints(final FeatureModel fm) throws ReflectiveOperationException {
 		List<de.vill.model.constraint.Constraint> toDelete = new ArrayList<>();
 		for (final de.vill.model.constraint.Constraint constr : TraVarTUtils.getOwnConstraints(fm)) {
 			final de.vill.model.constraint.Constraint cnf = TraVarTUtils.buildConstraintFromFormula(

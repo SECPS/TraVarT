@@ -823,16 +823,17 @@ public class TraVarTUtils {
 	 *
 	 * @param constraint the constraint from which to get the right part of
 	 * @return the right sub-constraint
+	 * @throws ReflectiveOperationException 
 	 */
-	public static Constraint getRightConstraint(final Constraint constraint) {
+	public static Constraint getRightConstraint(final Constraint constraint) throws ReflectiveOperationException {
 		Objects.requireNonNull(constraint);
 		final List<Method> methods = Arrays.asList(constraint.getClass().getMethods());
 		final Optional<Method> getRightMethod = methods.stream().filter(m -> m.getName().equals("getRight")).findAny();
 		if (getRightMethod.isPresent()) {
 			try {
 				return (Constraint) getRightMethod.get().invoke(constraint);
-			} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
+			} catch (final IllegalAccessException  | IllegalArgumentException | InvocationTargetException e) {
+				throw new ReflectiveOperationException("Passed constraint does not have a getRight-method.",e);
 			}
 		}
 		return null;
@@ -844,8 +845,9 @@ public class TraVarTUtils {
 	 *
 	 * @param constraint the constraint from which to get the left part of
 	 * @return the left sub-constraint
+	 * @throws ReflectiveOperationException 
 	 */
-	public static Constraint getLeftConstraint(final Constraint constraint) {
+	public static Constraint getLeftConstraint(final Constraint constraint) throws ReflectiveOperationException {
 		Objects.requireNonNull(constraint);
 		final List<Method> methods = Arrays.asList(constraint.getClass().getMethods());
 		final Optional<Method> getLeftMethod = methods.stream().filter(m -> m.getName().equals("getLeft")).findAny();
@@ -853,7 +855,7 @@ public class TraVarTUtils {
 			try {
 				return (Constraint) getLeftMethod.get().invoke(constraint);
 			} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
+				throw new ReflectiveOperationException("Passed constraint does not have a getLeft-method.",e);
 			}
 		}
 		return null;
