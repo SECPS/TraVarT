@@ -35,7 +35,7 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 	}
 
 	@Override
-	public void optimize(final FeatureModel fm, final OPTIMIZING_LEVEL level) {
+	public void optimize(final FeatureModel fm, final STRATEGY level) {
 		// find mandatory features within feature groups
 		fixFalseOptionalFeaturesByFeatureGroupConstraints(fm, TraVarTUtils.getRoot(fm));
 		// find mandatory features within abstract feature groups
@@ -72,7 +72,8 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 		}
 	}
 
-	private static void fixFalseOptionalFeaturesByConstraints(final FeatureModel fm) throws ReflectiveOperationException {
+	private static void fixFalseOptionalFeaturesByConstraints(final FeatureModel fm)
+			throws ReflectiveOperationException {
 		List<de.vill.model.constraint.Constraint> toDelete = new ArrayList<>();
 		for (final de.vill.model.constraint.Constraint constr : TraVarTUtils.getOwnConstraints(fm)) {
 			final de.vill.model.constraint.Constraint cnf = TraVarTUtils.buildConstraintFromFormula(

@@ -1,9 +1,17 @@
 package at.jku.cps.travart.core.common;
 
-public interface IModelOptimizer<I> {
+/**
+ * Defines a base interface for a variability model optimizer. A optimizer
+ * performs in-place operation on a given variability model of type <T>.
+ *
+ * @author Kevin Feichtinger
+ *
+ * @param <T> The type of the variability artifact.
+ */
+public interface IModelOptimizer<T> {
 
 	/**
-	 * Defines the level of optimization, which the transformation performs.
+	 * Defines the strategy of optimization, which the transformation performs.
 	 * <p>
 	 * </p>
 	 * {@code CONSTRAINT} the optimizer tries to minimize the number of constraints
@@ -21,21 +29,33 @@ public interface IModelOptimizer<I> {
 	 * <p>
 	 * </p>
 	 * Optimizations may influence the roundtrip transformation of a model.
-	 * {@code IModelTransformer.TRANSFORMATION_LEVEL}.
+	 * {@link IModelTransformer.STRATEGY}.
 	 * <p>
 	 * </p>
 	 *
 	 * @author Kevin Feichtinger
 	 *
 	 */
-	enum OPTIMIZING_LEVEL {
-		// TODO: Think of additional levels of optimizations? Talk to Dario!
+	enum STRATEGY {
 		FULL, CONSTRAINT, UNIT_OF_VARIABILITY
 	}
 
-	void optimize(I model, OPTIMIZING_LEVEL level);
+	/**
+	 * Optimizes the given variability model of type <T> using the given
+	 * optimization {@link STRATEGY}.
+	 *
+	 * @param model    the variability model to optimize.
+	 * @param strategy the strategy to perform.
+	 */
+	void optimize(T model, STRATEGY strategy);
 
-	default void optimize(final I model) {
-		optimize(model, OPTIMIZING_LEVEL.FULL);
+	/**
+	 * Optimizes the given variability model of type <T> using the {@code FULL}
+	 * {@link STRATEGY}.
+	 *
+	 * @param model the variability model to optimize.
+	 */
+	default void optimize(final T model) {
+		optimize(model, STRATEGY.FULL);
 	}
 }

@@ -1,11 +1,30 @@
 package at.jku.cps.travart.core.common;
 
 /**
- * @param <T> The type of model for which necessary statistics should be implemented
+ * This base interface defines methods to derive statistics of a given
+ * variability model of type <T>.
+ *
  * @author Prankur Agarwal
+ * @author Kevin Feichtinger
+ *
+ * @param <T> The type of the variability model.
  */
 public interface IStatistics<T> {
-    Integer getVariabilityElementsCount(T model);
 
-    Integer getConstraintsCount(T model);
+	/**
+	 * Returns the number of variability unit elements, e.g., features, decisions in
+	 * the given variability model.
+	 *
+	 * @param model the model from which the unit of elements should be counted.
+	 * @return the number of variability elements.
+	 */
+	long getVariabilityElementsCount(T model);
+
+	/**
+	 * Returns the number of constraints in the given variability model.
+	 *
+	 * @param model the model from which the constraints should be counted.
+	 * @return the number of constraints.
+	 */
+	long getConstraintsCount(T model);
 }

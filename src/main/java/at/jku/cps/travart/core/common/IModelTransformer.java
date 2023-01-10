@@ -4,6 +4,21 @@ import at.jku.cps.travart.core.exception.NotSupportedVariabilityTypeException;
 import at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties;
 import de.vill.model.FeatureModel;
 
+/**
+ * The main class for transforming a variabiltiy model of type <T> into a core
+ * model. The core model is a Universal Variability Language (UVL) model,
+ * developed by the MODEVAR initiative.
+ *
+ * @see <a href="https://doi.org/10.1145/3461001.3471145">UVL SPLC Paper
+ *      2021</a>
+ * @see <a href="https://github.com/Universal-Variability-Language">UVL Github
+ *      Repository</a>
+ * @see <a href="https://modevar.github.io/">MODEVAR initiative</a>
+ *
+ * @author Kevin Feichtinger
+ *
+ * @param <T> The type of the variability model.
+ */
 public interface IModelTransformer<I> {
 
 	/**
@@ -23,34 +38,31 @@ public interface IModelTransformer<I> {
 	 * @author Kevin Feichtinger
 	 *
 	 */
-	enum TRANSFORMATION_LEVEL {
-		// TODO: Think of additional levels? Talk to Dario!
+	enum STRATEGY {
 		ONE_WAY, ROUNDTRIP
 	}
 
-	FeatureModel transform(I model, String modelName, TRANSFORMATION_LEVEL level)
+	FeatureModel transform(I model, String modelName, STRATEGY level)
 			throws NotSupportedVariabilityTypeException;
 
 	default FeatureModel transform(final I model, final String modelName) throws NotSupportedVariabilityTypeException {
-		return this.transform(model, modelName, TRANSFORMATION_LEVEL.ONE_WAY);
+		return this.transform(model, modelName, STRATEGY.ONE_WAY);
 	}
 
 	default FeatureModel transform(final I model) throws NotSupportedVariabilityTypeException {
 		return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
-				TRANSFORMATION_LEVEL.ONE_WAY);
+				STRATEGY.ONE_WAY);
 	}
 
-	I transform(FeatureModel model, String modelName, TRANSFORMATION_LEVEL level)
+	I transform(FeatureModel model, String modelName, STRATEGY level)
 			throws NotSupportedVariabilityTypeException;
 
 	default I transform(final FeatureModel model, final String modelName) throws NotSupportedVariabilityTypeException {
-		return this.transform(model, modelName, TRANSFORMATION_LEVEL.ONE_WAY);
+		return this.transform(model, modelName, STRATEGY.ONE_WAY);
 	}
 
 	default I transform(final FeatureModel model) throws NotSupportedVariabilityTypeException {
 		return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
-				TRANSFORMATION_LEVEL.ONE_WAY);
+				STRATEGY.ONE_WAY);
 	}
-
-	// TODO: Add information methods about round trip or one way journey
 }

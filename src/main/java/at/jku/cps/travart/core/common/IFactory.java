@@ -2,12 +2,12 @@ package at.jku.cps.travart.core.common;
 
 /**
  *
- * This represents a base factory to create elements for the variability
- * artifact of type <T>.
+ * This represents a base factory to create elements for the variability model
+ * of type <T>.
  *
  * @author Kevin Feichtinger
  *
- * @param <T> The type of the variability artifact.
+ * @param <T> The type of the variability model.
  */
 public interface IFactory<T> {
 
