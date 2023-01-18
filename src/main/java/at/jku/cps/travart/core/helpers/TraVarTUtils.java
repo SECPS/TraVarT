@@ -104,15 +104,26 @@ public class TraVarTUtils {
 	}
 
 	/**
-	 * Returns true if the given feature does not have a parent feature and is a
-	 * root.
+	 * Returns {@code true} if the given feature does not have a parent feature and
+	 * is a root.
 	 *
 	 * @param feature the feature to be checked
-	 * @return true if the given feature does not have a parent feature and is a
-	 *         root, otherwise false.
+	 * @return {@code true} if the given feature does not have a parent feature and
+	 *         is a root, otherwise {@code false}.
 	 */
 	public static boolean isRoot(final Feature feature) {
-		return Objects.requireNonNull(feature).getParentFeature() == null;
+		return !hasParentFeature(feature);
+	}
+
+	/**
+	 * Returns {@code true} if the given feature does specify a parent feature.
+	 *
+	 * @param feature the feature to check.
+	 * @return {@code true} if the given feature does specify a parent feature,
+	 *         otherwise {@code false}.
+	 */
+	public static boolean hasParentFeature(final Feature feature) {
+		return Objects.requireNonNull(feature).getParentFeature() != null;
 	}
 
 	/**
@@ -872,7 +883,7 @@ public class TraVarTUtils {
 	 *
 	 * @param constraint the constraint from which to get the right part of
 	 * @return the right sub-constraint
-	 * @throws ReflectiveOperationException 
+	 * @throws ReflectiveOperationException
 	 */
 	public static Constraint getRightConstraint(final Constraint constraint) throws ReflectiveOperationException {
 		Objects.requireNonNull(constraint);
@@ -881,8 +892,8 @@ public class TraVarTUtils {
 		if (getRightMethod.isPresent()) {
 			try {
 				return (Constraint) getRightMethod.get().invoke(constraint);
-			} catch (final IllegalAccessException  | IllegalArgumentException | InvocationTargetException e) {
-				throw new ReflectiveOperationException("Passed constraint does not have a getRight-method.",e);
+			} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new ReflectiveOperationException("Passed constraint does not have a getRight-method.", e);
 			}
 		}
 		return null;
@@ -894,7 +905,7 @@ public class TraVarTUtils {
 	 *
 	 * @param constraint the constraint from which to get the left part of
 	 * @return the left sub-constraint
-	 * @throws ReflectiveOperationException 
+	 * @throws ReflectiveOperationException
 	 */
 	public static Constraint getLeftConstraint(final Constraint constraint) throws ReflectiveOperationException {
 		Objects.requireNonNull(constraint);
@@ -904,7 +915,7 @@ public class TraVarTUtils {
 			try {
 				return (Constraint) getLeftMethod.get().invoke(constraint);
 			} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new ReflectiveOperationException("Passed constraint does not have a getLeft-method.",e);
+				throw new ReflectiveOperationException("Passed constraint does not have a getLeft-method.", e);
 			}
 		}
 		return null;
@@ -920,7 +931,7 @@ public class TraVarTUtils {
 	private static List<Feature> findRoots(final Map<String, Feature> featureMap) {
 		Objects.requireNonNull(featureMap);
 		// return all features with no parent
-		return featureMap.values().stream().filter(f -> f.getParentFeature() == null).collect(Collectors.toList());
+		return featureMap.values().stream().filter(TraVarTUtils::hasParentFeature).collect(Collectors.toList());
 	}
 
 	/**
@@ -1188,11 +1199,30 @@ public class TraVarTUtils {
 		TraVarTUtils.addFeature(fm, parent);
 	}
 
-	// TODO: Java doc
+	/**
+	 * Returns {@code true} if the given feature specifies a group of type
+	 * grouptype.
+	 *
+	 * @param feature   the feature to check.
+	 * @param groupType the grouptype to search for in the feature.
+	 * @return {@code true} if the given feature specifies a group of type
+	 *         grouptype. otherwise {@code false}.
+	 */
 	public static boolean hasGroup(final Feature feature, final GroupType groupType) {
 		return Objects.requireNonNull(feature).getChildren().stream().anyMatch(g -> groupType.equals(g.GROUPTYPE));
 	}
 
+	/**
+	 * Returns a group of type grouptype from the given feature. If the feature
+	 * specifies multiple groups of the given type, only one is returned. If the
+	 * feature does not specify a group of the given type, the method creates one
+	 * and returns it. @see{{@link #hasGroup(Feature, GroupType)}}.
+	 *
+	 * @param feature   the feature to return the group of type grouptype from.
+	 * @param groupType the grouptype to search for in the feature.
+	 * @return a group of type grouptype, either from the given feature or a new
+	 *         one.
+	 */
 	public static Group getGroup(final Feature feature, final GroupType groupType) {
 		Optional<Group> group = feature.getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE)).findAny();
 		if (group.isPresent()) {
