@@ -3,8 +3,11 @@ package at.jku.cps.travart.core.helpers;
 import static at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties.ABSTRACT_ATTRIBUTE;
 import static at.jku.cps.travart.core.transformation.DefaultModelTransformationProperties.HIDDEN_ATTRIBUTE;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +18,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 import org.logicng.formulas.FType;
@@ -1262,4 +1268,30 @@ public class TraVarTUtils {
 		TraVarTUtils.addFeature(fm, parent);
 	}
 
+	/**
+	 * Gets the logger for the particular class with a log file name
+	 *
+	 * @param className   the name of the class for which the logger is needed
+	 * @param logFileName the name of the log file by which it is supposed to be
+	 *                    saved
+	 */
+	public static Logger getSimpleLogger(final String className, final String logFileName)
+			throws SecurityException, IOException {
+		final Logger logger = Logger.getLogger(className);
+		final FileHandler fh = new FileHandler(String.format("%s.log", logFileName));
+		fh.setFormatter(new SimpleFormatter());
+		logger.addHandler(fh);
+		return logger;
+	}
+
+	/**
+	 * Gets the list of paths in the path which matches the file extension
+	 *
+	 * @param path      the path where we need the list of files
+	 * @param extension the file extension
+	 */
+	public static Set<Path> getPathSet(final Path path, final String extension) throws IOException {
+		return Files.walk(path).filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(extension))
+				.collect(Collectors.toSet());
+	}
 }
