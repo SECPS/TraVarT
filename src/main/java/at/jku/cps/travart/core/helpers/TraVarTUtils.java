@@ -474,7 +474,7 @@ public class TraVarTUtils {
 	 * @return returns the feature identified by id, otherwise null.
 	 */
 	public static Feature getFeature(final FeatureModel fm, final String id) {
-		return fm.getFeatureMap().get(id);
+		return Objects.requireNonNull(fm).getFeatureMap().get(id);
 	}
 
 	/**
@@ -539,6 +539,19 @@ public class TraVarTUtils {
 		} else {
 			feature.getAttributes().remove(ABSTRACT_ATTRIBUTE);
 		}
+	}
+
+	/**
+	 * Returns {@code true} if the given feature contains an attribute with the
+	 * given name, otherwise {@code false}.
+	 *
+	 * @param feature                      the feature to search for the attribute.
+	 * @param cardinalityConcernIdentifier the attribute name to search for.
+	 * @return {@code true} if the given feature contains an attribute with the
+	 *         given name, otherwise {@code false}.
+	 */
+	public static boolean containsAttribute(final Feature feature, final String cardinalityConcernIdentifier) {
+		return Objects.requireNonNull(feature).getAttributes().containsKey(cardinalityConcernIdentifier);
 	}
 
 	/**
@@ -1248,4 +1261,5 @@ public class TraVarTUtils {
 		p.addChildren(optionalGroup);
 		TraVarTUtils.addFeature(fm, parent);
 	}
+
 }
