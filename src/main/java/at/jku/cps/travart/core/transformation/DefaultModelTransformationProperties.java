@@ -13,6 +13,9 @@ public final class DefaultModelTransformationProperties {
 
 	public static final String HIDDEN_ATTRIBUTE = "hidden";
 
+	public static final String INSTANCE_CARDINALTIY = "InstanceNum";
+	public static final String INSTANCE_CARDINALTIY_DELIMITER = "..";
+
 	private DefaultModelTransformationProperties() {
 	}
 }
