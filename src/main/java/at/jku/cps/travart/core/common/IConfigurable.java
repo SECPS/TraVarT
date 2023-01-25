@@ -8,25 +8,24 @@ package at.jku.cps.travart.core.common;
  * @author Kevin Feichtinger
  */
 public interface IConfigurable {
+  /**
+   * Returns whether the feature is selected or not.
+   *
+   * @return whether the feature is selected or not.
+   */
+  boolean isSelected();
 
-    /**
-     * Returns whether the feature is selected or not.
-     *
-     * @return whether the feature is selected or not.
-     */
-    boolean isSelected();
+  /**
+   * De-/Selects the feature.
+   *
+   * @param selected De-/Selects the configurable.
+   */
+  void setSelected(boolean selected);
 
-    /**
-     * De-/Selects the feature.
-     *
-     * @param selected De-/Selects the configurable.
-     */
-    void setSelected(boolean selected);
-
-    /**
-     * Returns the name of an IConfigurable of a variability model
-     *
-     * @return the name of the identifiable.
-     */
-    String getName();
+  /**
+   * Returns the name of an IConfigurable of a variability model
+   *
+   * @return the name of the identifiable.
+   */
+  String getName();
 }

@@ -12,6 +12,7 @@
         <javadoc.disabled>true</javadoc.disabled>
         <deploy.disabled>true</deploy.disabled>
         <source.disabled>true</source.disabled>
+        <checkstyle-maven-plugin.version>3.2.1</checkstyle-maven-plugin.version>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.pf4j/pf4j -->
@@ -52,6 +53,21 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle-maven-plugin.version}</version>
+                <configuration>
+                    <configLocation>${project.basedir}/checkstyle.xml</configLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
