@@ -19,8 +19,8 @@ import java.nio.file.Path;
  */
 public class UVLWriter implements IWriter<FeatureModel> {
 
-  @Override
-  public void write(final FeatureModel uvlModel, final Path path) throws IOException {
-    Files.write(path, uvlModel.toString().getBytes());
-  }
+    @Override
+    public void write(final FeatureModel uvlModel, final Path path) throws IOException {
+        Files.write(path, uvlModel.toString().getBytes());
+    }
 }

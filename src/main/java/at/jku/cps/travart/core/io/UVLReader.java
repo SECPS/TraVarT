@@ -22,15 +22,15 @@ import java.nio.file.Path;
  */
 public class UVLReader implements IReader<FeatureModel> {
 
-  @Override
-  public FeatureModel read(final Path path)
-      throws IOException, NotSupportedVariabilityTypeException {
-    final String content = new String(Files.readAllBytes(path));
-    final UVLModelFactory uvlModelFactory = new UVLModelFactory();
-    try {
-      return uvlModelFactory.parse(content);
-    } catch (final ParseError error) {
-      throw new NotSupportedVariabilityTypeException("Error in reading UVL Model file");
+    @Override
+    public FeatureModel read(final Path path)
+        throws IOException, NotSupportedVariabilityTypeException {
+        final String content = new String(Files.readAllBytes(path));
+        final UVLModelFactory uvlModelFactory = new UVLModelFactory();
+        try {
+            return uvlModelFactory.parse(content);
+        } catch (final ParseError error) {
+            throw new NotSupportedVariabilityTypeException("Error in reading UVL Model file");
+        }
     }
-  }
 }

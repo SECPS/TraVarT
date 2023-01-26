@@ -17,49 +17,49 @@ import de.vill.model.FeatureModel;
  */
 public interface IModelTransformer<I> {
 
-  FeatureModel transform(I model, String modelName, STRATEGY level)
-      throws NotSupportedVariabilityTypeException;
+    FeatureModel transform(I model, String modelName, STRATEGY level)
+        throws NotSupportedVariabilityTypeException;
 
-  default FeatureModel transform(final I model, final String modelName)
-      throws NotSupportedVariabilityTypeException {
-    return this.transform(model, modelName, STRATEGY.ONE_WAY);
-  }
+    default FeatureModel transform(final I model, final String modelName)
+        throws NotSupportedVariabilityTypeException {
+        return this.transform(model, modelName, STRATEGY.ONE_WAY);
+    }
 
-  default FeatureModel transform(final I model) throws NotSupportedVariabilityTypeException {
-    return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
-        STRATEGY.ONE_WAY);
-  }
+    default FeatureModel transform(final I model) throws NotSupportedVariabilityTypeException {
+        return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
+            STRATEGY.ONE_WAY);
+    }
 
-  I transform(FeatureModel model, String modelName, STRATEGY level)
-      throws NotSupportedVariabilityTypeException;
+    I transform(FeatureModel model, String modelName, STRATEGY level)
+        throws NotSupportedVariabilityTypeException;
 
-  default I transform(final FeatureModel model, final String modelName)
-      throws NotSupportedVariabilityTypeException {
-    return this.transform(model, modelName, STRATEGY.ONE_WAY);
-  }
+    default I transform(final FeatureModel model, final String modelName)
+        throws NotSupportedVariabilityTypeException {
+        return this.transform(model, modelName, STRATEGY.ONE_WAY);
+    }
 
-  default I transform(final FeatureModel model) throws NotSupportedVariabilityTypeException {
-    return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
-        STRATEGY.ONE_WAY);
-  }
+    default I transform(final FeatureModel model) throws NotSupportedVariabilityTypeException {
+        return this.transform(model, DefaultModelTransformationProperties.ARTIFICIAL_MODEL_NAME,
+            STRATEGY.ONE_WAY);
+    }
 
-  /**
-   * Defines the level of transformation, which is performs.
-   * <p>
-   * </p>
-   * {@code ONE_WAY} reduces the number of modeling elements as much as possible.
-   * It is the default case.
-   * <p>
-   * </p>
-   * {@code ROUDNTRIP} the transformation is performed with the roundtrip, i.e.,
-   * transformation back to the original notation, in mind. The resulting model
-   * avoids information loss as much as possible.
-   * <p>
-   * </p>
-   *
-   * @author Kevin Feichtinger
-   */
-  enum STRATEGY {
-    ONE_WAY, ROUNDTRIP
-  }
+    /**
+     * Defines the level of transformation, which is performs.
+     * <p>
+     * </p>
+     * {@code ONE_WAY} reduces the number of modeling elements as much as possible.
+     * It is the default case.
+     * <p>
+     * </p>
+     * {@code ROUDNTRIP} the transformation is performed with the roundtrip, i.e.,
+     * transformation back to the original notation, in mind. The resulting model
+     * avoids information loss as much as possible.
+     * <p>
+     * </p>
+     *
+     * @author Kevin Feichtinger
+     */
+    enum STRATEGY {
+        ONE_WAY, ROUNDTRIP
+    }
 }
