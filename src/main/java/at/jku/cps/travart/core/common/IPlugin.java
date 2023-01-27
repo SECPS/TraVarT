@@ -14,14 +14,14 @@ import org.pf4j.ExtensionPoint;
  * @author Kevin Feichtinger
  */
 @SuppressWarnings("rawtypes")
-public interface IPlugin extends ExtensionPoint {
+public interface IPlugin<T> extends ExtensionPoint {
 
     /**
      * Returns the transformer of the plugin to transform the variability model.
      *
      * @return the transformer of the plugin to transform the variability model.
      */
-    IModelTransformer getTransformer();
+    IModelTransformer<T> getTransformer();
 
     /**
      * Returns the reader of the plugin to read the variability model from the file
@@ -30,14 +30,14 @@ public interface IPlugin extends ExtensionPoint {
      * @return the reader of the plugin to read the variability model from the file
      * system.
      */
-    IReader getReader();
+    IReader<T> getReader();
 
     /**
      * Returns the statistics of the plugin to get the statistics the variability model.
      *
      * @return the statistics of the plugin to get the statistics the variability model.
      */
-    IStatistics getStatistics();
+    IStatistics<T> getStatistics();
 
     /**
      * Returns the writer of the plugin to write the variability model to the file
@@ -46,7 +46,7 @@ public interface IPlugin extends ExtensionPoint {
      * @return the writer of the plugin to write the variability model to the file
      * system.
      */
-    IWriter getWriter();
+    IWriter<T> getWriter();
 
     /**
      * Returns the variability model type name.
