@@ -10,6 +10,12 @@ import org.pf4j.ManifestPluginDescriptorFinder;
 import org.pf4j.PluginDescriptorFinder;
 import org.pf4j.PluginManager;
 
+/**
+ * This is the helper class to load, start, use, and close the available plugins in the system.
+ *
+ * @author Prankur Agarwal
+ * @author Kevin Feichtinger
+ */
 public final class TraVarTPluginManager {
     private static final Map<String, IPlugin> availablePlugins = new HashMap<>();
 
@@ -19,6 +25,9 @@ public final class TraVarTPluginManager {
 
     }
 
+    /**
+     * A static function to start the available plugins in the system.
+     */
     public static void startPlugins() {
         // create the plugin manager
         pluginManager = new DefaultPluginManager() {
@@ -37,6 +46,9 @@ public final class TraVarTPluginManager {
         findAvailablePlugins();
     }
 
+    /**
+     * A static function to find the available plugins in the system.
+     */
     public static void findAvailablePlugins() {
         // retrieves the extensions for IPlugin extension point
         final List<IPlugin> plugins = pluginManager.getExtensions(IPlugin.class);
@@ -46,10 +58,16 @@ public final class TraVarTPluginManager {
 
     }
 
+    /**
+     * A static function to get the available plugins in the system.
+     */
     public static Map<String, IPlugin> getAvailablePlugins() {
         return Collections.unmodifiableMap(availablePlugins);
     }
 
+    /**
+     * A static function to stop the available plugins in the system.
+     */
     public static void stopPlugins() {
         pluginManager.stopPlugins();
     }
