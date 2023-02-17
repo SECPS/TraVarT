@@ -494,6 +494,16 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * returns the features of the given feature model.
+	 *
+	 * @param fm the feature model from which the features are returned.
+	 * @return returns the features of the feature model.
+	 */
+	public static Collection<Feature> getFeatures(final FeatureModel fm) {
+		return Objects.requireNonNull(fm).getFeatureMap().values();
+	}
+
+	/**
 	 * Removes the given feature from a feature model.
 	 *
 	 * @param fm      the feature model from which the feature is removed.
@@ -697,6 +707,17 @@ public class TraVarTUtils {
 	}
 
 	/**
+	 * checks if the given feature has any child features.
+	 *
+	 * @param feature the feature to check if it has children.
+	 * @return a {@code true} if the given feature has children, otherwise
+	 *         {@code false}.
+	 */
+	public static boolean hasChildren(final Feature feature) {
+		return !getChildren(feature).isEmpty();
+	}
+
+	/**
 	 * get a list of all child features from a given group type. This pools features
 	 * from all groups of the given type.
 	 *
@@ -722,8 +743,8 @@ public class TraVarTUtils {
 	 * @return
 	 */
 	public static boolean checkGroupType(final Feature feature, final Group.GroupType groupType) {
-		return Objects.requireNonNull(feature).getParentGroup() != null
-				&& feature.getParentGroup().GROUPTYPE.equals(groupType);
+		return !hasParentFeature(feature)
+				&& Objects.requireNonNull(feature).getParentGroup().GROUPTYPE.equals(groupType);
 	}
 
 	/**
@@ -1243,6 +1264,19 @@ public class TraVarTUtils {
 	 */
 	public static boolean hasGroup(final Feature feature, final GroupType groupType) {
 		return Objects.requireNonNull(feature).getChildren().stream().anyMatch(g -> groupType.equals(g.GROUPTYPE));
+	}
+
+	/**
+	 * Returns the number of groups the given feature specifies of the given group
+	 * type.
+	 *
+	 * @param feature   the feature to check.
+	 * @param groupType the grouptype to search for in the feature.
+	 * @return the number of instances of the given group type in the feature
+	 */
+	public static long countGroup(final Feature feature, final GroupType groupType) {
+		return Objects.requireNonNull(feature).getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE))
+				.count();
 	}
 
 	/**

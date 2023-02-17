@@ -111,12 +111,14 @@ public class DefaultCoreModelOptimizer implements IModelOptimizer<FeatureModel> 
 		toDelete.forEach(fm.getOwnConstraints()::remove);
 	}
 
+	// TODO: check - Is this method correct? Is it necessary?!
 	private static void fixFalseOptionalFeaturesByAbstractFeatureGroup(final FeatureModel fm, final Feature feature) {
 		final Set<Feature> children = TraVarTUtils.getChildren(feature);
 		for (final Feature child : children) {
 			fixFalseOptionalFeaturesByAbstractFeatureGroup(fm, child);
 		}
 		if (!children.isEmpty() && TraVarTUtils.isAbstract(feature)
+//				&& !TraVarTUtils.isAbstract(feature.getParentFeature())
 				&& (TraVarTUtils.checkGroupType(feature, Group.GroupType.OR)
 						|| TraVarTUtils.checkGroupType(feature, Group.GroupType.ALTERNATIVE))) {
 			// abstract features where all child features are mandatory are also mandatory
