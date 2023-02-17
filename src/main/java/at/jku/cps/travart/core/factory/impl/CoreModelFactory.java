@@ -46,14 +46,12 @@ public final class CoreModelFactory implements ICoreModelFactory {
     }
 
     @Override
-    public ImplicationConstraint createImplicationConstraint(final Constraint left,
-                                                             final Constraint right) {
+    public ImplicationConstraint createImplicationConstraint(final Constraint left, final Constraint right) {
         return new ImplicationConstraint(Objects.requireNonNull(left), Objects.requireNonNull(right));
     }
 
     @Override
-    public EquivalenceConstraint createEquivalenceConstraint(final Constraint left,
-                                                             final Constraint right) {
+    public EquivalenceConstraint createEquivalenceConstraint(final Constraint left, final Constraint right) {
         return new EquivalenceConstraint(Objects.requireNonNull(left), Objects.requireNonNull(right));
     }
 
@@ -81,5 +79,4 @@ public final class CoreModelFactory implements ICoreModelFactory {
     public LiteralConstraint createLiteralConstraint(final String id) {
         return new LiteralConstraint(Objects.requireNonNull(id));
     }
-
 }
