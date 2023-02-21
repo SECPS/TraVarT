@@ -744,7 +744,7 @@ public class TraVarTUtils {
 	 *         otherwise {@code false}.
 	 */
 	public static boolean checkGroupType(final Feature feature, final Group.GroupType groupType) {
-		return !hasParentFeature(feature)
+		return hasParentFeature(feature)
 				&& Objects.requireNonNull(feature).getParentGroup().GROUPTYPE.equals(groupType);
 	}
 
