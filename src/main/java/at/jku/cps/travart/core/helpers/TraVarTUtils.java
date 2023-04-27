@@ -977,30 +977,30 @@ public class TraVarTUtils {
 	}
 
 	/**
-	 * Finds all features in a featuremap that do not have a parent are therefore
+	 * Finds all features in a features that do not have a parent are therefore
 	 * roots.
 	 *
-	 * @param featureMap featuremap containing all features of an UVL model
+	 * @param features Collection containing all features of an UVL model
 	 * @return A list of features that don't have a parent
 	 */
-	private static List<Feature> findRoots(final Map<String, Feature> featureMap) {
-		Objects.requireNonNull(featureMap);
+	private static List<Feature> findRoots(final Collection<Feature> features) {
+		Objects.requireNonNull(features);
 		// return all features with no parent
-		return featureMap.values().stream().filter(TraVarTUtils::hasParentFeature).collect(Collectors.toList());
+		return features.stream().filter(f -> !TraVarTUtils.hasParentFeature(f)).collect(Collectors.toList());
 	}
 
 	/**
-	 * Returns a valid feature tree for an UVL model. If more than one root are
-	 * contained in the feature map, they are united under one single virtual root.
+	 * Returns a valid feature tree for an UVL model. If the feature model has more
+	 * than one root, they are united under one single virtual root.
 	 *
-	 * @param featureMap featuremap containing all features of an UVL model
-	 * @param rootName   Name of the artificial root
+	 * @param fm       The feature model to add a root
+	 * @param rootName Name of the artificial root
 	 * @return name of the root feature
 	 */
-	public static String deriveFeatureModelRoot(final Map<String, Feature> featureMap, final String rootName) {
-		Objects.requireNonNull(featureMap);
+	public static String deriveFeatureModelRoot(final FeatureModel fm, final String rootName) {
+		Objects.requireNonNull(fm);
 		Objects.requireNonNull(rootName);
-		final List<Feature> roots = findRoots(featureMap);
+		final List<Feature> roots = findRoots(TraVarTUtils.getFeatures(fm));
 		if (roots.isEmpty()) {
 			return null;
 		}
@@ -1015,12 +1015,11 @@ public class TraVarTUtils {
 			final Group mandatoryGroup = new Group(GroupType.MANDATORY);
 			mandatoryGroup.getFeatures().addAll(roots);
 			artificialRoot.addChildren(mandatoryGroup);
-			featureMap.put(rootName, artificialRoot);
-
+			TraVarTUtils.setRoot(fm, artificialRoot);
 			return rootName;
 		}
-
 		final Feature root = roots.get(0);
+		TraVarTUtils.setRoot(fm, root);
 		return root.getFeatureName();
 	}
 
