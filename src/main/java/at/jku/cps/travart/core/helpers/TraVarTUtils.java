@@ -1,8 +1,8 @@
 /*******************************************************************************
  * TODO: explanation what the class does
- *  
+ *
  * @author Kevin Feichtinger
- *  
+ *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
  * All rights reserved
@@ -86,7 +86,7 @@ public class TraVarTUtils {
 		for (final Map<IConfigurable, Boolean> sample : samples) {
 			final Set<String> sampleNames = new HashSet<>();
 			for (final Map.Entry<IConfigurable, Boolean> sampleEntry : sample.entrySet()) {
-				if (sampleEntry.getValue()) {
+				if (Boolean.TRUE.equals(sampleEntry.getValue())) {
 					sampleNames.add(sampleEntry.getKey().getName());
 				}
 			}
@@ -1256,9 +1256,12 @@ public class TraVarTUtils {
 	 */
 	public static void addToGroup(final FeatureModel fm, final Feature feature, final Feature parent,
 			final GroupType groupType) {
-		final Group group = getGroup(parent, groupType);
+		Group group = getGroup(parent, groupType);
+		if (group == null) {
+			group = new Group(groupType);
+			parent.addChildren(group);
+		}
 		group.getFeatures().add(feature);
-		parent.addChildren(group);
 		TraVarTUtils.addFeature(fm, parent);
 	}
 
@@ -1320,9 +1323,23 @@ public class TraVarTUtils {
 	public static void addGroup(final FeatureModel fm, final Collection<Feature> features, final Feature parent,
 			final GroupType groupType) {
 		final Feature p = Objects.requireNonNull(parent);
-		final Group optionalGroup = new Group(groupType);
-		optionalGroup.getFeatures().addAll(features);
-		p.addChildren(optionalGroup);
+		final Group group = new Group(groupType);
+		group.getFeatures().addAll(features);
+		p.addChildren(group);
+		TraVarTUtils.addFeature(fm, parent);
+	}
+
+	/**
+	 * Adds a new group to the parent feature of type grouptype.
+	 *
+	 * @param fm        the feature model to work on.
+	 * @param parent    the parent feature to which the group is added.
+	 * @param groupType the type of the group.
+	 */
+	public static void addGroup(final FeatureModel fm, final Feature parent, final GroupType groupType) {
+		final Feature p = Objects.requireNonNull(parent);
+		final Group group = new Group(groupType);
+		p.addChildren(group);
 		TraVarTUtils.addFeature(fm, parent);
 	}
 

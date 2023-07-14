@@ -43,6 +43,11 @@
 			<artifactId>opt4j-satdecoding</artifactId>
 			<version>3.1.4</version>
 		</dependency>
+		<dependency>
+  			<groupId>info.picocli</groupId>
+  			<artifactId>picocli</artifactId>
+  			<version>4.7.4</version>
+		</dependency>
     </dependencies>
 
     <build>
