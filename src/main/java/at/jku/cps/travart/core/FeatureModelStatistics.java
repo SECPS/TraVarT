@@ -1,8 +1,8 @@
 /*******************************************************************************
  * TODO: explanation what the class does
- *  
+ *
  * @author Kevin Feichtinger
- *  
+ *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
  * All rights reserved
@@ -23,14 +23,14 @@ public class FeatureModelStatistics implements IStatistics<FeatureModel> {
 
 	private static FeatureModelStatistics instance;
 
+	private FeatureModelStatistics() {
+	}
+
 	public static FeatureModelStatistics getInstance() {
 		if (instance == null) {
 			instance = new FeatureModelStatistics();
 		}
 		return instance;
-	}
-
-	private FeatureModelStatistics() {
 	}
 
 	@Override
