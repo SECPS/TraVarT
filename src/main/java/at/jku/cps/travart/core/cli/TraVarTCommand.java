@@ -10,12 +10,6 @@
 */
 package at.jku.cps.travart.core.cli;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -33,36 +27,6 @@ public class TraVarTCommand {
 		TraVarTPluginManager.startPlugins();
 	}
 
-	private static Set<String> availableTypes;
-	private static Map<String, String> nameToKey;
-	private static Map<String, String> keyToName;
-
-	public static Set<String> getAvailableTypes() {
-		if (availableTypes == null) {
-			availableTypes = new HashSet<>();
-			TraVarTPluginManager.getAvailablePlugins().values().forEach(p -> availableTypes.add(p.getName()));
-		}
-		return Collections.unmodifiableSet(availableTypes);
-	}
-
-	public static Map<String, String> nameToKeyMap() {
-		if (nameToKey == null) {
-			nameToKey = new HashMap<>();
-			TraVarTPluginManager.getAvailablePlugins().entrySet()
-					.forEach(e -> nameToKey.put(e.getValue().getName(), e.getKey()));
-		}
-		return Collections.unmodifiableMap(nameToKey);
-	}
-
-	public static Map<String, String> keyToNameMap() {
-		if (keyToName == null) {
-			keyToName = new HashMap<>();
-			TraVarTPluginManager.getAvailablePlugins().entrySet()
-					.forEach(e -> keyToName.put(e.getKey(), e.getValue().getName()));
-		}
-		return Collections.unmodifiableMap(keyToName);
-	}
-
 	@Option(names = { "-v",
 			"--verbose" }, scope = ScopeType.INHERIT, description = "Enable verbose log information during execution.")
 	public void setVerbose(final boolean[] verbose) {
@@ -75,8 +39,12 @@ public class TraVarTCommand {
 	}
 
 	public static void main(final String[] args) {
-		String[] arg = { "transform" };
-		int exitCode = new CommandLine(new TraVarTCommand()).execute(arg);
+//		String[] arg = { "transform", "-st=ppr-dsl", "-tt=uvl",
+//				"C:\\Users\\AK117831\\git\\travart2.0\\resources\\PPRDSL",
+//				"C:\\Users\\AK117831\\git\\travart2.0\\output\\UVL" };
+//		String[] arg = { "plugin" };
+		int exitCode = new CommandLine(new TraVarTCommand()).execute(args);
+		TraVarTPluginManager.stopPlugins();
 		System.exit(exitCode);
 	}
 }

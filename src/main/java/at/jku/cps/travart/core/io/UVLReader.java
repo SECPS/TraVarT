@@ -35,7 +35,7 @@ public class UVLReader implements IReader<FeatureModel> {
 
 	@Override
 	public Iterable<String> fileExtensions() {
-		return List.of("uvl", "xml");
+		return List.of("uvl");
 	}
 
 	@Override

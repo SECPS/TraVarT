@@ -14,31 +14,42 @@ import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import at.jku.cps.travart.core.common.IPlugin;
 import at.jku.cps.travart.core.helpers.TraVarTPluginManager;
 import picocli.CommandLine.Command;
 
-@Command(name = "plugin", version = "0.0.1", description = "Lists the available plugins for the TraVarT command")
+@Command(name = "plugin", version = "0.0.1", description = "Lists the available plugins for the TraVarT command.")
 public class PluginCommand implements Callable<Integer> {
 
 	private static final Logger LOGGER = LogManager.getLogger(PluginCommand.class);
 
 	@Override
 	public Integer call() throws Exception {
+		LOGGER.debug("Look up the plugins installed...");
 		if (!TraVarTPluginManager.getAvailablePlugins().isEmpty()) {
-			LOGGER.debug(String.format("Installed Plugins: %s.", toPluginNameString()));
+			LOGGER.debug(String.format("# Pugins found %s", TraVarTPluginManager.getAvailablePlugins().size()));
 			System.out.println(String.format("Installed Plugins: %s.", toPluginNameString()));
+			System.out.println(
+					"Languages provided by TraVarT...\n- at.jku.cps.travart.core[de.vill.uvl-parser] Universal Variability Language v1.0-SNAPSHOT");
 			return 0;
 		}
+		LOGGER.error("No installed plugins could be found. Place them into a plugins folder next to the executable!");
 		return -1;
 	}
 
 	private static String toPluginNameString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("{ ");
-		for (String pluginName : TraVarTCommand.getAvailableTypes()) {
-			builder.append(pluginName).append(",");
+		for (IPlugin plugin : TraVarTPluginManager.getAvailablePlugins().values()) {
+			builder.append("- ").append(toPluginString(plugin)).append("\n");
 		}
-		builder.append(" UVL }");
+		return builder.toString();
+	}
+
+	private static String toPluginString(final IPlugin plugin) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(plugin.getId());
+		builder.append(" ").append(plugin.getName());
+		builder.append(" ").append(plugin.getVersion());
 		return builder.toString();
 	}
 
