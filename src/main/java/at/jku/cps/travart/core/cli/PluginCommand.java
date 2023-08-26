@@ -28,7 +28,7 @@ public class PluginCommand implements Callable<Integer> {
 		LOGGER.debug("Look up the plugins installed...");
 		if (!TraVarTPluginManager.getAvailablePlugins().isEmpty()) {
 			LOGGER.debug(String.format("# Pugins found %s", TraVarTPluginManager.getAvailablePlugins().size()));
-			System.out.println(String.format("Installed Plugins: %s.", toPluginNameString()));
+			System.out.println(String.format("Installed Plugins: %s", toPluginNameString()));
 			System.out.println(
 					"Languages provided by TraVarT...\n- at.jku.cps.travart.core[de.vill.uvl-parser] Universal Variability Language v1.0-SNAPSHOT");
 			return 0;
@@ -39,6 +39,7 @@ public class PluginCommand implements Callable<Integer> {
 
 	private static String toPluginNameString() {
 		StringBuilder builder = new StringBuilder();
+		builder.append("\n");
 		for (IPlugin plugin : TraVarTPluginManager.getAvailablePlugins().values()) {
 			builder.append("- ").append(toPluginString(plugin)).append("\n");
 		}

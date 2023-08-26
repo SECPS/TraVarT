@@ -1,5 +1,5 @@
 /*******************************************************************************
- * TODO: explanation what the class does
+ * Base interface for a TraVarT plugin extension.
  *
  * @author Kevin Feichtinger
  *
@@ -12,16 +12,15 @@ package at.jku.cps.travart.core.common;
 import org.pf4j.ExtensionPoint;
 
 /**
- * A TraVarT plugin must provide access to a {@link IModelTransformer} to
- * transform a variability model, {@link IReader}/{@link IWriter} to read/write
- * the variability model and {@link IStatistics} to get the statistics of the
- * variability model. Additionally, some meta-data of the plugin should be
- * available.
+ * A TraVarT plugin extension must provide access to a {@link IModelTransformer}
+ * to transform a variability model, {@link IReader}/{@link IWriter} to
+ * read/write the variability model and {@link IStatistics} to get the
+ * statistics of the variability model. Additionally, some meta-data of the
+ * plugin should be available.
  *
  * @author Prankur Agarwal
  * @author Kevin Feichtinger
  */
-@SuppressWarnings("rawtypes")
 public interface IPlugin<T> extends ExtensionPoint {
 
 	/**

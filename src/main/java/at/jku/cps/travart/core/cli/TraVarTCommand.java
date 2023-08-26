@@ -19,7 +19,8 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ScopeType;
 
-@Command(name = "travart", subcommands = { TransformCommand.class, ValidateCommand.class,
+// ValidateCommand.class,
+@Command(name = "travart", subcommands = { TransformCommand.class,
 		PluginCommand.class }, mixinStandardHelpOptions = true, version = "0.0.1", description = "TraVarT main command to transform and validate variability artifacts.")
 public class TraVarTCommand {
 
@@ -39,11 +40,15 @@ public class TraVarTCommand {
 	}
 
 	public static void main(final String[] args) {
-//		String[] arg = { "transform", "-st=ppr-dsl", "-tt=uvl",
-//				"C:\\Users\\AK117831\\git\\travart2.0\\resources\\PPRDSL",
-//				"C:\\Users\\AK117831\\git\\travart2.0\\output\\UVL" };
-//		String[] arg = { "plugin" };
-		int exitCode = new CommandLine(new TraVarTCommand()).execute(args);
+		String[] arg = { "-h" };
+//		String[] arg = { "transform", "-st=featureide", "-tt=uvl",
+//		"C:\\Users\\AK117831\\git\\travart2.0\\resources\\FeatureIDE",
+//		"C:\\Users\\AK117831\\git\\travart2.0\\output\\UVL" };
+// 		String[] arg = { "plugin" };
+		if (args.length != 0) {
+			arg = args;
+		}
+		int exitCode = new CommandLine(new TraVarTCommand()).execute(arg);
 		TraVarTPluginManager.stopPlugins();
 		System.exit(exitCode);
 	}

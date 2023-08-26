@@ -72,9 +72,9 @@ public class TransformCommand implements Callable<Integer> {
 			"--targetType" }, required = true, description = "The mandatory target type of the transformed variability artifacts, as listed in the plugin command.")
 	private String targetType;
 
-	@Option(names = { "-validate",
-			"--validate" }, description = "Validate the resulting variability artifact as with the validate command.")
-	private boolean validate;
+//	@Option(names = { "-validate",
+//			"--validate" }, description = "Validate the resulting variability artifact as with the validate command.")
+//	private boolean validate;
 
 	private IReader reader;
 	private IWriter writer;
@@ -205,10 +205,10 @@ public class TransformCommand implements Callable<Integer> {
 		Path newPath = targetPath.resolve(file.getFileName() + writer.getFileExtension());
 		LOGGER.debug(String.format("Write transformed file to %s...", newPath.toAbsolutePath()));
 		writer.write(newModel, newPath);
-		if (validate) {
-			LOGGER.debug("Validate the transformed model...");
-			// TODO validate newModel with model
-		}
+//		if (validate) {
+//			LOGGER.debug("Validate the transformed model...");
+//			// TODO validate newModel with model
+//		}
 		return 0;
 	}
 }
