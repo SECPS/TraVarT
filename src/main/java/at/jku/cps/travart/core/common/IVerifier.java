@@ -7,24 +7,16 @@
  * Contributors:
  *     @author Kevin Feichtinger
  *
- * Command line tool command to validate a transformed variability artifact.
+ * The base interface for a verifier.
  *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
  * All rights reserved
  *******************************************************************************/
-package at.jku.cps.travart.core.cli;
+package at.jku.cps.travart.core.common;
 
-import java.util.concurrent.Callable;
+public interface IVerifier<T> {
 
-import picocli.CommandLine.Command;
-
-@Command(name = "validate", version = "0.0.1", description = "Validates a given variability artifact with its given sampler.")
-public class ValidateCommand implements Callable<Integer> {
-
-	@Override
-	public Integer call() throws Exception {
-		return 0;
-	}
+	boolean isSyntacticallyCorrect(T varModel);
 
 }

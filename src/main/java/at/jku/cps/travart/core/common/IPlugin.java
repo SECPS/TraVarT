@@ -1,7 +1,14 @@
 /*******************************************************************************
- * Base interface for a TraVarT plugin extension.
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
  *
- * @author Kevin Feichtinger
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *     @author Prankur Agarwal
+ *
+ * The base interface for a TraVarT plugin extension.
  *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab

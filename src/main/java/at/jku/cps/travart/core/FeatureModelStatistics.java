@@ -1,7 +1,13 @@
 /*******************************************************************************
- * TODO: explanation what the class does
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
  *
- * @author Kevin Feichtinger
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *
+ * The class provides access to statistical information of the pivot model.
  *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
@@ -19,7 +25,7 @@ import de.vill.model.Feature;
 import de.vill.model.FeatureModel;
 import de.vill.model.Group;
 
-public class FeatureModelStatistics implements IStatistics<FeatureModel> {
+public final class FeatureModelStatistics implements IStatistics<FeatureModel> {
 
 	private static FeatureModelStatistics instance;
 
@@ -57,28 +63,28 @@ public class FeatureModelStatistics implements IStatistics<FeatureModel> {
 		logger.log(Level.INFO, "Tree height: {0}", computeFMHeight(TraVarTUtils.getRoot(fm)));
 	}
 
-	private long countAbstractFeatures(final FeatureModel fm) {
+	private static long countAbstractFeatures(final FeatureModel fm) {
 		return TraVarTUtils.getFeatures(fm).stream().filter(TraVarTUtils::isAbstract).count();
 	}
 
-	private long countMandatoryFeatures(final FeatureModel fm) {
+	private static long countMandatoryFeatures(final FeatureModel fm) {
 		return TraVarTUtils.getFeatures(fm).stream().filter(TraVarTUtils::isMandatory).count();
 	}
 
-	private long countOptionalFeatures(final FeatureModel fm) {
+	private static long countOptionalFeatures(final FeatureModel fm) {
 		return TraVarTUtils.getFeatures(fm).stream()
 				.filter(f -> TraVarTUtils.checkGroupType(f, Group.GroupType.OPTIONAL)).count();
 	}
 
-	private long countOrGroups(final FeatureModel fm) {
+	private static long countOrGroups(final FeatureModel fm) {
 		return countGroupType(fm, Group.GroupType.OR);
 	}
 
-	private long countXorGroups(final FeatureModel fm) {
+	private static long countXorGroups(final FeatureModel fm) {
 		return countGroupType(fm, Group.GroupType.ALTERNATIVE);
 	}
 
-	private long countGroupType(final FeatureModel fm, final Group.GroupType grouptype) {
+	private static long countGroupType(final FeatureModel fm, final Group.GroupType grouptype) {
 		long count = 0;
 		for (Feature feature : TraVarTUtils.getFeatures(fm)) {
 			count += TraVarTUtils.countGroup(feature, grouptype);
@@ -86,7 +92,7 @@ public class FeatureModelStatistics implements IStatistics<FeatureModel> {
 		return count;
 	}
 
-	private long computeFMHeight(final Feature feature) {
+	private static long computeFMHeight(final Feature feature) {
 		if (!TraVarTUtils.hasChildren(feature)) {
 			return 0;
 		}

@@ -1,12 +1,18 @@
-/**
- * Defines the plugin command for the TraVarT CLI. Lists the available plugins of the current installation.
+/*******************************************************************************
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
  *
- * @author Kevin Feichtinger
-*
-* Copyright 2023 Johannes Kepler University Linz
-* LIT Cyber-Physical Systems Lab
-* All rights reserved
-*/
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *
+ * Command line tool command to list all available plugins.
+ *
+ * Copyright 2023 Johannes Kepler University Linz
+ * LIT Cyber-Physical Systems Lab
+ * All rights reserved
+ *******************************************************************************/
 package at.jku.cps.travart.core.cli;
 
 import java.util.concurrent.Callable;

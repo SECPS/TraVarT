@@ -1,8 +1,14 @@
 /*******************************************************************************
- * TODO: explanation what the class does
- *  
- * @author Kevin Feichtinger
- *  
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
+ *
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *
+ * Implements a own library for initializing the FeatureIDE samplers.
+ *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
  * All rights reserved
@@ -24,18 +30,18 @@ import de.ovgu.featureide.fm.core.io.JavaFileSystem;
 import de.ovgu.featureide.fm.core.job.LongRunningCore;
 import de.ovgu.featureide.fm.core.job.LongRunningWrapper;
 
-public class DefaultLibrary implements ILibrary {
+public final class DefaultLibrary implements ILibrary {
 
 	private static DefaultLibrary instance;
+
+	private DefaultLibrary() {
+	}
 
 	public static DefaultLibrary getInstance() {
 		if (instance == null) {
 			instance = new DefaultLibrary();
 		}
 		return instance;
-	}
-
-	private DefaultLibrary() {
 	}
 
 	@Override
@@ -48,23 +54,6 @@ public class DefaultLibrary implements ILibrary {
 		FMFactoryManager.getInstance().addExtension(MultiFeatureModelFactory.getInstance());
 		FMFactoryManager.getInstance().setWorkspaceLoader(new CoreFactoryWorkspaceLoader());
 
-//		FMFormatManager.getInstance().addExtension(new XmlFeatureModelFormat());
-//		FMFormatManager.getInstance().addExtension(new SimpleVelvetFeatureModelFormat());
-//		FMFormatManager.getInstance().addExtension(new DIMACSFormat());
-//		FMFormatManager.getInstance().addExtension(new SXFMFormat());
-//		FMFormatManager.getInstance().addExtension(new ConquererFMWriter());
-//		FMFormatManager.getInstance().addExtension(new CNFFormat());
-//		FMFormatManager.getInstance().addExtension(new UVLFeatureModelFormat());
-//
-//		ConfigurationFactoryManager.getInstance().addExtension(DefaultConfigurationFactory.getInstance());
-//		ConfigurationFactoryManager.getInstance().setWorkspaceLoader(new CoreFactoryWorkspaceLoader());
-//
-//		ConfigFormatManager.getInstance().addExtension(new XMLConfFormat());
-//		ConfigFormatManager.getInstance().addExtension(new DefaultFormat());
-//		ConfigFormatManager.getInstance().addExtension(new FeatureIDEFormat());
-//		ConfigFormatManager.getInstance().addExtension(new EquationFormat());
-//		ConfigFormatManager.getInstance().addExtension(new ExpressionFormat());
-
 		CLIFunctionManager.getInstance().addExtension(new ConfigurationGenerator());
 	}
 
@@ -73,5 +62,4 @@ public class DefaultLibrary implements ILibrary {
 		FMFactoryManager.getInstance().save();
 		ConfigurationFactoryManager.getInstance().save();
 	}
-
 }

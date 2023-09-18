@@ -1,7 +1,13 @@
 /*******************************************************************************
- * TODO: explanation what the class does
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
  *
- * @author Kevin Feichtinger
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *
+ * Implements a writer for the core model of TraVarT.
  *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab

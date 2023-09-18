@@ -1,13 +1,18 @@
-/**
- * The travart command is the main command of the cli.
- * It provides two subcommands: transform and validate.
+/*******************************************************************************
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
  *
- * @author Kevin Feichtinger
-*
-* Copyright 2023 Johannes Kepler University Linz
-* LIT Cyber-Physical Systems Lab
-* All rights reserved
-*/
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *
+ * Command line tool start point.
+ *
+ * Copyright 2023 Johannes Kepler University Linz
+ * LIT Cyber-Physical Systems Lab
+ * All rights reserved
+ *******************************************************************************/
 package at.jku.cps.travart.core.cli;
 
 import org.apache.logging.log4j.Level;
@@ -31,20 +36,11 @@ public class TraVarTCommand {
 	@Option(names = { "-v",
 			"--verbose" }, scope = ScopeType.INHERIT, description = "Enable verbose log information during execution.")
 	public void setVerbose(final boolean[] verbose) {
-		// Configure log4j.
-		// (This is a simplistic example: a real application may use more levels and
-		// perhaps configure only the ConsoleAppender level instead of the root log
-		// level.)
-		// see picocli documentation: https://picocli.info/#_inherited_options
 		Configurator.setRootLevel(verbose.length > 0 ? Level.DEBUG : Level.INFO);
 	}
 
 	public static void main(final String[] args) {
 		String[] arg = { "-h" };
-//		String[] arg = { "transform", "-st=featureide", "-tt=uvl",
-//		"C:\\Users\\AK117831\\git\\travart2.0\\resources\\FeatureIDE",
-//		"C:\\Users\\AK117831\\git\\travart2.0\\output\\UVL" };
-// 		String[] arg = { "plugin" };
 		if (args.length != 0) {
 			arg = args;
 		}

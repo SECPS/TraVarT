@@ -1,12 +1,18 @@
-/**
- * The command transforms a given variability artifact into a different one.
+/*******************************************************************************
+ * This Source Code Form is subject to the terms of the Mozilla
+ * Public License, v. 2.0. If a copy of the MPL was not distributed
+ * with this file, You can obtain one at
+ * https://mozilla.org/MPL/2.0/.
  *
- * @author Kevin Feichtinger
-*
-* Copyright 2023 Johannes Kepler University Linz
-* LIT Cyber-Physical Systems Lab
-* All rights reserved
-*/
+ * Contributors:
+ *     @author Kevin Feichtinger
+ *
+ * Command line tool command transform a variability artifact.
+ *
+ * Copyright 2023 Johannes Kepler University Linz
+ * LIT Cyber-Physical Systems Lab
+ * All rights reserved
+ *******************************************************************************/
 package at.jku.cps.travart.core.cli;
 
 import java.io.IOException;
@@ -45,7 +51,6 @@ public class TransformCommand implements Callable<Integer> {
 	private static final Logger LOGGER = LogManager.getLogger(TransformCommand.class);
 
 	private static final String CORE_MODEL_UVL = "UVL";
-//	private static final String CORE_MODEL_FEATURE_IDE = "FeatureIDE";
 
 	private static String toStringList(final Iterable<String> fileExtensions) {
 		StringBuilder builder = new StringBuilder();
