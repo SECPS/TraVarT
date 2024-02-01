@@ -28,6 +28,11 @@
 	    <version>0.3</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+			<groupId>io.github.universal-variability-language</groupId>
+			<artifactId>uvl-metamodel</artifactId>
+			<version>1.0</version>
+		</dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
@@ -42,7 +47,7 @@
         <dependency>
             <groupId>de.ovgu.featureide</groupId>
             <artifactId>lib.fm</artifactId>
-            <version>3.9.1</version>
+            <version>3.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opt4j</groupId>
