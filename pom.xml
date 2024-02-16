@@ -69,6 +69,13 @@
                     <include>**/*.java</include>
                 </includes>
             </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>.</directory>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
