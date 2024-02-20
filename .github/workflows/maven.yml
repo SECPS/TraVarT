@@ -38,7 +38,7 @@ jobs:
     - name: Assemble artifacts
       run: |
         mkdir artifacts
-        cp /target/*.jar artifacts/ -R
+        cp target/*.jar artifacts/ -R
     - uses: actions/upload-artifact@v1
       with:
          name: Jars
