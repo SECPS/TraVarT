@@ -16,6 +16,8 @@
 package at.jku.cps.travart.core.verify;
 
 import static at.jku.cps.travart.core.verify.LogicOperator.*;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -23,14 +25,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
+import org.logicng.explanations.UNSATCore;
+import org.logicng.explanations.mus.MUSGeneration;
+import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.FormulaParser;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-
+import org.logicng.propositions.Proposition;
+import org.logicng.propositions.StandardProposition;
+import at.jku.cps.travart.core.exception.VerificationException;
 import de.vill.model.Feature;
 import de.vill.model.FeatureModel;
+import de.vill.model.Group;
 import de.vill.model.constraint.Constraint;
 
 public class UVLVerifier {
@@ -40,6 +49,27 @@ public class UVLVerifier {
 	 */
 	private UVLVerifier() {
 		throw new IllegalStateException("Utility class");
+	}
+
+	/**
+	 * verifies if the
+	 * 
+	 * @param fm1
+	 * @param fm2
+	 * @return
+	 */
+	public static boolean verify(FeatureModel fm1, FeatureModel fm2) throws VerificationException {
+		if (!equals(fm1, fm2)) {
+			FormulaFactory ff = new FormulaFactory();
+			Formula formulaModel1 = getModelsAsFormula(ff, fm1);
+			Formula formulaModel2 = getModelsAsFormula(ff, fm2);
+			Formula equalityFormula= ff.and(formulaModel1,formulaModel2);
+			List<Proposition> props = new ArrayList<>();
+			props.add(new StandardProposition(equalityFormula));
+			UNSATCore<Proposition> core = new MUSGeneration().computeMUS(props, ff);
+			throw new VerificationException("Verification failed: see UNSAT core for explanation:\n"+core);
+		}
+		return true;
 	}
 
 	/**
@@ -87,7 +117,7 @@ public class UVLVerifier {
 	 */
 	public static Formula getModelsAsFormula(FormulaFactory ff, FeatureModel fm) {
 		Formula formula = ff.and(uvlConstraintstoFormulas(ff, fm.getConstraints()));
-		return ff.and(formula, getFeaturesBasic(ff, fm));
+		return ff.and(formula, getFormulaFromUVLTree(ff, fm));
 	}
 
 	/**
@@ -111,30 +141,6 @@ public class UVLVerifier {
 	}
 
 	/**
-	 * @deprecated Gets all features within the model and creates a formula like (A
-	 *             | !A) and (B | !B) ... this is only used to get all literals
-	 *             inside a big formula to check equality of to formal models. Since
-	 *             the equality checker needs all literals to be present to generate
-	 *             a valid result. This does not actually represent the logic of the
-	 *             feature-tree and is to be replaced by a method that actually
-	 *             processes that logic.
-	 * @param ff the formulafactory used to create the formulas (needs to be
-	 *           identical for all formulas that need to be compared with the result
-	 *           of this method)
-	 * @param fm the uvl model from which to get the individual features.
-	 * @return A formula representing all features included in the featuremodel
-	 */
-	public static Formula getFeaturesBasic(FormulaFactory ff, FeatureModel fm) {
-		List<Formula> signs = fm.getFeatureMap()
-				.values()
-				.stream()
-				.map(Feature::getFeatureName)
-				.map(n -> ff.or(ff.literal(n, true), ff.literal(n, false)))
-				.collect(Collectors.toList());
-		return ff.and(signs);
-	}
-
-	/**
 	 * Generates a logic formula that represents the feature-tree of a UVL model
 	 * 
 	 * @param ff the formulafactory used to create the formulas (needs to be
@@ -143,11 +149,56 @@ public class UVLVerifier {
 	 * @param fm the uvl model from which to generate the formula
 	 * @return
 	 */
-	private static Formula getFormulaFromUVLTree(FormulaFactory ff, FeatureModel fm) {
-		Feature root = fm.getRootFeature();
-//		TODO recursively build a formula that represents the feature tree
-//		mabe some future work I guess
-		return null;
+	public static Formula getFormulaFromUVLTree(FormulaFactory ff, FeatureModel fm) {
+		return ff.and(fm.getFeatureMap()
+				.values()
+				.stream()
+				.flatMap(f -> f.getChildren()
+						.stream())
+				.map(g -> getGroupAsFormula(ff, g))
+				.collect(Collectors.toList()));
+	}
+
+	/**
+	 * Transforms a list of features to their respective variables for a logicNG formula
+	 * @param ff		the formulafactory used to create the formulas (needs to be
+	 *           identical for all formulas that need to be compared with the result
+	 *           of this method)
+	 * @param features	the features to be converted to variables
+	 * @return	a collection of variables corresponding to the passed features
+	 */
+	private static Collection<Variable> literalsFromFeatures(FormulaFactory ff, Collection<Feature> features) {
+		return features.stream()
+				.map(f -> ff.variable(f.getFeatureName()))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Converts a group to a logicNG formula
+	 * @param ff the formulafactory used to create the formulas (needs to be
+	 *           identical for all formulas that need to be compared with the result
+	 *           of this method)
+	 * @param g  the group to be changed into a logic formula
+	 * @return	 a logicNG formula representing the logic encoded in a group
+	 */
+	private static Formula getGroupAsFormula(FormulaFactory ff, Group g) {
+		Collection<Variable> literals = literalsFromFeatures(ff, g.getFeatures());
+		switch (g.GROUPTYPE) {
+		case OR:
+			return ff.or(literals);
+		case ALTERNATIVE:
+			return ff.exo(literals);
+		case MANDATORY:
+			return ff.implication(ff.literal(g.getParentFeature()
+					.getFeatureName(), true), ff.and(literals));
+		case OPTIONAL:
+			return ff.verum();
+		case GROUP_CARDINALITY:
+			return ff.and(ff.cc(CType.GE, Integer.valueOf(g.getLowerBound()), literals),
+					ff.cc(CType.LE, Integer.valueOf(g.getUpperBound())));
+		default:
+			return ff.verum();
+		}
 	}
 
 }
