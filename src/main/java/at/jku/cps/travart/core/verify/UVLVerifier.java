@@ -55,9 +55,6 @@ public class UVLVerifier {
 		Formula formulaModel1 = getModelsAsFormula(ff, fm1);
 		Formula formulaModel2 = getModelsAsFormula(ff, fm2);
 
-		// add root <=> True, to make sure root is not an unknown symbol in both
-		// formulas
-
 		return formulaModel1.isEquivalentTo(formulaModel2);
 	}
 
