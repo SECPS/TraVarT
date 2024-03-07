@@ -24,18 +24,23 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.imageio.plugins.tiff.FaxTIFFTagSet;
+
 import org.apache.logging.log4j.util.Strings;
 import org.logicng.explanations.UNSATCore;
 import org.logicng.explanations.mus.MUSGeneration;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
+import org.logicng.formulas.Literal;
 import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.FormulaParser;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
 import org.logicng.propositions.Proposition;
 import org.logicng.propositions.StandardProposition;
+import org.logicng.solvers.MaxSATSolver;
+
 import at.jku.cps.travart.core.exception.VerificationException;
 import de.vill.model.Feature;
 import de.vill.model.FeatureModel;
@@ -63,11 +68,14 @@ public class UVLVerifier {
 			FormulaFactory ff = new FormulaFactory();
 			Formula formulaModel1 = getModelsAsFormula(ff, fm1);
 			Formula formulaModel2 = getModelsAsFormula(ff, fm2);
-			Formula equalityFormula= ff.and(formulaModel1,formulaModel2);
-			List<Proposition> props = new ArrayList<>();
-			props.add(new StandardProposition(equalityFormula));
-			UNSATCore<Proposition> core = new MUSGeneration().computeMUS(props, ff);
-			throw new VerificationException("Verification failed: see UNSAT core for explanation:\n"+core);
+			Formula equalityFormula = ff.not(ff.equivalence(formulaModel1, formulaModel2));
+			MaxSATSolver solver = MaxSATSolver.msu3(ff);
+			solver.addHardFormula(equalityFormula);
+			//TODO still needs to have the information which features it can set, and which not -> root and mandatory features.
+			solver.solve();
+
+			throw new VerificationException("Verification failed.\n" + "Model1:\n" + formulaModel1 + "\n\nModel2:" + formulaModel2
+					+ "\n\nSee UNSAT core for explanation:\n" + solver.model());
 		}
 		return true;
 	}
@@ -160,12 +168,14 @@ public class UVLVerifier {
 	}
 
 	/**
-	 * Transforms a list of features to their respective variables for a logicNG formula
-	 * @param ff		the formulafactory used to create the formulas (needs to be
-	 *           identical for all formulas that need to be compared with the result
-	 *           of this method)
-	 * @param features	the features to be converted to variables
-	 * @return	a collection of variables corresponding to the passed features
+	 * Transforms a list of features to their respective variables for a logicNG
+	 * formula
+	 * 
+	 * @param ff       the formulafactory used to create the formulas (needs to be
+	 *                 identical for all formulas that need to be compared with the
+	 *                 result of this method)
+	 * @param features the features to be converted to variables
+	 * @return a collection of variables corresponding to the passed features
 	 */
 	private static Collection<Variable> literalsFromFeatures(FormulaFactory ff, Collection<Feature> features) {
 		return features.stream()
@@ -175,27 +185,30 @@ public class UVLVerifier {
 
 	/**
 	 * Converts a group to a logicNG formula
+	 * 
 	 * @param ff the formulafactory used to create the formulas (needs to be
 	 *           identical for all formulas that need to be compared with the result
 	 *           of this method)
 	 * @param g  the group to be changed into a logic formula
-	 * @return	 a logicNG formula representing the logic encoded in a group
+	 * @return a logicNG formula representing the logic encoded in a group
 	 */
 	private static Formula getGroupAsFormula(FormulaFactory ff, Group g) {
 		Collection<Variable> literals = literalsFromFeatures(ff, g.getFeatures());
+		Literal parentLiteral = ff.literal(g.getParentFeature()
+				.getFeatureName(), true);
 		switch (g.GROUPTYPE) {
 		case OR:
-			return ff.or(literals);
+			return ff.and(ff.implication(ff.or(literals), parentLiteral), ff.or(literals));
 		case ALTERNATIVE:
-			return ff.exo(literals);
+			return ff.and(ff.implication(ff.or(literals), parentLiteral), ff.exo(literals));
 		case MANDATORY:
-			return ff.implication(ff.literal(g.getParentFeature()
-					.getFeatureName(), true), ff.and(literals));
+			return ff.implication(parentLiteral, ff.and(literals));
 		case OPTIONAL:
-			return ff.verum();
+			return ff.implication(ff.or(literals), parentLiteral);
 		case GROUP_CARDINALITY:
-			return ff.and(ff.cc(CType.GE, Integer.valueOf(g.getLowerBound()), literals),
-					ff.cc(CType.LE, Integer.valueOf(g.getUpperBound())));
+			return ff.and(ff.implication(ff.or(literals), parentLiteral),
+					ff.and(ff.cc(CType.GE, Integer.valueOf(g.getLowerBound()), literals),
+							ff.cc(CType.LE, Integer.valueOf(g.getUpperBound()))));
 		default:
 			return ff.verum();
 		}
