@@ -57,11 +57,14 @@ public class UVLVerifier {
 	}
 
 	/**
-	 * verifies if the
+	 * verifies if the two passed UVL models are logically equivalent and therefore have the same
+  	 * configuration space. Requires that features in the models have the same names.
 	 * 
-	 * @param fm1
-	 * @param fm2
-	 * @return
+	 * @param fm1 The first model
+	 * @param fm2 the second model 
+	 * @return returns true if the verification was successful. Throws a VerificationException if the verification
+  	 * 		failed containing the logic formulas for both models, and a configuration that leads to an un-equal
+    	 * 		configuration state for both models.
 	 */
 	public static boolean verify(FeatureModel fm1, FeatureModel fm2) throws VerificationException {
 		if (!equals(fm1, fm2)) {
