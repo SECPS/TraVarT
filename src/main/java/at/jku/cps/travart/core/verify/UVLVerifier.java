@@ -57,14 +57,16 @@ public class UVLVerifier {
 	}
 
 	/**
-	 * verifies if the two passed UVL models are logically equivalent and therefore have the same
-  	 * configuration space. Requires that features in the models have the same names.
+	 * verifies if the two passed UVL models are logically equivalent and therefore
+	 * have the same configuration space. Requires that features in the models have
+	 * the same names.
 	 * 
 	 * @param fm1 The first model
-	 * @param fm2 the second model 
-	 * @return returns true if the verification was successful. Throws a VerificationException if the verification
-  	 * 		failed containing the logic formulas for both models, and a configuration that leads to an un-equal
-    	 * 		configuration state for both models.
+	 * @param fm2 the second model
+	 * @return returns true if the verification was successful. Throws a
+	 *         VerificationException if the verification failed containing the logic
+	 *         formulas for both models, and a configuration that leads to an
+	 *         un-equal configuration state for both models.
 	 */
 	public static boolean verify(FeatureModel fm1, FeatureModel fm2) throws VerificationException {
 		if (!equals(fm1, fm2)) {
@@ -74,11 +76,12 @@ public class UVLVerifier {
 			Formula equalityFormula = ff.not(ff.equivalence(formulaModel1, formulaModel2));
 			MaxSATSolver solver = MaxSATSolver.msu3(ff);
 			solver.addHardFormula(equalityFormula);
-			//TODO still needs to have the information which features it can set, and which not -> root and mandatory features.
+			// TODO still needs to have the information which features it can set, and which
+			// not -> root and mandatory features.
 			solver.solve();
 
-			throw new VerificationException("Verification failed.\n" + "Model1:\n" + formulaModel1 + "\n\nModel2:" + formulaModel2
-					+ "\n\nSee UNSAT core for explanation:\n" + solver.model());
+			throw new VerificationException("Verification failed.\n" + "Model1:\n" + formulaModel1 + "\n\nModel2:"
+					+ formulaModel2 + "\n\nSee UNSAT core for explanation:\n" + solver.model());
 		}
 		return true;
 	}
@@ -147,6 +150,7 @@ public class UVLVerifier {
 		try {
 			return parser.parse(s);
 		} catch (ParserException e) {
+			System.err.println("Verifier has failed to parse the following UVL constraint:\n" + s);
 			return null;
 		}
 	}
