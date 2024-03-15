@@ -16,7 +16,7 @@
 package at.jku.cps.travart.core.verify;
 
 public enum LogicOperator {
-	AND("&", "&"), OR("|", "|"), EQUALS("<=>", "<=>"), IMPLIES("=>", "=>"), NOT("~", "!");
+	AND("&", "&"), OR("|", "|"), EQUALS("<=>", "<=>"), IMPLIES("=>", "=>"), NOT("!", "~");
 
 	private String uvl;
 	private String ng;
