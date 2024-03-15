@@ -76,8 +76,6 @@ public class UVLVerifier {
 			Formula equalityFormula = ff.not(ff.equivalence(formulaModel1, formulaModel2));
 			MaxSATSolver solver = MaxSATSolver.msu3(ff);
 			solver.addHardFormula(equalityFormula);
-			// TODO still needs to have the information which features it can set, and which
-			// not -> root and mandatory features.
 			solver.solve();
 
 			throw new VerificationException("Verification failed.\n" + "Model1:\n" + formulaModel1 + "\n\nModel2:"
@@ -115,7 +113,7 @@ public class UVLVerifier {
 		return constraints.stream()
 				.map(c -> c.toString(false, Strings.EMPTY))
 				.map(c -> c.replace(NOT.uvl(), NOT.ng()))
-				.map(c -> UVLVerifier.parseUVL(ff, c))
+				.map(c -> UVLVerifier.parseUVLconstraintAsFormula(ff, c))
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
 	}
@@ -145,7 +143,7 @@ public class UVLVerifier {
 	 * @param s  the pre-processes constraint-string
 	 * @return A formula object representing the constraints
 	 */
-	private static Formula parseUVL(FormulaFactory ff, String s) {
+	public static Formula parseUVLconstraintAsFormula(FormulaFactory ff, String s) {
 		final FormulaParser parser = new PropositionalParser(ff);
 		try {
 			return parser.parse(s);
