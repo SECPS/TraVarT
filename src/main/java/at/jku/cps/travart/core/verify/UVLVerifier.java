@@ -129,7 +129,8 @@ public class UVLVerifier {
 	 */
 	public static Formula getModelsAsFormula(FormulaFactory ff, FeatureModel fm) {
 		Formula formula = ff.and(uvlConstraintstoFormulas(ff, fm.getConstraints()));
-		return ff.and(formula, getFormulaFromUVLTree(ff, fm));
+		return ff.equivalence(ff.literal(fm.getRootFeature()
+				.getFeatureName(), true), ff.and(formula, getFormulaFromUVLTree(ff, fm))) ;
 	}
 
 	/**
