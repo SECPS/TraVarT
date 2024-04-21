@@ -150,6 +150,7 @@ public class UVLVerifier {
 			return parser.parse(s);
 		} catch (ParserException e) {
 			System.err.println("Verifier has failed to parse the following UVL constraint:\n" + s);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -214,7 +215,7 @@ public class UVLVerifier {
 		case GROUP_CARDINALITY:
 			return ff.and(ff.implication(ff.or(literals), parentLiteral),
 					ff.and(ff.cc(CType.GE, Integer.valueOf(g.getLowerBound()), literals),
-							ff.cc(CType.LE, Integer.valueOf(g.getUpperBound()))));
+							ff.cc(CType.LE, Integer.valueOf(g.getUpperBound()), literals)));
 		default:
 			return ff.verum();
 		}
