@@ -15,20 +15,14 @@
  *******************************************************************************/
 package at.jku.cps.travart.core.verify;
 
-import static at.jku.cps.travart.core.verify.LogicOperator.*;
+import static at.jku.cps.travart.core.verify.LogicOperator.NOT;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.imageio.plugins.tiff.FaxTIFFTagSet;
-
 import org.apache.logging.log4j.util.Strings;
-import org.logicng.explanations.UNSATCore;
-import org.logicng.explanations.mus.MUSGeneration;
 import org.logicng.formulas.CType;
 import org.logicng.formulas.Formula;
 import org.logicng.formulas.FormulaFactory;
@@ -37,8 +31,6 @@ import org.logicng.formulas.Variable;
 import org.logicng.io.parsers.FormulaParser;
 import org.logicng.io.parsers.ParserException;
 import org.logicng.io.parsers.PropositionalParser;
-import org.logicng.propositions.Proposition;
-import org.logicng.propositions.StandardProposition;
 import org.logicng.solvers.MaxSATSolver;
 
 import at.jku.cps.travart.core.exception.VerificationException;
