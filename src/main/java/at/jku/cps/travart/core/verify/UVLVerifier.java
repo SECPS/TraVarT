@@ -20,6 +20,7 @@ import static at.jku.cps.travart.core.verify.LogicOperator.NOT;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
@@ -40,6 +41,7 @@ import de.vill.model.Group;
 import de.vill.model.constraint.Constraint;
 
 public class UVLVerifier {
+	private static final Logger logger= Logger.getLogger(UVLVerifier.class.getName());
 
 	/**
 	 * forbid public constructor because this is purely a static utility class
@@ -141,7 +143,7 @@ public class UVLVerifier {
 		try {
 			return parser.parse(s);
 		} catch (ParserException e) {
-			System.err.println("Verifier has failed to parse the following UVL constraint:\n" + s);
+			logger.warning("Verifier has failed to parse the following UVL constraint:\n" + s);
 			e.printStackTrace();
 			return null;
 		}
