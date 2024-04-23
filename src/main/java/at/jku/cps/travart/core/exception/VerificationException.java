@@ -15,14 +15,38 @@
  *******************************************************************************/
 package at.jku.cps.travart.core.exception;
 
+import org.logicng.formulas.Formula;
+
 public class VerificationException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Creates a VerificationException with the given message.
 	 *
 	 * @param message a string.
 	 */
-	public VerificationException(final String message) {
+	private final transient Formula fm1;
+	private final transient Formula fm2;
+	private final transient String unsatCore;
+	public VerificationException(final String message, Formula fm1, Formula fm2,String unsatCore) {
 		super(message);
+		this.unsatCore=unsatCore;
+		this.fm1=fm1;
+		this.fm2=fm2;
+	}
+	
+	public String getUnsatCore() {
+		return unsatCore;
+	}
+	
+	public Formula getFormulaOne() {
+		return fm1;
+	}
+	
+	public Formula getFormulaTwo() {
+		return fm2;
 	}
 
 }

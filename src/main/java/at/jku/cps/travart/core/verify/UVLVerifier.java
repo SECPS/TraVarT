@@ -72,8 +72,7 @@ public class UVLVerifier {
 			solver.addHardFormula(equalityFormula);
 			solver.solve();
 
-			throw new VerificationException("Verification failed.\n" + "Model1:\n" + formulaModel1 + "\n\nModel2:"
-					+ formulaModel2 + "\n\nSee UNSAT core for explanation:\n" + solver.model());
+			throw new VerificationException("Verification failed.\n",formulaModel1,formulaModel2,solver.model().toString());
 		}
 		return true;
 	}
