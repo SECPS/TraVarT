@@ -13,6 +13,14 @@
         <source.disabled>true</source.disabled>
         <checkstyle-maven-plugin.version>3.2.1</checkstyle-maven-plugin.version>
     </properties>
+    
+    <repositories>
+		<repository>
+			<id>travart-lib-static</id>
+			<url>file://${project.basedir}/lib</url>
+		</repository>
+	</repositories>
+    
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.pf4j/pf4j -->
         <dependency>
