@@ -7,7 +7,7 @@
  * Contributors:
  *     @author Kevin Feichtinger
  *
- * Implements a reader for the core model of TraVarT.
+ * Implements a writer for the core model of TraVarT.
  *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
@@ -15,19 +15,13 @@
  *******************************************************************************/
 package at.jku.cps.travart.core.io;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
-import at.jku.cps.travart.core.common.IReader;
+import at.jku.cps.travart.core.common.Format;
+import at.jku.cps.travart.core.common.ISerializer;
 import at.jku.cps.travart.core.exception.NotSupportedVariabilityTypeException;
-import de.vill.exception.ParseError;
-import de.vill.main.UVLModelFactory;
 import de.vill.model.FeatureModel;
 
 /**
- * Reads a Universal Variability Language (UVL) model from the file system. UVL
+ * Writes a Universal Variability Language (UVL) model to the file system. UVL
  * is used as the core model and is developed by the MODEVAR initiative.
  *
  * @author Kevin Feichtinger
@@ -37,21 +31,17 @@ import de.vill.model.FeatureModel;
  *      Repository</a>
  * @see <a href="https://modevar.github.io/">MODEVAR initiative</a>
  */
-public class UVLReader implements IReader<FeatureModel> {
+public class UVLSerializer implements ISerializer<FeatureModel> {
+	public static Format UVL_FORMAT = new Format("UVL", ".uvl", true, true);
 
 	@Override
-	public Iterable<String> fileExtensions() {
-		return List.of("uvl");
+	public String serialize(FeatureModel uvlModel) throws NotSupportedVariabilityTypeException {
+		return uvlModel.toString();
 	}
 
 	@Override
-	public FeatureModel read(final Path path) throws IOException, NotSupportedVariabilityTypeException {
-		final String content = new String(Files.readAllBytes(path));
-		final UVLModelFactory uvlModelFactory = new UVLModelFactory();
-		try {
-			return uvlModelFactory.parse(content);
-		} catch (final ParseError error) {
-			throw new NotSupportedVariabilityTypeException("Error in reading UVL Model file");
-		}
+	public Format getFormat() {
+		return UVL_FORMAT;
 	}
+
 }

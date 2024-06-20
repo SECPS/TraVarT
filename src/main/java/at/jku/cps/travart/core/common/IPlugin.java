@@ -7,6 +7,7 @@
  * Contributors:
  *     @author Kevin Feichtinger
  *     @author Prankur Agarwal
+ * 	   @author Jakob Gretenkort
  *
  * The base interface for a TraVarT plugin extension.
  *
@@ -17,6 +18,8 @@
 package at.jku.cps.travart.core.common;
 
 import org.pf4j.ExtensionPoint;
+
+import at.jku.cps.travart.core.basic.DefaultPrettyPrinter;
 
 /**
  * A TraVarT plugin extension must provide access to a {@link IModelTransformer}
@@ -38,13 +41,13 @@ public interface IPlugin<T> extends ExtensionPoint {
 	IModelTransformer<T> getTransformer();
 
 	/**
-	 * Returns the reader of the plugin to read the variability model from the file
-	 * system.
+	 * Returns the deserializer of the plugin to deserializer the variability
+	 * model.
 	 *
-	 * @return the reader of the plugin to read the variability model from the file
-	 *         system.
+	 * @return the deserializer of the plugin to deserializer the variability
+	 * 	       model.
 	 */
-	IReader<T> getReader();
+	IDeserializer<T> getDeserializer();
 
 	/**
 	 * Returns the statistics of the plugin to get the statistics the variability
@@ -56,13 +59,22 @@ public interface IPlugin<T> extends ExtensionPoint {
 	IStatistics<T> getStatistics();
 
 	/**
-	 * Returns the writer of the plugin to write the variability model to the file
-	 * system.
+	 * Returns the serializer of the plugin to serialize the variability model.
 	 *
-	 * @return the writer of the plugin to write the variability model to the file
-	 *         system.
+	 * @return the serializer of the plugin to serialize the variability model.
 	 */
-	IWriter<T> getWriter();
+	ISerializer<T> getSerializer();
+
+	/**
+	 * Returns the pretty printer of the plugin to create human-readable
+	 * representations of the variability model.
+	 *
+	 * @return the pretty printer to create human-readable representations of
+	 * 		   the variability model.
+	 */
+	default IPrettyPrinter<T> getPrinter() {
+		return new DefaultPrettyPrinter<T>(getSerializer());
+	}
 
 	/**
 	 * Returns the variability model type name.

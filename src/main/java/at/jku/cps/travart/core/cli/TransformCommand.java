@@ -31,14 +31,14 @@ import org.apache.logging.log4j.Logger;
 import at.jku.cps.travart.core.common.IModelTransformer;
 import at.jku.cps.travart.core.common.IModelTransformer.STRATEGY;
 import at.jku.cps.travart.core.common.IPlugin;
-import at.jku.cps.travart.core.common.IReader;
-import at.jku.cps.travart.core.common.IWriter;
+import at.jku.cps.travart.core.common.IDeserializer;
+import at.jku.cps.travart.core.common.ISerializer;
 import at.jku.cps.travart.core.exception.NotSupportedVariabilityTypeException;
 import at.jku.cps.travart.core.exception.TransformationException;
 import at.jku.cps.travart.core.helpers.TraVarTPluginManager;
 import at.jku.cps.travart.core.io.FileUtils;
-import at.jku.cps.travart.core.io.UVLReader;
-import at.jku.cps.travart.core.io.UVLWriter;
+import at.jku.cps.travart.core.io.UVLDeserializer;
+import at.jku.cps.travart.core.io.UVLSerializer;
 import de.vill.model.FeatureModel;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -81,8 +81,8 @@ public class TransformCommand implements Callable<Integer> {
 //			"--validate" }, description = "Validate the resulting variability artifact as with the validate command.")
 //	private boolean validate;
 
-	private IReader reader;
-	private IWriter writer;
+	private IDeserializer deserializer;
+	private ISerializer serializer;
 	private final Queue<IModelTransformer> transformers = new LinkedList<>();
 
 	private boolean startUVL = false;
@@ -134,7 +134,7 @@ public class TransformCommand implements Callable<Integer> {
 	private int initializeTransformations() {
 		if (CORE_MODEL_UVL.equalsIgnoreCase(sourceType)) {
 			LOGGER.debug("Deteced source type UVL...");
-			reader = new UVLReader();
+			deserializer = new UVLDeserializer();
 			startUVL = true;
 		} else {
 			IPlugin plugin = findPlugin(sourceType);
@@ -143,12 +143,12 @@ public class TransformCommand implements Callable<Integer> {
 				return 1;
 			}
 			LOGGER.debug(String.format("Deteced source type %s...", plugin.getName()));
-			reader = plugin.getReader();
+			deserializer = plugin.getDeserializer();
 			transformers.add(plugin.getTransformer());
 		}
 		if (CORE_MODEL_UVL.equalsIgnoreCase(targetType)) {
 			LOGGER.debug("Deteced target type UVL...");
-			writer = new UVLWriter();
+			serializer = new UVLSerializer();
 		} else {
 			IPlugin plugin = findPlugin(targetType);
 			if (plugin == null) {
@@ -156,7 +156,7 @@ public class TransformCommand implements Callable<Integer> {
 				return 2;
 			}
 			LOGGER.debug(String.format("Deteced target type %s...", plugin.getName()));
-			writer = plugin.getWriter();
+			serializer = plugin.getSerializer();
 			transformers.add(plugin.getTransformer());
 		}
 		return 0;
@@ -174,8 +174,8 @@ public class TransformCommand implements Callable<Integer> {
 
 	private Integer transformDirectory() throws IOException, NotSupportedVariabilityTypeException {
 		Set<Path> files = new HashSet<>();
-		LOGGER.debug(String.format("Collect files of type %s...", toStringList(reader.fileExtensions())));
-		for (Object elem : reader.fileExtensions()) {
+		LOGGER.debug(String.format("Collect files of type %s...", toStringList(deserializer.fileExtensions())));
+		for (Object elem : deserializer.fileExtensions()) {
 			String extension = (String) elem;
 			Set<Path> filesFound = FileUtils.getPathSet(sourcePath, extension);
 			files.addAll(filesFound);
@@ -194,7 +194,7 @@ public class TransformCommand implements Callable<Integer> {
 
 	private Integer transformSingleFile(final Path file) throws IOException, NotSupportedVariabilityTypeException {
 		LOGGER.debug(String.format("Start transforming file %s...", file.getFileName()));
-		Object model = reader.read(file);
+		Object model = deserializer.deserializeFromFile(file);
 		Object newModel = model;
 		boolean intermediate = false;
 		for (IModelTransformer transformer : transformers) {
@@ -207,9 +207,9 @@ public class TransformCommand implements Callable<Integer> {
 				intermediate = true;
 			}
 		}
-		Path newPath = targetPath.resolve(file.getFileName() + writer.getFileExtension());
+		Path newPath = targetPath.resolve(file.getFileName() + serializer.getFileExtension());
 		LOGGER.debug(String.format("Write transformed file to %s...", newPath.toAbsolutePath()));
-		writer.write(newModel, newPath);
+		serializer.serializeToFile(newModel, newPath);
 //		if (validate) {
 //			LOGGER.debug("Validate the transformed model...");
 //			// TODO validate newModel with model
