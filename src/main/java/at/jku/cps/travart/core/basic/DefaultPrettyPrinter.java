@@ -37,9 +37,6 @@ public class DefaultPrettyPrinter<T> implements IPrettyPrinter<T> {
      * readable format.
      */
     public DefaultPrettyPrinter(ISerializer<T> serializer) {
-        if(!serializer.getFormat().isText() && serializer.getFormat().isHumanReadable()) {
-
-        }
         this.serializer = serializer;
     }
 
@@ -50,6 +47,12 @@ public class DefaultPrettyPrinter<T> implements IPrettyPrinter<T> {
 
     @Override
     public String toText(T model) throws NotSupportedVariabilityTypeException {
+        if(!serializer.getFormat().isText() || !serializer.getFormat().isHumanReadable()) {
+            throw new NotSupportedVariabilityTypeException(
+                "The default pretty printer could not be generated from the given serializer. " +
+                "The given serializer does not have a human-readable text-based format!"
+            );
+        }
         return serializer.serialize(model);
     }
 
