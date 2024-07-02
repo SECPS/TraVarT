@@ -7,7 +7,7 @@
  * Contributors:
  *     @author Kevin Feichtinger
  *
- * Implements a writer for the core model of TraVarT.
+ * Implements a reader for the core model of TraVarT.
  *
  * Copyright 2023 Johannes Kepler University Linz
  * LIT Cyber-Physical Systems Lab
@@ -15,15 +15,17 @@
  *******************************************************************************/
 package at.jku.cps.travart.core.io;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.List;
 
-import at.jku.cps.travart.core.common.IWriter;
+import at.jku.cps.travart.core.common.Format;
+import at.jku.cps.travart.core.common.IDeserializer;
+import at.jku.cps.travart.core.exception.NotSupportedVariabilityTypeException;
+import de.vill.exception.ParseError;
+import de.vill.main.UVLModelFactory;
 import de.vill.model.FeatureModel;
 
 /**
- * Writes a Universal Variability Language (UVL) model to the file system. UVL
+ * Reads a Universal Variability Language (UVL) model from the file system. UVL
  * is used as the core model and is developed by the MODEVAR initiative.
  *
  * @author Kevin Feichtinger
@@ -33,15 +35,19 @@ import de.vill.model.FeatureModel;
  *      Repository</a>
  * @see <a href="https://modevar.github.io/">MODEVAR initiative</a>
  */
-public class UVLWriter implements IWriter<FeatureModel> {
-
+public class UVLDeserializer implements IDeserializer<FeatureModel> {
 	@Override
-	public void write(final FeatureModel uvlModel, final Path path) throws IOException {
-		Files.write(path, uvlModel.toString().getBytes());
+	public FeatureModel deserialize(String serial, Format format) throws NotSupportedVariabilityTypeException {
+		final UVLModelFactory uvlModelFactory = new UVLModelFactory();
+		try {
+			return uvlModelFactory.parse(serial);
+		} catch (final ParseError error) {
+			throw new NotSupportedVariabilityTypeException("Error in reading UVL Model file");
+		}
 	}
 
 	@Override
-	public String getFileExtension() {
-		return ".uvl";
+	public Iterable<Format> supportedFormats() {
+		return List.of(UVLSerializer.UVL_FORMAT);
 	}
 }

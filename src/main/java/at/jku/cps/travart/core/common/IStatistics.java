@@ -45,7 +45,7 @@ public interface IStatistics<T> {
 	long getConstraintsCount(T model);
 
 	/**
-	 * Returns the number of constraints in the given variability model.
+	 * Logs the model statistics.
 	 *
 	 * @param logger the logger for the class
 	 * @param model  the model from which the constraints should be counted.
