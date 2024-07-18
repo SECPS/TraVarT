@@ -14,6 +14,8 @@
 
 # Package Files #
 *.jar
+# ...unless in lib/
+!lib/*
 *.war
 *.nar
 *.ear
