@@ -1328,6 +1328,8 @@ public class TraVarTUtils {
 			return null;
 		}
 	}
+	
+	// TODO Add method that returns all groups of a specific type
 
 	/**
 	 * Adds a new group to the parent feature of type groupType, which contains the

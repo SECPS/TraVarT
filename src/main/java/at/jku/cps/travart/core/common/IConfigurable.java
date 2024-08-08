@@ -52,7 +52,7 @@ public interface IConfigurable {
 	 *
 	 * @param selected Toggle "configuredless" of this object
 	 */
-	void setConfigured(boolean selected);
+	void setConfigured(boolean configured);
 
 	/**
 	 * Returns the name of an IConfigurable of a variability model
