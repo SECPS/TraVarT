@@ -513,7 +513,7 @@ public class TraVarTUtils {
 	 * @return returns the feature identified by id, otherwise null.
 	 */
 	public static Feature getFeature(final FeatureModel fm, final String id) {
-		return Objects.requireNonNull(fm).getFeatureMap().get(id);
+		return getFeatureMapFromRoot(Objects.requireNonNull(fm).getRootFeature()).get(id);
 	}
 
 	/**
