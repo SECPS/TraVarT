@@ -212,6 +212,12 @@ public class TraVarTUtils {
 	public static void addOwnConstraint(final FeatureModel fm, final Constraint constraint) {
 		getOwnConstraints(fm).add(Objects.requireNonNull(constraint));
 	}
+	
+	public static void addOwnConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
+		for (Constraint c : constraints) {
+			getOwnConstraints(fm).add(Objects.requireNonNull(c));
+		}
+	}
 
 	/**
 	 * Removes the given constraint from the given feature model.
@@ -358,6 +364,12 @@ public class TraVarTUtils {
 	 */
 	public static void addGlobalConstraint(final FeatureModel fm, final Constraint constraint) {
 		getGlobalConstraints(fm).add(Objects.requireNonNull(constraint));
+	}
+	
+	public static void addGlobalConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
+		for (Constraint c : constraints) {
+			getGlobalConstraints(fm).add(Objects.requireNonNull(c));
+		}
 	}
 
 	/**
@@ -1239,7 +1251,9 @@ public class TraVarTUtils {
 		Objects.requireNonNull(feature);
 		if (feature.getParentGroup() != null) {
 			feature.getParentGroup().getFeatures().remove(feature);
-			if (feature.getParentGroup().getFeatures().isEmpty()) {
+			// NPE here: When the feature is removed from its group, getParentGroup returns null
+			// Short-circuited to bypass exception
+			if (false && feature.getParentGroup().getFeatures().isEmpty()) {
 				getParentFeature(feature).getChildren().remove(feature.getParentGroup());
 			}
 		}

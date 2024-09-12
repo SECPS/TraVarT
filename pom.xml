@@ -1,60 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>at.jku.cps</groupId>
-    <artifactId>travart-core</artifactId>
-    <version>1.1.0</version>
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <javadoc.disabled>true</javadoc.disabled>
-        <deploy.disabled>true</deploy.disabled>
-        <source.disabled>true</source.disabled>
-        <checkstyle-maven-plugin.version>3.2.1</checkstyle-maven-plugin.version>
-    </properties>
-    
-    <repositories>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>at.jku.cps</groupId>
+	<artifactId>travart-core</artifactId>
+	<version>1.1.0</version>
+	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<javadoc.disabled>true</javadoc.disabled>
+		<deploy.disabled>true</deploy.disabled>
+		<source.disabled>true</source.disabled>
+		<checkstyle-maven-plugin.version>3.2.1</checkstyle-maven-plugin.version>
+	</properties>
+
+	<repositories>
 		<repository>
 			<id>travart-lib-static</id>
 			<url>file://${project.basedir}/lib</url>
 		</repository>
 	</repositories>
-    
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.pf4j/pf4j -->
-        <dependency>
-            <groupId>org.pf4j</groupId>
-            <artifactId>pf4j</artifactId>
-            <version>3.8.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.universal-variability-language</groupId>
-	    <artifactId>uvl-parser</artifactId>
-	    <version>0.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.pf4j/pf4j -->
+		<dependency>
+			<groupId>org.pf4j</groupId>
+			<artifactId>pf4j</artifactId>
+			<version>3.8.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.universal-variability-language</groupId>
+			<artifactId>uvl-parser</artifactId>
+			<version>0.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.github.universal-variability-language</groupId>
 			<artifactId>uvl-metamodel</artifactId>
 			<version>1.0</version>
 		</dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>2.20.0</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.20.0</version>
 		</dependency>
-        <dependency>
-            <groupId>org.logicng</groupId>
-            <artifactId>logicng-j11</artifactId>
-            <version>2.4.3</version>
-        </dependency>
-        <dependency>
-            <groupId>de.ovgu.featureide</groupId>
-            <artifactId>lib.fm</artifactId>
-            <version>3.10.0</version>
+		<dependency>
+			<groupId>org.logicng</groupId>
+			<artifactId>logicng-j11</artifactId>
+			<version>2.4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>de.ovgu.featureide</groupId>
+			<artifactId>lib.fm</artifactId>
+			<version>3.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opt4j</groupId>
@@ -62,51 +63,51 @@
 			<version>3.1.4</version>
 		</dependency>
 		<dependency>
-  			<groupId>info.picocli</groupId>
-  			<artifactId>picocli</artifactId>
-  			<version>4.7.4</version>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+			<version>4.7.4</version>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
-    <build>
-        <resources>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.java</include>
-                </includes>
-            </resource>
-            <resource>
-                <filtering>false</filtering>
-                <directory>.</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle-maven-plugin.version}</version>
-                <configuration>
-                    <configLocation>${project.basedir}/checkstyle.xml</configLocation>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.java</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>.</directory>
+				<includes>
+					<include>LICENSE</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle-maven-plugin.version}</version>
+				<configuration>
+					<configLocation>${project.basedir}/checkstyle.xml</configLocation>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
