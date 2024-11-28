@@ -24,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -212,9 +211,9 @@ public class TraVarTUtils {
 	public static void addOwnConstraint(final FeatureModel fm, final Constraint constraint) {
 		getOwnConstraints(fm).add(Objects.requireNonNull(constraint));
 	}
-	
+
 	public static void addOwnConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
-		for (Constraint c : constraints) {
+		for (final Constraint c : constraints) {
 			getOwnConstraints(fm).add(Objects.requireNonNull(c));
 		}
 	}
@@ -312,9 +311,9 @@ public class TraVarTUtils {
 	public static void addFeatureConstraint(final FeatureModel fm, final Constraint constraint) {
 		getFeatureConstraints(fm).add(Objects.requireNonNull(constraint));
 	}
-	
+
 	public static void addFeatureConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
-		for (Constraint c : constraints) {
+		for (final Constraint c : constraints) {
 			getFeatureConstraints(fm).add(Objects.requireNonNull(c));
 		}
 	}
@@ -365,9 +364,9 @@ public class TraVarTUtils {
 	public static void addGlobalConstraint(final FeatureModel fm, final Constraint constraint) {
 		getGlobalConstraints(fm).add(Objects.requireNonNull(constraint));
 	}
-	
+
 	public static void addGlobalConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
-		for (Constraint c : constraints) {
+		for (final Constraint c : constraints) {
 			getGlobalConstraints(fm).add(Objects.requireNonNull(c));
 		}
 	}
@@ -1283,7 +1282,7 @@ public class TraVarTUtils {
 	 * @param groupType the type of the group.
 	 */
 	public static void addToGroup(final FeatureModel fm, final Feature feature, final Feature parent,
-			final GroupType groupType, int index) {
+			final GroupType groupType, final int index) {
 		Group group = getGroup(parent, groupType, index);
 		if (group == null) {
 			// Dead code? getGroup never returns null!
@@ -1325,7 +1324,7 @@ public class TraVarTUtils {
 	 * Returns a group of type groupType from the given feature. If the feature
 	 * specifies multiple groups of the given type, the one with the given index
 	 * returned. If the feature does not specify a group of the given type, the
-	 * method creates one and returns it. 
+	 * method creates one and returns it.
 	 * @see{{@link #hasGroup(Feature, GroupType)}}.
 	 *
 	 * @param feature   the feature to return the group of type grouptype from.
@@ -1338,11 +1337,10 @@ public class TraVarTUtils {
 				.collect(Collectors.toList());
 		if (!groups.isEmpty()) {
 			return groups.get(index);
-		} else {
-			return null;
 		}
+		return null;
 	}
-	
+
 	// TODO Add method that returns all groups of a specific type
 
 	/**
