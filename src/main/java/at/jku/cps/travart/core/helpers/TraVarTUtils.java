@@ -22,8 +22,6 @@ import static at.jku.cps.travart.core.transformation.DefaultModelTransformationP
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1393,16 +1391,5 @@ public class TraVarTUtils {
 		fh.setFormatter(new SimpleFormatter());
 		logger.addHandler(fh);
 		return logger;
-	}
-
-	/**
-	 * Gets the list of paths in the path which matches the file extension
-	 *
-	 * @param path      the path where we need the list of files
-	 * @param extension the file extension
-	 */
-	public static Set<Path> getPathSet(final Path path, final String extension) throws IOException {
-		return Files.walk(path).filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(extension))
-				.collect(Collectors.toSet());
 	}
 }
