@@ -97,7 +97,7 @@ public interface IDeserializer<T> {
 	 *         reader.
 	 */
 	default Iterable<String> fileExtensions() {
-		List<String> extensions = new ArrayList<String>();
+		List<String> extensions = new ArrayList<>();
 		supportedFormats().forEach(f -> extensions.add(f.extension()));
 		return extensions;
 	}

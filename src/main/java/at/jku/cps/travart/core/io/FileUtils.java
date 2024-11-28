@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class FileUtils {
 
@@ -33,7 +34,11 @@ public final class FileUtils {
 
 	public static Set<Path> getPathSetForLevel(final Path path, final String extension, final int level)
 			throws IOException {
-		return Files.walk(path, level).filter(Files::isRegularFile)
-				.filter(f -> f.getFileName().toString().endsWith(extension)).collect(Collectors.toSet());
+		try (Stream<Path> stream = Files.walk(path, level)) {
+			return stream.filter(Files::isRegularFile)
+					.filter(f -> f.getFileName().toString().endsWith(extension)).collect(Collectors.toSet());
+		} catch (IOException e) {
+			throw new IOException(e);
+		}
 	}
 }

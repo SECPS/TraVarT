@@ -54,7 +54,6 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 
 	private FeatureModel lastFm;
 
-	private IFeatureModel featureIdeFm;
 	private Set<Map<IConfigurable, Boolean>> samples;
 	private Set<Map<IConfigurable, Boolean>> invalidSamples;
 
@@ -110,8 +109,7 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 		format.read(featureIdeFm, fm.toString());
 	}
 
-	private Set<Map<IConfigurable, Boolean>> sample(final IFeatureModel fm)
-			throws NotSupportedVariabilityTypeException {
+	private Set<Map<IConfigurable, Boolean>> sample(final IFeatureModel fm) {
 		List<List<String>> configurations = findConfigurations(fm);
 		Set<Map<IConfigurable, Boolean>> configurables = new HashSet<>();
 		for (final List<String> fmSample : configurations) {
@@ -143,13 +141,11 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 		return configurables;
 	}
 
-	private List<List<String>> findConfigurations(final IFeatureModel fm) throws NotSupportedVariabilityTypeException {
+	private List<List<String>> findConfigurations(final IFeatureModel fm) {
 		FeatureModelFormula formula = new FeatureModelFormula(fm);
-		List<LiteralSet> samples = LongRunningWrapper.runMethod(new TWiseConfigurationGenerator(formula.getCNF(), 3));
-//		List<LiteralSet> samples = LongRunningWrapper
-//				.runMethod(new RandomConfigurationGenerator(formula.getCNF(), 1_000_000));
-		List<List<String>> configurations = new ArrayList<>(samples.size());
-		for (LiteralSet sample : samples) {
+		List<LiteralSet> configs = LongRunningWrapper.runMethod(new TWiseConfigurationGenerator(formula.getCNF(), 3));
+		List<List<String>> configurations = new ArrayList<>(configs.size());
+		for (LiteralSet sample : configs) {
 			List<String> names = formula.getCNF().getVariables().convertToString(sample);
 			configurations.add(names);
 		}
@@ -157,8 +153,8 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 	}
 
 	private Set<Map<IConfigurable, Boolean>> sampleInvalid(final IFeatureModel fm,
-			final Set<Map<IConfigurable, Boolean>> samples) throws NotSupportedVariabilityTypeException {
-		Set<Map<IConfigurable, Boolean>> invalidSamples = new HashSet<>();
+			final Set<Map<IConfigurable, Boolean>> samples) {
+		invalidSamples = new HashSet<>();
 		for (Map<IConfigurable, Boolean> sample : samples) {
 			for (int count = 0; count < INVALID_COUNT; count++) {
 				int featureSwitch = rand.nextInt(sample.size());
@@ -191,7 +187,7 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 			IFeature feature = FeatureUtils.getFeature(fm, entry.getKey().getName());
 			if (feature != null) {
 				String featureName = FeatureUtils.getName(feature);
-				if (entry.getValue()) {
+				if (Boolean.TRUE.equals(entry.getValue())) {
 					config.setManual(featureName, Selection.SELECTED);
 				} else {
 					config.setManual(featureName, Selection.UNSELECTED);

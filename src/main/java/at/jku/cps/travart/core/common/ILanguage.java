@@ -63,7 +63,7 @@ public interface ILanguage<T> {
 	 * 		   the variability model.
 	 */
 	default IPrettyPrinter<T> getPrinter() {
-		return new DefaultPrettyPrinter<T>(this.getSerializer());
+		return new DefaultPrettyPrinter<>(this.getSerializer());
 	}
 
 	/**
@@ -73,12 +73,12 @@ public interface ILanguage<T> {
 	 */
 	String getName();
 
-    /**
-     * Returns an abbreviation, typically an acronym of the variability type name.
-     *
-     * @return the abbreviated version of the variability type name.
-     */
-    String getAbbreviation();
+	/**
+	 * Returns an abbreviation, typically an acronym of the variability type name.
+	 *
+	 * @return the abbreviated version of the variability type name.
+	 */
+	String getAbbreviation();
 
 	/**
 	 * Returns a iterable of file extensions for which this language is applicable.
