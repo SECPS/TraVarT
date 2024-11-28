@@ -118,16 +118,16 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 			Map<IConfigurable, Boolean> config = new HashMap<>();
 			for (String selectedFeature : fmSample) {
 				IConfigurable configurable = new IConfigurable() {
-					boolean selected;
+					boolean configured;
 
 					@Override
-					public void setSelected(final boolean selected) {
-						this.selected = selected;
+					public void setConfigured(final boolean selected) {
+						this.configured = selected;
 					}
 
 					@Override
-					public boolean isSelected() {
-						return selected;
+					public boolean isConfigured() {
+						return configured;
 					}
 
 					@Override
@@ -135,7 +135,7 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 						return selectedFeature;
 					}
 				};
-				configurable.setSelected(true);
+				configurable.setConfigured(true);
 				config.put(configurable, true);
 			}
 			configurables.add(config);
@@ -168,7 +168,7 @@ public class DefaultCoreModelSampler implements ISampler<FeatureModel> {
 					IConfigurable key = entry.getKey();
 					Boolean value = entry.getValue();
 					if (i == featureSwitch) {
-						key.setSelected(!key.isSelected());
+						key.setConfigured(!key.isConfigured());
 						value = !value;
 					}
 					invalid.put(key, value);

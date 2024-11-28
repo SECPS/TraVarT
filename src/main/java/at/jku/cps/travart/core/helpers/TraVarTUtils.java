@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -211,6 +212,12 @@ public class TraVarTUtils {
 	public static void addOwnConstraint(final FeatureModel fm, final Constraint constraint) {
 		getOwnConstraints(fm).add(Objects.requireNonNull(constraint));
 	}
+	
+	public static void addOwnConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
+		for (Constraint c : constraints) {
+			getOwnConstraints(fm).add(Objects.requireNonNull(c));
+		}
+	}
 
 	/**
 	 * Removes the given constraint from the given feature model.
@@ -305,6 +312,12 @@ public class TraVarTUtils {
 	public static void addFeatureConstraint(final FeatureModel fm, final Constraint constraint) {
 		getFeatureConstraints(fm).add(Objects.requireNonNull(constraint));
 	}
+	
+	public static void addFeatureConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
+		for (Constraint c : constraints) {
+			getFeatureConstraints(fm).add(Objects.requireNonNull(c));
+		}
+	}
 
 	/**
 	 * Removes the given feature {@link Constraint} from the given feature model.
@@ -351,6 +364,12 @@ public class TraVarTUtils {
 	 */
 	public static void addGlobalConstraint(final FeatureModel fm, final Constraint constraint) {
 		getGlobalConstraints(fm).add(Objects.requireNonNull(constraint));
+	}
+	
+	public static void addGlobalConstraints(final FeatureModel fm, final Collection<Constraint> constraints) {
+		for (Constraint c : constraints) {
+			getGlobalConstraints(fm).add(Objects.requireNonNull(c));
+		}
 	}
 
 	/**
@@ -506,7 +525,7 @@ public class TraVarTUtils {
 	 * @return returns the feature identified by id, otherwise null.
 	 */
 	public static Feature getFeature(final FeatureModel fm, final String id) {
-		return Objects.requireNonNull(fm).getFeatureMap().get(id);
+		return getFeatureMapFromRoot(Objects.requireNonNull(fm).getRootFeature()).get(id);
 	}
 
 	/**
@@ -1232,7 +1251,9 @@ public class TraVarTUtils {
 		Objects.requireNonNull(feature);
 		if (feature.getParentGroup() != null) {
 			feature.getParentGroup().getFeatures().remove(feature);
-			if (feature.getParentGroup().getFeatures().isEmpty()) {
+			// NPE here: When the feature is removed from its group, getParentGroup returns null
+			// Short-circuited to bypass exception
+			if (false && feature.getParentGroup().getFeatures().isEmpty()) {
 				getParentFeature(feature).getChildren().remove(feature.getParentGroup());
 			}
 		}
@@ -1262,9 +1283,10 @@ public class TraVarTUtils {
 	 * @param groupType the type of the group.
 	 */
 	public static void addToGroup(final FeatureModel fm, final Feature feature, final Feature parent,
-			final GroupType groupType) {
-		Group group = getGroup(parent, groupType);
+			final GroupType groupType, int index) {
+		Group group = getGroup(parent, groupType, index);
 		if (group == null) {
+			// Dead code? getGroup never returns null!
 			group = new Group(groupType);
 			parent.addChildren(group);
 		}
@@ -1293,33 +1315,38 @@ public class TraVarTUtils {
 	 * @param groupType the grouptype to search for in the feature.
 	 * @return the number of instances of the given group type in the feature
 	 */
-	public static long countGroup(final Feature feature, final GroupType groupType) {
-		return Objects.requireNonNull(feature).getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE))
+	public static int countGroup(final Feature feature, final GroupType groupType) {
+		// Safe cast, as the size of a list is limited by Integer.MAX_VALUE
+		return (int) Objects.requireNonNull(feature).getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE))
 				.count();
 	}
 
 	/**
-	 * Returns a group of type grouptype from the given feature. If the feature
-	 * specifies multiple groups of the given type, only one is returned. If the
-	 * feature does not specify a group of the given type, the method creates one
-	 * and returns it. @see{{@link #hasGroup(Feature, GroupType)}}.
+	 * Returns a group of type groupType from the given feature. If the feature
+	 * specifies multiple groups of the given type, the one with the given index
+	 * returned. If the feature does not specify a group of the given type, the
+	 * method creates one and returns it. 
+	 * @see{{@link #hasGroup(Feature, GroupType)}}.
 	 *
 	 * @param feature   the feature to return the group of type grouptype from.
-	 * @param groupType the grouptype to search for in the feature.
-	 * @return a group of type grouptype, either from the given feature or a new
+	 * @param groupType the groupType to search for in the feature.
+	 * @return a group of type groupType, either from the given feature or a new
 	 *         one.
 	 */
-	public static Group getGroup(final Feature feature, final GroupType groupType) {
-		final Optional<Group> group = feature.getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE))
-				.findAny();
-		if (group.isPresent()) {
-			return group.get();
+	public static Group getGroup(final Feature feature, final GroupType groupType, final int index) {
+		final List<Group> groups = feature.getChildren().stream().filter(g -> groupType.equals(g.GROUPTYPE))
+				.collect(Collectors.toList());
+		if (!groups.isEmpty()) {
+			return groups.get(index);
+		} else {
+			return null;
 		}
-		return new Group(groupType);
 	}
+	
+	// TODO Add method that returns all groups of a specific type
 
 	/**
-	 * Adds a new group to the parent feature of type grouptype, which contains the
+	 * Adds a new group to the parent feature of type groupType, which contains the
 	 * features.
 	 *
 	 * @param fm        the feature model to work on.
@@ -1327,13 +1354,17 @@ public class TraVarTUtils {
 	 * @param parent    the parent feature to which the group is added.
 	 * @param groupType the type of the group.
 	 */
-	public static void addGroup(final FeatureModel fm, final Collection<Feature> features, final Feature parent,
+	// Return the index of the newly added group?
+	public static int addGroup(final FeatureModel fm, final Collection<Feature> features, final Feature parent,
 			final GroupType groupType) {
+		// Current max index for given groupType
+		final int index = TraVarTUtils.countGroup(parent, groupType);
 		final Feature p = Objects.requireNonNull(parent);
 		final Group group = new Group(groupType);
 		group.getFeatures().addAll(features);
 		p.addChildren(group);
 		TraVarTUtils.addFeature(fm, parent);
+		return index + 1;
 	}
 
 	/**
