@@ -11,7 +11,7 @@
         <javadoc.disabled>true</javadoc.disabled>
         <deploy.disabled>true</deploy.disabled>
         <source.disabled>true</source.disabled>
-        <checkstyle-maven-plugin.version>3.4.0</checkstyle-maven-plugin.version>
+        <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
     </properties>
 
 	<repositories>
